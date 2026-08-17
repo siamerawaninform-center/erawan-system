@@ -16,6 +16,8 @@ import Plan from "./views/Plan.jsx";
 import JSA from "./views/JSA.jsx";
 import Expenses from "./views/Expenses.jsx";
 import MonthlyArchive from "./views/MonthlyArchive.jsx";
+import Debts from "./views/Debts.jsx";
+import Analysis from "./views/Analysis.jsx";
 import Team from "./views/Team.jsx";
 import Company from "./views/Company.jsx";
 import Customers from "./views/Customers.jsx";
@@ -50,6 +52,8 @@ const NAV_PROJECT_DOCS = [
 const NAV_ACCOUNTING = [
   { key: "expenses", label: "รายจ่าย/ภาษีซื้อ", eyebrow: "13" },
   { key: "monthly", label: "คลังเอกสารรายเดือน", eyebrow: "14" },
+  { key: "debts", label: "ทะเบียนหนี้สิน", eyebrow: "15" },
+  { key: "analysis", label: "วิเคราะห์การเงิน", eyebrow: "16" },
 ];
 
 export default function App() {
@@ -175,6 +179,8 @@ export default function App() {
         )}
         {view === "expenses" && <Expenses {...viewProps} />}
         {view === "monthly" && <MonthlyArchive data={data} />}
+        {view === "debts" && <Debts {...viewProps} />}
+        {view === "analysis" && <Analysis data={data} />}
         {view === "team" && <Team {...viewProps} />}
         {view === "company" && <Company company={data.company} onSave={saveCompany} />}
         {view === "customers" && <Customers {...viewProps} />}
