@@ -149,6 +149,12 @@ export function nextWhtCertNo(existingExpenses, dateStr) {
   return `WHT-${period}-${String(n).padStart(3, "0")}`;
 }
 
+/** รหัสหนี้สิน DEBT-001 */
+export function nextDebtCode(existingDebts) {
+  const n = (existingDebts || []).length + 1;
+  return `DEBT-${String(n).padStart(3, "0")}`;
+}
+
 /** รหัสเอกสารแนบ DOC-0001 */
 export function nextAttachCode(existingDocs) {
   return `DOC-${String((existingDocs?.length || 0) + 1).padStart(4, "0")}`;
