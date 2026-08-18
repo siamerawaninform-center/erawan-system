@@ -394,11 +394,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dp-sig-name{ white-space:nowrap; }
 
 .doc-table{ width:100%; border-collapse:collapse; font-size:18px; margin-bottom:4px; }
-.doc-table th{ background:var(--ink); color:#fff; border:1px solid var(--ink); padding:4px 5px; font-weight:700; text-align:center; }
-.doc-table td{ border-left:1px solid #d5d5d5; border-right:1px solid #d5d5d5; padding:3px 6px; vertical-align:top; }
+.doc-table th{ background:var(--ink); color:#fff; border:1px solid var(--ink); padding:10px 8px; font-weight:700; text-align:center; }
+.doc-table td{ border-left:1px solid #d5d5d5; border-right:1px solid #d5d5d5; padding:9px 8px; vertical-align:top; }
 .doc-table tbody tr:first-child td{ border-top:1px solid #d5d5d5; }
 .doc-table-fill tbody{ border-bottom:1px solid #d5d5d5; }
-.doc-blank-row td{ height:12px; border-top:1px solid #ececec; }
+.doc-blank-row td{ height:28px; border-top:1px solid #ececec; }
 .doc-desc{ white-space:pre-wrap; }
 .doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 .doc-center{ text-align:center; }
