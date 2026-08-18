@@ -67,7 +67,7 @@ const PRINT_CSS = `
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
-  .doc-blank-row td{ height:28px; border-top:1.5px solid #ccc; }
+  .doc-blank-row td{ height:22px; border-top:1.5px solid #ccc; }
   .doc-desc{ white-space:pre-wrap; }
   .doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
@@ -111,7 +111,7 @@ const PRINT_CSS = `
   .dsg-sig-line{ width:100%; border-bottom:2.5px solid #222; height:30px; }
   .dsg-role{ color:#555; font-weight:600; }
 
-  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:46px; }
+  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:26px; }
   .quote-sig-col{ flex:1; text-align:center; }
   .quote-sig-inname{ font-size:18px; color:#555; margin-bottom:26px; font-weight:600; }
   .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
@@ -191,7 +191,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         <td class="doc-num">${esc(baht(it.discount))}</td>
         <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
       </tr>`).join("");
-    const blankCount = Math.max(0, 6 - (record.items?.length || 0));
+    const blankCount = Math.max(0, 4 - (record.items?.length || 0));
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
