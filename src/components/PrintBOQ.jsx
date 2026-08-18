@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useLayoutEffect, useRef } from "react";
 import { Logo } from "./UI.jsx";
 import { baht, bahtText, formatShortThaiDate, num, computeBoqTotals } from "../lib/format.js";
 import { COMPANY_DEFAULT } from "../lib/constants.js";
@@ -28,6 +28,35 @@ export default function PrintBOQ({ boq, data, onClose }) {
   const signer = data.signers.find((s) => s.id === boq.estimatorId);
   const totals = computeBoqTotals(boq.items, boq.markupPercent, boq.vat, boq.discount);
 
+  // ย่อขนาดเนื้อหาอัตโนมัติให้พอดี 1 หน้า A4 เสมอ
+  const pageRef = useRef(null);
+  const contentRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    const content = contentRef.current;
+    if (!page || !content) return;
+
+    const recalc = () => {
+      content.style.zoom = 1;
+      const cs = getComputedStyle(page);
+      const padTop = parseFloat(cs.paddingTop) || 0;
+      const padBottom = parseFloat(cs.paddingBottom) || 0;
+      const availableHeight = page.clientHeight - padTop - padBottom;
+      const naturalHeight = content.scrollHeight;
+      if (naturalHeight > availableHeight && naturalHeight > 0) {
+        setScale((availableHeight / naturalHeight) * 0.96);
+      } else {
+        setScale(1);
+      }
+    };
+
+    recalc();
+    window.addEventListener("beforeprint", recalc);
+    return () => window.removeEventListener("beforeprint", recalc);
+  }, [boq, data]);
+
   return (
     <div className="print-overlay">
       <div className="print-toolbar no-print">
@@ -38,7 +67,12 @@ export default function PrintBOQ({ boq, data, onClose }) {
         </div>
       </div>
 
-      <div className="print-area a4">
+      <div className="print-area a4" ref={pageRef}>
+        <div
+          ref={contentRef}
+          className="doc-page-inner"
+          style={{ zoom: scale }}
+        >
         <div className="doc-top">
           <div className="doc-company">
             <Logo size={58} />
@@ -150,6 +184,7 @@ export default function PrintBOQ({ boq, data, onClose }) {
               <span className="dsg-role">ผู้ประมาณการ</span>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
