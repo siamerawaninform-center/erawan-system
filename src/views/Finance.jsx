@@ -19,6 +19,7 @@ import {
 
 export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
   const [modal, setModal] = useState(null);
+  const [printSetModal, setPrintSetModal] = useState(null); // { record }
   const [filterType, setFilterType] = useState("ทั้งหมด");
   const [q, setQ] = useState("");
   const [collapsed, setCollapsed] = useState({});
@@ -165,7 +166,7 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
                                 ))}
                                 <button
                                   className="btn btn-primary btn-sm"
-                                  onClick={() => onPrintSet({ record: f })}
+                                  onClick={() => setPrintSetModal({ record: f })}
                                 >🖶 พิมพ์รวมทั้งชุด (PDF เดียว)</button>
                               </>
                             ) : (
@@ -195,6 +196,14 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
           data={data}
           onSave={(item) => { upsert("quotes", item, "เอกสาร"); setModal(null); }}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {printSetModal && (
+        <PrintSetConfigModal
+          record={printSetModal.record}
+          onConfirm={(counts) => { onPrintSet({ record: printSetModal.record, counts }); setPrintSetModal(null); }}
+          onClose={() => setPrintSetModal(null)}
         />
       )}
     </div>
@@ -591,6 +600,64 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           <button type="submit" className="btn btn-primary">บันทึกเอกสาร</button>
         </div>
       </form>
+    </Modal>
+  );
+}
+
+/* ---------------------------------------------------------
+   PrintSetConfigModal — กำหนดจำนวนต้นฉบับ/สำเนาแยกแต่ละประเภทเอกสาร
+   ก่อนพิมพ์รวมทั้งชุดเป็น PDF เดียว
+--------------------------------------------------------- */
+function PrintSetConfigModal({ record, onConfirm, onClose }) {
+  const [counts, setCounts] = useState(() =>
+    Object.fromEntries(SALES_SET_TYPES.map((t) => [t, { original: 1, copy: 0 }]))
+  );
+
+  const setCount = (t, key, value) => {
+    const n = Math.max(0, Math.min(20, Number(value) || 0));
+    setCounts((prev) => ({ ...prev, [t]: { ...prev[t], [key]: n } }));
+  };
+
+  const totalPages = Object.values(counts).reduce((s, c) => s + c.original + c.copy, 0);
+
+  return (
+    <Modal title="กำหนดจำนวนพิมพ์แต่ละประเภทเอกสาร" onClose={onClose}>
+      <div className="form">
+        <p className="muted">เลือกจำนวนต้นฉบับ/สำเนาที่ต้องการของแต่ละประเภท แล้วรวมพิมพ์เป็น PDF เดียว</p>
+
+        <div className="set-count-table set-count-table-light">
+          <div className="set-count-row set-count-head">
+            <span>ประเภทเอกสาร</span><span>ต้นฉบับ</span><span>สำเนา</span>
+          </div>
+          {SALES_SET_TYPES.map((t) => (
+            <div className="set-count-row" key={t}>
+              <span>{t}</span>
+              <input
+                type="number" min="0" max="20"
+                value={counts[t].original}
+                onChange={(e) => setCount(t, "original", e.target.value)}
+                className="set-count-input"
+              />
+              <input
+                type="number" min="0" max="20"
+                value={counts[t].copy}
+                onChange={(e) => setCount(t, "copy", e.target.value)}
+                className="set-count-input"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="form-actions">
+          <button type="button" className="btn btn-ghost" onClick={onClose}>ยกเลิก</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={totalPages === 0}
+            onClick={() => onConfirm(counts)}
+          >🖶 พิมพ์รวม ({totalPages} แผ่น)</button>
+        </div>
+      </div>
     </Modal>
   );
 }

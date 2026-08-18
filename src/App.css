@@ -353,6 +353,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .set-count-row{ display:grid; grid-template-columns:150px 70px 70px; gap:10px; align-items:center; font-size:12.5px; color:#EDE9E2; }
 .set-count-head{ font-weight:600; color:#c9a227; font-size:11px; }
 .set-count-input{ width:48px; padding:4px 6px; font-size:12.5px; text-align:center; }
+.set-count-table-light{ background:var(--concrete); }
+.set-count-table-light .set-count-row{ color:var(--ink); }
+.set-count-table-light .set-count-head{ color:var(--maroon); }
 
 /* หน้าตัดขึ้นหน้าใหม่เวลาพิมพ์รวมหลายเอกสารเป็น PDF เดียว */
 .print-page-break{ margin-bottom:20px; }

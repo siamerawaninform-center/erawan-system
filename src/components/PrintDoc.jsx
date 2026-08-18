@@ -424,10 +424,17 @@ export function PrintDocSet({ payload, data, onClose }) {
     if (openedRef.current) return;
     openedRef.current = true;
 
-    const { record } = payload;
+    const { record, counts } = payload;
     const docCode = buildDocCode("ใบวางบิล", record.period, record.running);
 
-    const pages = SET_DOC_TYPES.map((t) => ({ printType: t, copyType: "ต้นฉบับ (ORIGINAL)" }));
+    // เรียงตามลำดับประเภทเอกสาร แต่ละประเภทพิมพ์ต้นฉบับก่อนแล้วตามด้วยสำเนา ตามจำนวนที่กำหนด
+    const pages = [];
+    SET_DOC_TYPES.forEach((t) => {
+      const c = (counts && counts[t]) || { original: 1, copy: 0 };
+      for (let i = 0; i < (c.original || 0); i++) pages.push({ printType: t, copyType: "ต้นฉบับ (ORIGINAL)" });
+      for (let i = 0; i < (c.copy || 0); i++) pages.push({ printType: t, copyType: "สำเนา (COPY)" });
+    });
+
     const sheetsHtml = pages.map((p) => buildDocPageHtml({ record, printType: p.printType, copyType: p.copyType, data })).join("\n");
 
     const html = `<!doctype html>
@@ -436,7 +443,7 @@ export function PrintDocSet({ payload, data, onClose }) {
 <style>${PRINT_CSS}</style>
 </head><body>
 <div class="pv-bar no-print">
-  <span class="pv-label">พรีวิวก่อนพิมพ์ — ชุดเอกสาร (${pages.length} แผ่น: วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ)</span>
+  <span class="pv-label">พรีวิวก่อนพิมพ์ — ชุดเอกสาร (${pages.length} แผ่น)</span>
   <button onclick="window.print()">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
 </div>
 <div class="sheet-wrap">
