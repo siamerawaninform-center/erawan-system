@@ -4,7 +4,7 @@ import {
   finStatusVariant, billingStatusVariant,
 } from "../components/UI.jsx";
 import { Autocomplete } from "../components/Autocomplete.jsx";
-import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear } from "../lib/format.js";
+import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear, exportToCSV } from "../lib/format.js";
 import { allocateDocNumber, buildDocCode } from "../lib/docNumber.js";
 import {
   FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES,
@@ -39,6 +39,26 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
     })
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
+  const handleExportCSV = () => {
+    const headers = [
+      "รหัส", "ประเภท", "วันที่", "ลูกค้า", "โปรเจกต์", "สถานะ",
+      "ยอดรวม", "ส่วนลด", "VAT", "ยอดสุทธิ", "เลข PO",
+    ];
+    const rows = list.map((f) => {
+      const t = computeFinTotal(f.items, f.vat, f.discount);
+      const cname = customer(f.customerId)?.nameTh || f.customerName || "";
+      const proj = project(f.projectId);
+      const typeLabel = f.kind === "salesSet" ? "ชุดเรียกเก็บ" : f.type;
+      return [
+        f.code, typeLabel, f.date || "", cname, proj ? `${proj.code} ${proj.name}` : "",
+        f.kind === "salesSet" ? (f.billingStatus || "") : (f.status || ""),
+        t.subtotal.toFixed(2), t.discount.toFixed(2), t.vatAmount.toFixed(2), t.total.toFixed(2),
+        f.refPO || "",
+      ];
+    });
+    exportToCSV(`เอกสารบัญชี-${todayISO()}`, headers, rows);
+  };
+
   // จัดกลุ่มเป็น "โฟลเดอร์" ตามเดือน — คำนวณจากวันที่บนเอกสารทุกครั้ง ไม่ต้องมีใครย้ายเอง
   const groupMap = {};
   list.forEach((f) => {
@@ -71,6 +91,7 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
           onChange={(e) => setQ(e.target.value)}
         />
         <div className="btn-group">
+          <button className="btn btn-ghost" onClick={handleExportCSV}>⬇ Export CSV</button>
           <button
             className="btn btn-ghost"
             onClick={() => setModal({ mode: "add", kind: "quote" })}

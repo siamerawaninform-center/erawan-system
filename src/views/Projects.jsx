@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TitleBlock, Modal, EmptyState, Toolbar, Stamp, FormDivider, projectStatusVariant } from "../components/UI.jsx";
 import { Autocomplete } from "../components/Autocomplete.jsx";
-import { uid, baht, todayISO, formatShortThaiDate } from "../lib/format.js";
+import { uid, baht, todayISO, formatShortThaiDate, exportToCSV } from "../lib/format.js";
 import { nextProjectCode } from "../lib/docNumber.js";
 import { PROJECT_STATUSES } from "../lib/constants.js";
 
@@ -34,6 +34,19 @@ export default function Projects({ data, upsert, removeProject }) {
 
   const toggleGroup = (status) => setCollapsed({ ...collapsed, [status]: !collapsed[status] });
 
+  const handleExportCSV = () => {
+    const headers = [
+      "รหัส", "ชื่อโปรเจกต์", "ลูกค้า", "สถานะ", "ความคืบหน้า (%)",
+      "งบประมาณ", "วันที่เริ่ม", "วันครบกำหนด", "เลขที่ PO", "ที่อยู่",
+    ];
+    const rows = list.map((p) => [
+      p.code, p.name, customerName(p.customerId) || p.clientName || "",
+      p.status, p.progress || 0, p.budget || "",
+      p.startDate || "", p.dueDate || "", p.poNumber || "", p.address || "",
+    ]);
+    exportToCSV(`โปรเจกต์-${todayISO()}`, headers, rows);
+  };
+
   return (
     <div className="view">
       <TitleBlock
@@ -49,6 +62,7 @@ export default function Projects({ data, upsert, removeProject }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
+        <button className="btn btn-ghost" onClick={handleExportCSV}>⬇ Export CSV</button>
         <button className="btn btn-primary" onClick={() => setModal({ mode: "add" })}>
           + เพิ่มโปรเจกต์
         </button>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TitleBlock, Modal, EmptyState, Toolbar, ChipRow, Stamp, FormDivider } from "../components/UI.jsx";
 import { Autocomplete } from "../components/Autocomplete.jsx";
-import { uid, baht, todayISO, formatShortThaiDate, computeExpenseTotal } from "../lib/format.js";
+import { uid, baht, todayISO, formatShortThaiDate, computeExpenseTotal, exportToCSV } from "../lib/format.js";
 import { nextExpenseCode, nextWhtCertNo } from "../lib/docNumber.js";
 import { EXPENSE_CATEGORIES, WHT_RATES, WHT_INCOME_TYPES, WHT_PND_TYPES, WHT_ISSUE_TYPES } from "../lib/constants.js";
 import { openWhtCertPrint } from "../components/PrintWHT.jsx";
@@ -37,6 +37,28 @@ export default function Expenses({ data, upsert, remove }) {
 
   const monthTotal = filtered.reduce((s, e) => s + computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate).totalWithVat, 0);
 
+  const handleExportCSV = () => {
+    const headers = [
+      "รหัส", "วันที่", "ผู้ขาย", "เลขผู้เสียภาษีผู้ขาย", "เลขที่ใบกำกับภาษี",
+      "หมวด", "โปรเจกต์", "รายละเอียด",
+      "มูลค่าก่อนภาษี", "VAT", "หัก ณ ที่จ่าย (%)", "จำนวนหัก ณ ที่จ่าย", "สุทธิที่จ่าย",
+    ];
+    const rows = filtered.map((e) => {
+      const t = computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate);
+      const vendorText = e.vendorId ? supplier(e.vendorId)?.nameTh : e.vendorName;
+      const vendorTax = e.vendorId ? supplier(e.vendorId)?.taxId : e.vendorTaxId;
+      const proj = project(e.projectId);
+      return [
+        e.code, e.date, vendorText || "", vendorTax || "", e.vendorInvoiceNo || "",
+        e.category, proj ? `${proj.code} ${proj.name}` : "", e.description || "",
+        t.base.toFixed(2), e.vat ? t.vatAmount.toFixed(2) : "0",
+        e.whtApplicable ? e.whtRate : "0", e.whtApplicable ? t.whtAmount.toFixed(2) : "0",
+        t.netPaid.toFixed(2),
+      ];
+    });
+    exportToCSV(`รายจ่าย-ภาษีซื้อ-${todayISO()}`, headers, rows);
+  };
+
   return (
     <div className="view">
       <TitleBlock
@@ -59,6 +81,7 @@ export default function Expenses({ data, upsert, remove }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
+        <button className="btn btn-ghost" onClick={handleExportCSV}>⬇ Export CSV</button>
         <button className="btn btn-primary" onClick={() => setModal({ mode: "add" })}>
           + บันทึกรายจ่าย
         </button>

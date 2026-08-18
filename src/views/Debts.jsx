@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TitleBlock, Modal, EmptyState, Toolbar, Stamp, FormDivider, Kpi } from "../components/UI.jsx";
-import { uid, baht, todayISO, formatShortThaiDate } from "../lib/format.js";
+import { uid, baht, todayISO, formatShortThaiDate, exportToCSV } from "../lib/format.js";
 import { nextDebtCode } from "../lib/docNumber.js";
 import { DEBT_TYPES } from "../lib/constants.js";
 
@@ -39,6 +39,17 @@ export default function Debts({ data, upsert, remove }) {
 
       <Toolbar>
         <span className="muted">{list.length === 0 ? "ยังไม่มีข้อมูลหนี้สิน" : `${activeDebts.length} รายการยังมีภาระ`}</span>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            const headers = ["รหัส", "ประเภท", "เจ้าหนี้", "เงินต้น", "ดอกเบี้ย (%)", "ค่างวด/เดือน", "ยอดคงเหลือ", "วันที่เริ่ม", "ครบกำหนด", "สถานะ"];
+            const rows = list.map((d) => [
+              d.code, d.type, d.creditorName || "", d.principal || "", d.interestRate || "",
+              d.monthlyPayment || "", d.balance || "", d.startDate || "", d.dueDate || "", d.status,
+            ]);
+            exportToCSV(`ทะเบียนหนี้สิน-${todayISO()}`, headers, rows);
+          }}
+        >⬇ Export CSV</button>
         <button className="btn btn-primary" onClick={() => setModal({ mode: "add" })}>+ เพิ่มรายการหนี้สิน</button>
       </Toolbar>
 
