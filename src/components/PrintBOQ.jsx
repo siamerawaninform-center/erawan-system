@@ -23,7 +23,7 @@ const PRINT_CSS = `
   .pv-label{ font-size:13px; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:7mm 10mm 6mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:18px; font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:6mm 9mm 5mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:17px; font-weight:600; }
 
   .mono-amt{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 
@@ -33,15 +33,15 @@ const PRINT_CSS = `
   .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; margin-bottom:2px; color:var(--ink); }
   .dc-line{ color:#333; font-size:18px; }
   .dc-taxid{ margin-left:14px; }
-  .doc-top-rule{ height:3px; background:var(--maroon); margin:4px 0 5px; border-radius:1px; }
-  .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 6px; }
+  .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
+  .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
   .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; border-radius:2px; display:inline-block; }
 
-  .boq-info{ font-size:18px; line-height:1.4; margin-bottom:4px; }
+  .boq-info{ font-size:17px; line-height:1.3; margin-bottom:3px; }
 
   .doc-table{ width:100%; border-collapse:collapse; font-size:18px; margin-bottom:4px; }
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:18px; text-align:center; }
-  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:17px; text-align:center; }
+  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:5px 7px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-desc{ white-space:pre-wrap; }
@@ -52,10 +52,10 @@ const PRINT_CSS = `
 
   .boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:2.5px solid #222 !important; }
   .boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:2.5px solid #222 !important; font-size:18px; }
-  .boq-bahttext{ text-align:center; font-style:italic; font-size:18px; padding:6px !important; border:2px solid #333 !important; }
-  .boq-note{ font-size:18px; margin:10px 0; color:#333; }
+  .boq-bahttext{ text-align:center; font-style:italic; font-size:17px; padding:4px !important; border:2px solid #333 !important; }
+  .boq-note{ font-size:17px; margin:6px 0; color:#333; }
 
-  .doc-sign-grid{ display:flex; justify-content:flex-end; gap:14px; margin-top:24px; font-size:18px; }
+  .doc-sign-grid{ display:flex; justify-content:flex-end; gap:14px; margin-top:14px; font-size:17px; }
   .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
   .dsg-sig-line{ width:180px; border-bottom:2.5px solid #222; height:30px; display:block; }
   .dsg-sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
