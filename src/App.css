@@ -431,7 +431,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:46px; }
 .quote-sig-col{ flex:1; text-align:center; }
 .quote-sig-inname{ font-size:11px; color:#555; margin-bottom:30px; font-weight:500; }
-.quote-sig-line{ border-bottom:1.5px solid #222; height:46px; margin-bottom:10px; }
+.quote-sig-line{ border-bottom:1.5px solid #222; height:68px; margin-bottom:10px; }
 .quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:1.5px solid #222; }
 .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
 .quote-sig-name{ font-size:14px; font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
