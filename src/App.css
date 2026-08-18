@@ -361,11 +361,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 }
 
 .print-area.a4{
-  background:#fff; width:210mm; min-height:297mm; padding:7mm 10mm 6mm;
+  background:#fff; width:210mm; height:297mm; padding:7mm 10mm 6mm;
   color:#171717; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
-  font-size:18px; font-weight:600; position:relative; overflow:hidden;
-  display:flex; flex-direction:column;
+  font-size:18px; font-weight:600; position:relative; overflow:hidden; box-sizing:border-box;
 }
+.doc-page-inner{ display:block; }
 .print-area.a4-landscape{
   background:#fff; width:297mm; min-height:210mm; padding:7mm 10mm;
   color:#171717; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
@@ -435,7 +435,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dfg-total{ border-top:3px solid var(--ink); padding-top:6px; font-weight:700; font-size:20px; color:var(--maroon); }
 
 /* ช่องลงนามใบวางบิล — เหลือฝั่งลูกค้าเท่านั้น (ฝั่งบริษัทแสดงไว้ที่กล่องขวาบนแล้ว) */
-.doc-sign-billing{ margin-top:auto; padding-top:22px; font-size:18px; }
+.doc-sign-billing{ margin-top:22px; font-size:18px; }
 .dsbn-single{ max-width:340px; }
 .dsbn-inname{ color:#555; margin-bottom:26px; font-weight:500; }
 .dsbn-line{ border-bottom:2.5px solid #222; height:1px; margin-bottom:8px; }
@@ -444,11 +444,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
 .dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
-.doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:auto; padding-top:2px; font-size:18px; }
+.doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:16px; font-size:18px; }
 .doc-sign-grid-quote{ justify-content:flex-end; gap:60px; margin-top:36px; }
 
 /* ช่องลงนามใบเสนอราคา — ตัวโตชัดเจน */
-.quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:auto; padding-top:46px; }
+.quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:46px; }
 .quote-sig-col{ flex:1; text-align:center; }
 .quote-sig-inname{ font-size:18px; color:#555; margin-bottom:26px; font-weight:600; }
 .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
@@ -514,10 +514,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 @media print{
   body *{ visibility:hidden; }
+  .app{ display:none !important; }
   .print-overlay, .print-overlay *{ visibility:visible; }
   .no-print{ display:none !important; }
   .print-overlay{ position:absolute; inset:0; background:#fff; padding:0; overflow:visible; align-items:flex-start; }
-  .print-area.a4{ box-shadow:none; margin:0; width:210mm; min-height:0; height:auto; }
+  .print-area.a4{ box-shadow:none; margin:0; width:210mm; height:297mm; overflow:hidden; }
   /* หมุนเนื้อหาแนวนอน 90 องศา ให้พอดีกับกระดาษ A4 แนวตั้งจริง (รองรับทุกเบราว์เซอร์) */
   .print-area.a4-landscape{
     box-shadow:none; position:absolute; top:0; left:0;
