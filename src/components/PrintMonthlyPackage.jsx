@@ -15,7 +15,7 @@ const PRINT_CSS = `
   @page { size: A4; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:15px; font-weight:600; }
+  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:17px; font-weight:600; }
   .sheet{ width:210mm; min-height:297mm; padding:16mm 16mm 14mm; page-break-after:always; }
   .sheet:last-child{ page-break-after:auto; }
   .hdr{ display:flex; align-items:center; gap:12px; border-bottom:3px solid #880808; padding-bottom:10px; margin-bottom:16px; }
@@ -29,9 +29,9 @@ const PRINT_CSS = `
   .cover-card.warn{ border-color:#8C3A22; background:#fdf4f1; }
   .cover-label{ font-size:12.5px; color:#666; margin-bottom:6px; }
   .cover-value{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:22px; font-weight:700; }
-  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
-  th{ background:#171717; color:#fff; padding:5px 5px; text-align:center; font-size:12px; font-weight:700; }
-  td{ padding:4px 5px; border-bottom:1px solid #e0e0e0; }
+  table{ width:100%; border-collapse:collapse; font-size:15.5px; }
+  th{ background:#171717; color:#fff; padding:4px 5px; text-align:center; font-size:13.5px; font-weight:700; }
+  td{ padding:3px 5px; border-bottom:1px solid #e0e0e0; }
   .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .center{ text-align:center; }
   tfoot td{ font-weight:700; border-top:2px solid #171717; background:#f2f2f2; }
