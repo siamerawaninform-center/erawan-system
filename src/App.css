@@ -187,7 +187,7 @@
 .table-wrap{ overflow-x:auto; border:1.5px solid var(--line); background:var(--paper); }
 table{ width:100%; border-collapse:collapse; font-size:20px; min-width:720px; font-weight:500; }
 th{ text-align:left; font-size:16px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink); padding:16px 16px; border-bottom:2px solid var(--ink); }
-td{ padding:18px 16px; border-bottom:1.5px solid var(--line); vertical-align:middle; font-weight:500; }
+td{ padding:18px 16px; border-bottom:1.5px solid var(--line); vertical-align:top; font-weight:500; }
 tr:last-child td{ border-bottom:none; }
 .row-actions{ display:flex; gap:6px; }
 .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:20px; color:var(--maroon); font-weight:700; }
