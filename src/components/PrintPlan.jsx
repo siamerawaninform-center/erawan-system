@@ -12,7 +12,7 @@ const PRINT_CSS = `
   @page { size: A4 landscape; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:13.5px; }
+  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:15px; font-weight:600; }
   .sheet{ width:297mm; min-height:210mm; padding:12mm 14mm; }
   .plan-title-bar{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:8px; margin-bottom:12px; }
   .plan-header{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:12px; line-height:1.8; }
