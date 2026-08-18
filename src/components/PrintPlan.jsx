@@ -12,7 +12,7 @@ const PRINT_CSS = `
   @page { size: A4 landscape; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:17px; font-weight:600; }
+  body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:17px; font-weight:600; }
   .sheet{ width:297mm; min-height:210mm; padding:12mm 14mm; }
   .plan-title-bar{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:8px; margin-bottom:12px; }
   .plan-header{ display:flex; justify-content:space-between; font-size:17px; margin-bottom:10px; line-height:1.6; }
@@ -30,7 +30,7 @@ const PRINT_CSS = `
   .sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
   .sig-role{ color:#555; }
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:13px; }
   @media print { .no-print{ display:none !important; } }

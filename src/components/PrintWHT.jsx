@@ -12,7 +12,7 @@ const PRINT_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   :root{ --ink:#1a1a1a; --maroon:#880808; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
+  body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
   .sheet-wrap{ padding:20px 0; }
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:11mm 14mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:15px; font-weight:500; position:relative; }
 
@@ -20,12 +20,12 @@ const PRINT_CSS = `
 
   .hdr{ display:flex; align-items:center; gap:14px; margin-bottom:6px; padding-right:110px; }
   .hdr img{ width:56px; height:56px; object-fit:contain; }
-  .hdr-name{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:18px; color:var(--ink); }
+  .hdr-name{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:18px; color:var(--ink); }
   .hdr-meta{ font-size:13.5px; color:#444; margin-top:2px; }
   .top-rule{ height:3px; background:var(--maroon); margin:5px 0 10px; border-radius:1px; }
 
   .title-wrap{ text-align:center; margin-bottom:4px; }
-  .title{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
+  .title{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
   .subtitle{ text-align:center; font-size:13.5px; margin-bottom:6px; color:#333; }
   .copy-note{ text-align:center; font-size:12px; color:#666; margin-bottom:10px; font-style:italic; }
   .booknum{ display:flex; justify-content:flex-end; gap:24px; font-size:13.5px; margin-bottom:12px; font-weight:600; }
@@ -37,7 +37,7 @@ const PRINT_CSS = `
   table.wht{ width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
   table.wht th{ border:2px solid #333; padding:8px 6px; background:var(--ink); color:#fff; font-weight:700; }
   table.wht td{ border:2px solid #333; padding:8px 8px; vertical-align:top; }
-  .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; font-weight:600; }
+  .num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; font-weight:600; }
   .center{ text-align:center; }
   .total-row td{ font-weight:700; background:#f2f2f2; }
   .bahttext-row td{ font-style:italic; font-size:13px; }
@@ -59,7 +59,7 @@ const PRINT_CSS = `
   .note{ font-size:11px; color:#999; margin-top:10px; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:13px; }
 
