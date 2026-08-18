@@ -10,7 +10,7 @@ import { buildDayColumns, buildHourColumns, taskColumnRange } from "../lib/gantt
 
 const PRINT_CSS = `
   @page { size: A4 landscape; margin: 0; }
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:15px; font-weight:600; }
   .sheet{ width:297mm; min-height:210mm; padding:12mm 14mm; }

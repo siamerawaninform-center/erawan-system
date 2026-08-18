@@ -13,7 +13,7 @@ import { COMPANY_DEFAULT } from "../lib/constants.js";
 
 const PRINT_CSS = `
   @page { size: A4; margin: 0; }
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:15px; font-weight:600; }
   .sheet{ width:210mm; min-height:297mm; padding:16mm 16mm 14mm; page-break-after:always; }
@@ -23,16 +23,16 @@ const PRINT_CSS = `
   .hdr-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:14px; }
   .hdr-meta{ font-size:12px; color:#444; line-height:1.5; }
   .title{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:19px; color:#880808; margin-bottom:4px; }
-  .subtitle{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:#666; margin-bottom:16px; }
+  .subtitle{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:13px; color:#666; margin-bottom:16px; }
   .cover-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px; }
   .cover-card{ border:1px solid #ddd; padding:14px 16px; }
   .cover-card.warn{ border-color:#8C3A22; background:#fdf4f1; }
   .cover-label{ font-size:12.5px; color:#666; margin-bottom:6px; }
-  .cover-value{ font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:700; }
+  .cover-value{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:22px; font-weight:700; }
   table{ width:100%; border-collapse:collapse; font-size:13.5px; }
   th{ background:#171717; color:#fff; padding:5px 5px; text-align:center; font-size:12px; font-weight:700; }
   td{ padding:4px 5px; border-bottom:1px solid #e0e0e0; }
-  .num{ text-align:right; font-family:'IBM Plex Mono',monospace; }
+  .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .center{ text-align:center; }
   tfoot td{ font-weight:700; border-top:2px solid #171717; background:#f2f2f2; }
   .note{ font-size:10.5px; color:#666; margin-top:12px; }

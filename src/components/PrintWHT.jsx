@@ -9,7 +9,7 @@ import { COMPANY_DEFAULT, WHT_TABLE_ROWS, WHT_PND_TYPES, WHT_ISSUE_TYPES } from 
 
 const PRINT_CSS = `
   @page { size: A4; margin: 0; }
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:14px; font-weight:600; }
   .sheet{ width:210mm; min-height:297mm; padding:12mm 14mm 10mm; page-break-after:always; }
@@ -30,7 +30,7 @@ const PRINT_CSS = `
   table.wht{ width:100%; border-collapse:collapse; font-size:11px; margin-top:6px; }
   table.wht th{ border:1px solid #999; padding:4px; background:#f2f2f2; font-weight:600; }
   table.wht td{ border:1px solid #999; padding:4px 6px; vertical-align:top; }
-  .num{ text-align:right; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
+  .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; }
   .center{ text-align:center; }
   .total-row td{ font-weight:700; background:#f8f8f8; }
   .bahttext-row td{ font-style:italic; font-size:9.5px; }
