@@ -15,7 +15,7 @@ const PRINT_CSS = `
   body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:17px; font-weight:600; }
   .sheet{ width:297mm; min-height:210mm; padding:12mm 14mm; }
   .plan-title-bar{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:8px; margin-bottom:12px; }
-  .plan-header{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:12px; line-height:1.8; }
+  .plan-header{ display:flex; justify-content:space-between; font-size:17px; margin-bottom:10px; line-height:1.6; }
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
   thead th{ background:#5c0505; color:#fff; font-size:10px; padding:4px 1px; font-weight:700; }
@@ -25,7 +25,7 @@ const PRINT_CSS = `
   .gantt-col{ height:18px; }
   .gantt-fill{ background:#880808; }
   .plan-sign{ margin-top:26px; display:flex; justify-content:flex-end; }
-  .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; width:180px; font-size:13px; }
+  .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; width:180px; font-size:17px; }
   .sig-line{ width:100%; border-bottom:1px solid #333; height:32px; }
   .sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
   .sig-role{ color:#555; }
