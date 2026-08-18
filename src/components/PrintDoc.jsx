@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Logo } from "./UI.jsx";
 import {
   baht, bahtText, formatShortThaiDate, computeFinTotal, lineTotal, num,
@@ -39,10 +39,47 @@ export function DocPage({ record, printType, copyType, data, pageBreak }) {
   const custName = customer?.nameTh || record.customerName || "";
   const custBranch = customer?.branch ? ` สาขา ${customer.branch}` : "";
 
+  // ย่อขนาดเนื้อหาอัตโนมัติให้พอดี 1 หน้า A4 เสมอ ไม่ว่าจำนวนรายการจะมากแค่ไหน
+  const pageRef = useRef(null);
+  const contentRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    const content = contentRef.current;
+    if (!page || !content) return;
+
+    const recalc = () => {
+      // วัดความสูงจริงที่ขนาดเต็ม 100% ก่อนเสมอ
+      content.style.zoom = 1;
+      const cs = getComputedStyle(page);
+      const padTop = parseFloat(cs.paddingTop) || 0;
+      const padBottom = parseFloat(cs.paddingBottom) || 0;
+      const availableHeight = page.clientHeight - padTop - padBottom;
+      const naturalHeight = content.scrollHeight;
+      if (naturalHeight > availableHeight && naturalHeight > 0) {
+        // เผื่อระยะกันชน 4% กันเนื้อหาชนขอบพอดีเป๊ะเกินไป (เผื่อขอบพิมพ์ไม่ได้ของเครื่องพิมพ์จริง)
+        setScale((availableHeight / naturalHeight) * 0.96);
+      } else {
+        setScale(1);
+      }
+    };
+
+    recalc();
+    // คำนวณซ้ำทันทีก่อนพิมพ์จริง กันกรณีฟอนต์เรนเดอร์ต่างกันเล็กน้อยระหว่างหน้าจอกับตอนพิมพ์
+    window.addEventListener("beforeprint", recalc);
+    return () => window.removeEventListener("beforeprint", recalc);
+  }, [record, printType, copyType, data]);
+
   return (
-    <div className={`print-area a4${pageBreak ? " print-page-break" : ""}`}>
+    <div className={`print-area a4${pageBreak ? " print-page-break" : ""}`} ref={pageRef}>
         <div className="doc-ribbon">{copyType === "ต้นฉบับ (ORIGINAL)" ? "ต้นฉบับ" : "สำเนา"}</div>
 
+        <div
+          ref={contentRef}
+          className="doc-page-inner"
+          style={{ zoom: scale }}
+        >
         {/* หัวเอกสาร */}
         <div className="doc-top">
           <div className="doc-company">
@@ -338,6 +375,7 @@ export function DocPage({ record, printType, copyType, data, pageBreak }) {
             </div>
           </div>
         )}
+        </div>
     </div>
   );
 }
