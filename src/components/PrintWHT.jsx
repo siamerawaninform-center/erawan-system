@@ -14,7 +14,7 @@ const PRINT_CSS = `
   :root{ --ink:#1a1a1a; --maroon:#880808; }
   body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
   .sheet-wrap{ padding:20px 0; }
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:14mm 16mm 12mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:15px; font-weight:500; position:relative; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:11mm 14mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:15px; font-weight:500; position:relative; }
 
   .copy-tag{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:8px 22px; font-size:14px; border-bottom-left-radius:6px; }
 
@@ -22,12 +22,12 @@ const PRINT_CSS = `
   .hdr img{ width:56px; height:56px; object-fit:contain; }
   .hdr-name{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:18px; color:var(--ink); }
   .hdr-meta{ font-size:13.5px; color:#444; margin-top:2px; }
-  .top-rule{ height:3px; background:var(--maroon); margin:6px 0 14px; border-radius:1px; }
+  .top-rule{ height:3px; background:var(--maroon); margin:5px 0 10px; border-radius:1px; }
 
   .title-wrap{ text-align:center; margin-bottom:4px; }
   .title{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
   .subtitle{ text-align:center; font-size:13.5px; margin-bottom:6px; color:#333; }
-  .copy-note{ text-align:center; font-size:12px; color:#666; margin-bottom:14px; font-style:italic; }
+  .copy-note{ text-align:center; font-size:12px; color:#666; margin-bottom:10px; font-style:italic; }
   .booknum{ display:flex; justify-content:flex-end; gap:24px; font-size:13.5px; margin-bottom:12px; font-weight:600; }
 
   .party{ border:2px solid #333; border-radius:3px; padding:12px 14px; margin-bottom:10px; font-size:14.5px; line-height:2; background:#fafafa; }
@@ -49,13 +49,13 @@ const PRINT_CSS = `
   .payer-row{ font-size:13px; margin-top:12px; }
   .fund-row{ font-size:13px; margin-top:10px; line-height:1.7; }
 
-  .certify{ font-size:14px; margin-top:24px; text-align:center; font-weight:600; }
+  .certify{ font-size:14px; margin-top:16px; text-align:center; font-weight:600; }
 
-  .sign-line{ margin-top:20px; text-align:center; font-size:14px; }
-  .sig-under{ border-bottom:2.5px solid #222; width:260px; height:52px; margin:0 auto 8px; display:flex; align-items:flex-end; justify-content:center; }
+  .sign-line{ margin-top:14px; text-align:center; font-size:14px; }
+  .sig-under{ width:260px; height:52px; margin:0 auto 4px; display:flex; align-items:flex-end; justify-content:center; }
   .sig-img{ max-height:48px; max-width:200px; object-fit:contain; }
 
-  .warn{ margin-top:22px; font-size:11.5px; color:#555; border-top:1.5px solid #ccc; padding-top:10px; line-height:1.8; }
+  .warn{ margin-top:16px; font-size:11.5px; color:#555; border-top:1.5px solid #ccc; padding-top:8px; line-height:1.7; }
   .note{ font-size:11px; color:#999; margin-top:10px; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
