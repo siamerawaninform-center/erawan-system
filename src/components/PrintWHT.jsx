@@ -11,23 +11,23 @@ const PRINT_CSS = `
   @page { size: A4; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:12px; }
+  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:13px; }
   .sheet{ width:210mm; min-height:297mm; padding:12mm 14mm 10mm; page-break-after:always; }
   .sheet:last-child{ page-break-after:auto; }
   .copy-tag{ text-align:right; font-size:10px; margin-bottom:4px; }
   .hdr{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .hdr img{ width:38px; height:38px; object-fit:contain; }
-  .hdr-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:12px; }
-  .hdr-meta{ font-size:9px; color:#444; }
+  .hdr-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:13px; }
+  .hdr-meta{ font-size:10.5px; color:#444; }
   .title-wrap{ text-align:center; margin-bottom:2px; }
   .title{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:15px; }
   .subtitle{ text-align:center; font-size:10px; margin-bottom:4px; }
   .copy-note{ text-align:center; font-size:9px; color:#555; margin-bottom:10px; }
   .booknum{ display:flex; justify-content:flex-end; gap:16px; font-size:10px; margin-bottom:8px; }
-  .party{ border:1px solid #999; padding:8px 10px; margin-bottom:8px; font-size:10px; line-height:2.1; }
+  .party{ border:1px solid #999; padding:8px 10px; margin-bottom:8px; font-size:11.5px; line-height:2; }
   .party b{ color:#000; }
   .dotted{ border-bottom:1px dotted #999; display:inline-block; min-width:60%; }
-  table.wht{ width:100%; border-collapse:collapse; font-size:9.5px; margin-top:6px; }
+  table.wht{ width:100%; border-collapse:collapse; font-size:11px; margin-top:6px; }
   table.wht th{ border:1px solid #999; padding:4px; background:#f2f2f2; font-weight:600; }
   table.wht td{ border:1px solid #999; padding:4px 6px; vertical-align:top; }
   .num{ text-align:right; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }

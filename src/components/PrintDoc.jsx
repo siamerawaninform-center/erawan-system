@@ -191,7 +191,7 @@ export default function PrintDoc({ payload, data, onClose }) {
                 <td className="doc-center">{record.refPO || ""}</td>
               </tr>
               {/* แถวเปล่าให้เต็มหน้ากระดาษ */}
-              {Array.from({ length: 3 }).map((_, i) => (
+              {Array.from({ length: 2 }).map((_, i) => (
                 <tr key={i} className="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>
               ))}
             </tbody>
@@ -226,7 +226,7 @@ export default function PrintDoc({ payload, data, onClose }) {
                   <td className="doc-num">{baht(lineTotal(it))}</td>
                 </tr>
               ))}
-              {Array.from({ length: Math.max(0, 4 - (record.items?.length || 0)) }).map((_, i) => (
+              {Array.from({ length: Math.max(0, 3 - (record.items?.length || 0)) }).map((_, i) => (
                 <tr key={i} className="doc-blank-row">
                   <td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
