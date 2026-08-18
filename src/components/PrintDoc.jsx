@@ -388,11 +388,10 @@ const SET_DOC_TYPES = ["ใบวางบิล", "ใบแจ้งหนี�
 
 export function PrintDocSet({ payload, data, onClose }) {
   const { record } = payload;
-  const [included, setIncluded] = useState(() =>
-    Object.fromEntries(SET_DOC_TYPES.map((t) => [t, true]))
+  // จำนวนแยกแต่ละประเภทเอกสาร: { [type]: { original: N, copy: M } }
+  const [counts, setCounts] = useState(() =>
+    Object.fromEntries(SET_DOC_TYPES.map((t) => [t, { original: 1, copy: 0 }]))
   );
-  const [originalCount, setOriginalCount] = useState(1);
-  const [copyCount, setCopyCount] = useState(1);
 
   const docCode = buildDocCode("ใบวางบิล", record.period, record.running);
   useEffect(() => {
@@ -401,34 +400,45 @@ export function PrintDocSet({ payload, data, onClose }) {
     return () => { document.title = prevTitle; };
   }, [docCode]);
 
-  const toggleType = (t) => setIncluded((prev) => ({ ...prev, [t]: !prev[t] }));
+  const setCount = (t, key, value) => {
+    const n = Math.max(0, Math.min(20, Number(value) || 0));
+    setCounts((prev) => ({ ...prev, [t]: { ...prev[t], [key]: n } }));
+  };
 
-  // เรียง: ชุดต้นฉบับทั้งหมดก่อน (วางบิล→แจ้งหนี้→กำกับภาษี→เสร็จ) แล้วตามด้วยชุดสำเนาทั้งหมด
+  // เรียงตามลำดับประเภทเอกสาร แต่ละประเภทพิมพ์ต้นฉบับก่อนแล้วตามด้วยสำเนา ตามจำนวนที่ตั้งไว้
   const pages = [];
-  const activeTypes = SET_DOC_TYPES.filter((t) => included[t]);
-  for (let i = 0; i < Math.max(0, Number(originalCount) || 0); i++) {
-    activeTypes.forEach((t) => pages.push({ printType: t, copyType: "ต้นฉบับ (ORIGINAL)" }));
-  }
-  for (let i = 0; i < Math.max(0, Number(copyCount) || 0); i++) {
-    activeTypes.forEach((t) => pages.push({ printType: t, copyType: "สำเนา (COPY)" }));
-  }
+  SET_DOC_TYPES.forEach((t) => {
+    const c = counts[t] || { original: 0, copy: 0 };
+    for (let i = 0; i < c.original; i++) pages.push({ printType: t, copyType: "ต้นฉบับ (ORIGINAL)" });
+    for (let i = 0; i < c.copy; i++) pages.push({ printType: t, copyType: "สำเนา (COPY)" });
+  });
 
   return (
     <div className="print-overlay">
       <div className="print-toolbar no-print print-toolbar-set">
         <div className="pt-left pt-left-set">
           <span className="pt-label">พรีวิวก่อนพิมพ์ — พิมพ์รวมทั้งชุด ({pages.length} แผ่น)</span>
-          <div className="set-type-checks">
+          <div className="set-count-table">
+            <div className="set-count-row set-count-head">
+              <span>ประเภทเอกสาร</span><span>ต้นฉบับ</span><span>สำเนา</span>
+            </div>
             {SET_DOC_TYPES.map((t) => (
-              <label key={t} className="check-item check-item-sm">
-                <input type="checkbox" checked={included[t]} onChange={() => toggleType(t)} />
-                {t}
-              </label>
+              <div className="set-count-row" key={t}>
+                <span>{t}</span>
+                <input
+                  type="number" min="0" max="20"
+                  value={counts[t].original}
+                  onChange={(e) => setCount(t, "original", e.target.value)}
+                  className="set-count-input"
+                />
+                <input
+                  type="number" min="0" max="20"
+                  value={counts[t].copy}
+                  onChange={(e) => setCount(t, "copy", e.target.value)}
+                  className="set-count-input"
+                />
+              </div>
             ))}
-          </div>
-          <div className="set-copy-counts">
-            <label>ต้นฉบับ <input type="number" min="0" max="9" value={originalCount} onChange={(e) => setOriginalCount(e.target.value)} className="set-count-input" /> ชุด</label>
-            <label>สำเนา <input type="number" min="0" max="9" value={copyCount} onChange={(e) => setCopyCount(e.target.value)} className="set-count-input" /> ชุด</label>
           </div>
         </div>
         <div className="pt-right">
@@ -438,7 +448,7 @@ export function PrintDocSet({ payload, data, onClose }) {
       </div>
 
       {pages.length === 0 ? (
-        <p className="no-print" style={{ padding: 24 }}>เลือกอย่างน้อย 1 ประเภทเอกสาร และจำนวนชุดอย่างน้อย 1 ชุด</p>
+        <p className="no-print" style={{ padding: 24 }}>ตั้งจำนวนอย่างน้อย 1 แผ่นสำหรับเอกสารประเภทใดประเภทหนึ่ง</p>
       ) : (
         pages.map((p, i) => (
           <DocPage
