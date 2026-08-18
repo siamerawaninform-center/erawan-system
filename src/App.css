@@ -346,6 +346,21 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .pt-right{ display:flex; gap:8px; }
 .print-toolbar select{ width:auto; padding:7px 10px; font-size:12.5px; }
 
+/* แถบเครื่องมือพิมพ์รวมทั้งชุด */
+.print-toolbar-set{ align-items:flex-start; flex-wrap:wrap; max-width:900px; }
+.pt-left-set{ flex-direction:column; align-items:flex-start; gap:8px; }
+.set-type-checks{ display:flex; flex-wrap:wrap; gap:4px 16px; }
+.check-item-sm{ font-size:12px; color:#EDE9E2; gap:5px; }
+.set-copy-counts{ display:flex; gap:18px; font-size:12.5px; color:#EDE9E2; }
+.set-copy-counts label{ display:flex; align-items:center; gap:6px; }
+.set-count-input{ width:48px; padding:4px 6px; font-size:12.5px; text-align:center; }
+
+/* หน้าตัดขึ้นหน้าใหม่เวลาพิมพ์รวมหลายเอกสารเป็น PDF เดียว */
+.print-page-break{ margin-bottom:20px; }
+@media print{
+  .print-page-break{ page-break-after:always; margin-bottom:0; }
+}
+
 .print-area.a4{
   background:#fff; width:210mm; min-height:297mm; padding:7mm 10mm 6mm;
   color:#171717; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
@@ -401,6 +416,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 /* เส้นปิดล่างตาราง — บังคับผ่านเซลล์แถวสุดท้ายโดยตรง เพราะ border บน tbody เรนเดอร์ไม่เสถียรตอนพิมพ์ */
 .doc-table-fill tbody tr:last-child td{ border-bottom:2px solid #333; }
 .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
+/* เส้นปิดล่างสุดของตาราง ใต้แถวรวมเงินทั้งสิ้น */
+.doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
 .doc-blank-row td{ height:28px; border-top:1.5px solid #ccc; }
 .doc-desc{ white-space:pre-wrap; }
 .doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }

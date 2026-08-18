@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { useAppData } from "./lib/useAppData.js";
 import { Logo } from "./components/UI.jsx";
-import PrintDoc from "./components/PrintDoc.jsx";
+import PrintDoc, { PrintDocSet } from "./components/PrintDoc.jsx";
 import PrintBOQ from "./components/PrintBOQ.jsx";
 import PrintPlan from "./components/PrintPlan.jsx";
 import PrintJSA from "./components/PrintJSA.jsx";
@@ -166,7 +166,7 @@ export default function App() {
         {view === "projects" && <Projects {...viewProps} />}
         {view === "documents" && <Documents {...viewProps} />}
         {view === "finance" && (
-          <Finance {...viewProps} onPrint={(payload) => setPrintJob({ kind: "finance", payload })} />
+          <Finance {...viewProps} onPrint={(payload) => setPrintJob({ kind: "finance", payload })} onPrintSet={(payload) => setPrintJob({ kind: "financeSet", payload })} />
         )}
         {view === "boq" && (
           <BOQ {...viewProps} onPrint={(boq) => setPrintJob({ kind: "boq", payload: boq })} />
@@ -190,6 +190,9 @@ export default function App() {
 
       {printJob?.kind === "finance" && (
         <PrintDoc payload={printJob.payload} data={data} onClose={closePrint} />
+      )}
+      {printJob?.kind === "financeSet" && (
+        <PrintDocSet payload={printJob.payload} data={data} onClose={closePrint} />
       )}
       {printJob?.kind === "boq" && (
         <PrintBOQ boq={printJob.payload} data={data} onClose={closePrint} />

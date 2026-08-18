@@ -17,7 +17,7 @@ import {
    จัดกลุ่มเป็น "โฟลเดอร์" ปี→เดือน อัตโนมัติจากวันที่บนเอกสาร
 --------------------------------------------------------- */
 
-export default function Finance({ data, upsert, remove, onPrint }) {
+export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
   const [modal, setModal] = useState(null);
   const [filterType, setFilterType] = useState("ทั้งหมด");
   const [q, setQ] = useState("");
@@ -155,13 +155,19 @@ export default function Finance({ data, upsert, remove, onPrint }) {
                           <div className="card-actions card-actions-wrap">
                             <button className="btn btn-ghost btn-sm" onClick={() => setModal({ mode: "edit", item: f, kind: f.kind })}>แก้ไข</button>
                             {isSet ? (
-                              SALES_SET_TYPES.map((t2) => (
+                              <>
+                                {SALES_SET_TYPES.map((t2) => (
+                                  <button
+                                    key={t2}
+                                    className="btn btn-ghost btn-sm"
+                                    onClick={() => onPrint({ record: f, printType: t2 })}
+                                  >🖶 {t2.replace("ใบ", "")}</button>
+                                ))}
                                 <button
-                                  key={t2}
-                                  className="btn btn-ghost btn-sm"
-                                  onClick={() => onPrint({ record: f, printType: t2 })}
-                                >🖶 {t2.replace("ใบ", "")}</button>
-                              ))
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => onPrintSet({ record: f })}
+                                >🖶 พิมพ์รวมทั้งชุด (PDF เดียว)</button>
+                              </>
                             ) : (
                               <button className="btn btn-ghost btn-sm" onClick={() => onPrint({ record: f, printType: "ใบเสนอราคา" })}>🖶 พิมพ์</button>
                             )}

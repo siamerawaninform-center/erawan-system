@@ -14,10 +14,10 @@ import { COMPANY_DEFAULT, FIN_TYPE_EN, PAYMENT_METHODS } from "../lib/constants.
    ใบอื่น   ใช้ตารางแบบ "รายการสินค้า/บริการ"
 --------------------------------------------------------- */
 
-export default function PrintDoc({ payload, data, onClose }) {
-  const { record, printType } = payload;
-  const [copyType, setCopyType] = useState("ต้นฉบับ (ORIGINAL)");
-
+/* ---------------------------------------------------------
+   DocPage — เนื้อหากระดาษ A4 หนึ่งแผ่น (ใช้ซ้ำได้ทั้งพิมพ์ทีละใบ และพิมพ์รวมทั้งชุด)
+--------------------------------------------------------- */
+export function DocPage({ record, printType, copyType, data, pageBreak }) {
   const company = { ...COMPANY_DEFAULT, ...(data.company || {}) };
   const customer = data.customers.find((c) => c.id === record.customerId);
   const project = data.projects.find((p) => p.id === record.projectId);
@@ -28,19 +28,10 @@ export default function PrintDoc({ payload, data, onClose }) {
   const isReceipt = printType === "ใบเสร็จรับเงิน";
   const isQuote = printType === "ใบเสนอราคา";
 
-  // เลขที่เอกสารของประเภทที่กำลังพิมพ์
   const docCode = record.kind === "salesSet"
     ? buildDocCode(printType, record.period, record.running)
     : record.code;
 
-  // ตั้งชื่อไฟล์ตอนพิมพ์/บันทึก PDF ให้ตรงกับเลขที่เอกสารอัตโนมัติ
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = docCode;
-    return () => { document.title = prevTitle; };
-  }, [docCode]);
-
-  // ใบวางบิลอ้างอิงเลขใบกำกับภาษีของชุดเดียวกัน
   const taxInvoiceCode = record.kind === "salesSet"
     ? buildDocCode("ใบกำกับภาษี", record.period, record.running)
     : "";
@@ -49,24 +40,7 @@ export default function PrintDoc({ payload, data, onClose }) {
   const custBranch = customer?.branch ? ` สาขา ${customer.branch}` : "";
 
   return (
-    <div className="print-overlay">
-      {/* แถบเครื่องมือ — ไม่พิมพ์ออกมา */}
-      <div className="print-toolbar no-print">
-        <div className="pt-left">
-          <span className="pt-label">พรีวิวก่อนพิมพ์</span>
-          <select value={copyType} onChange={(e) => setCopyType(e.target.value)}>
-            <option>ต้นฉบับ (ORIGINAL)</option>
-            <option>สำเนา (COPY)</option>
-          </select>
-        </div>
-        <div className="pt-right">
-          <button className="btn btn-ghost" onClick={onClose}>✕ ปิด</button>
-          <button className="btn btn-primary" onClick={() => window.print()}>🖶 พิมพ์ / บันทึก PDF</button>
-        </div>
-      </div>
-
-      {/* กระดาษ A4 */}
-      <div className="print-area a4">
+    <div className={`print-area a4${pageBreak ? " print-page-break" : ""}`}>
         <div className="doc-ribbon">{copyType === "ต้นฉบับ (ORIGINAL)" ? "ต้นฉบับ" : "สำเนา"}</div>
 
         {/* หัวเอกสาร */}
@@ -364,7 +338,119 @@ export default function PrintDoc({ payload, data, onClose }) {
             </div>
           </div>
         )}
+    </div>
+  );
+}
+
+export default function PrintDoc({ payload, data, onClose }) {
+  const { record, printType } = payload;
+  const [copyType, setCopyType] = useState("ต้นฉบับ (ORIGINAL)");
+
+  // เลขที่เอกสารของประเภทที่กำลังพิมพ์
+  const docCode = record.kind === "salesSet"
+    ? buildDocCode(printType, record.period, record.running)
+    : record.code;
+
+  // ตั้งชื่อไฟล์ตอนพิมพ์/บันทึก PDF ให้ตรงกับเลขที่เอกสารอัตโนมัติ
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = docCode;
+    return () => { document.title = prevTitle; };
+  }, [docCode]);
+
+  return (
+    <div className="print-overlay">
+      {/* แถบเครื่องมือ — ไม่พิมพ์ออกมา */}
+      <div className="print-toolbar no-print">
+        <div className="pt-left">
+          <span className="pt-label">พรีวิวก่อนพิมพ์</span>
+          <select value={copyType} onChange={(e) => setCopyType(e.target.value)}>
+            <option>ต้นฉบับ (ORIGINAL)</option>
+            <option>สำเนา (COPY)</option>
+          </select>
+        </div>
+        <div className="pt-right">
+          <button className="btn btn-ghost" onClick={onClose}>✕ ปิด</button>
+          <button className="btn btn-primary" onClick={() => window.print()}>🖶 พิมพ์ / บันทึก PDF</button>
+        </div>
       </div>
+
+      <DocPage record={record} printType={printType} copyType={copyType} data={data} />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------
+   PrintDocSet — พิมพ์รวมทั้งชุดเอกสาร (วางบิล+แจ้งหนี้+กำกับภาษี+เสร็จ)
+   เป็น PDF เดียว เลือกได้ว่าจะรวมประเภทไหนบ้าง และกี่ชุด (ต้นฉบับ/สำเนา)
+--------------------------------------------------------- */
+const SET_DOC_TYPES = ["ใบวางบิล", "ใบแจ้งหนี้", "ใบกำกับภาษี", "ใบเสร็จรับเงิน"];
+
+export function PrintDocSet({ payload, data, onClose }) {
+  const { record } = payload;
+  const [included, setIncluded] = useState(() =>
+    Object.fromEntries(SET_DOC_TYPES.map((t) => [t, true]))
+  );
+  const [originalCount, setOriginalCount] = useState(1);
+  const [copyCount, setCopyCount] = useState(1);
+
+  const docCode = buildDocCode("ใบวางบิล", record.period, record.running);
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = `ชุดเอกสาร-${docCode}`;
+    return () => { document.title = prevTitle; };
+  }, [docCode]);
+
+  const toggleType = (t) => setIncluded((prev) => ({ ...prev, [t]: !prev[t] }));
+
+  // เรียง: ชุดต้นฉบับทั้งหมดก่อน (วางบิล→แจ้งหนี้→กำกับภาษี→เสร็จ) แล้วตามด้วยชุดสำเนาทั้งหมด
+  const pages = [];
+  const activeTypes = SET_DOC_TYPES.filter((t) => included[t]);
+  for (let i = 0; i < Math.max(0, Number(originalCount) || 0); i++) {
+    activeTypes.forEach((t) => pages.push({ printType: t, copyType: "ต้นฉบับ (ORIGINAL)" }));
+  }
+  for (let i = 0; i < Math.max(0, Number(copyCount) || 0); i++) {
+    activeTypes.forEach((t) => pages.push({ printType: t, copyType: "สำเนา (COPY)" }));
+  }
+
+  return (
+    <div className="print-overlay">
+      <div className="print-toolbar no-print print-toolbar-set">
+        <div className="pt-left pt-left-set">
+          <span className="pt-label">พรีวิวก่อนพิมพ์ — พิมพ์รวมทั้งชุด ({pages.length} แผ่น)</span>
+          <div className="set-type-checks">
+            {SET_DOC_TYPES.map((t) => (
+              <label key={t} className="check-item check-item-sm">
+                <input type="checkbox" checked={included[t]} onChange={() => toggleType(t)} />
+                {t}
+              </label>
+            ))}
+          </div>
+          <div className="set-copy-counts">
+            <label>ต้นฉบับ <input type="number" min="0" max="9" value={originalCount} onChange={(e) => setOriginalCount(e.target.value)} className="set-count-input" /> ชุด</label>
+            <label>สำเนา <input type="number" min="0" max="9" value={copyCount} onChange={(e) => setCopyCount(e.target.value)} className="set-count-input" /> ชุด</label>
+          </div>
+        </div>
+        <div className="pt-right">
+          <button className="btn btn-ghost" onClick={onClose}>✕ ปิด</button>
+          <button className="btn btn-primary" onClick={() => window.print()} disabled={pages.length === 0}>🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
+        </div>
+      </div>
+
+      {pages.length === 0 ? (
+        <p className="no-print" style={{ padding: 24 }}>เลือกอย่างน้อย 1 ประเภทเอกสาร และจำนวนชุดอย่างน้อย 1 ชุด</p>
+      ) : (
+        pages.map((p, i) => (
+          <DocPage
+            key={`${p.printType}-${p.copyType}-${i}`}
+            record={record}
+            printType={p.printType}
+            copyType={p.copyType}
+            data={data}
+            pageBreak={i < pages.length - 1}
+          />
+        ))
+      )}
     </div>
   );
 }
