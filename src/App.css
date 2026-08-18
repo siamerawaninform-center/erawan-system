@@ -379,8 +379,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; border-radius:2px;
 }
 
-.doc-party{ display:flex; border:1px solid #d5d5d5; border-radius:3px; margin-bottom:6px; font-size:18px; overflow:hidden; }
-.dp-left{ flex:1.6; padding:10px 14px; border-right:1px solid #d5d5d5; display:flex; flex-direction:column; gap:4px; background:#fff; }
+.doc-party{ display:flex; border:2px solid #333; border-radius:3px; margin-bottom:6px; font-size:18px; overflow:hidden; }
+.dp-left{ flex:1.6; padding:10px 14px; border-right:2px solid #333; display:flex; flex-direction:column; gap:4px; background:#fff; }
 .dp-right{ flex:1; padding:10px 14px; display:flex; flex-direction:column; gap:6px; background:#fafafa; }
 .dp-row{ display:grid; grid-template-columns:70px 1fr 90px 1fr; gap:4px; align-items:baseline; }
 .dp-row-block{ grid-template-columns:70px 1fr; }
@@ -394,36 +394,36 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dp-sig-name{ white-space:nowrap; }
 
 .doc-table{ width:100%; border-collapse:collapse; font-size:18px; margin-bottom:4px; }
-.doc-table th{ background:var(--ink); color:#fff; border:1px solid var(--ink); padding:10px 8px; font-weight:700; text-align:center; }
-.doc-table td{ border-left:1px solid #d5d5d5; border-right:1px solid #d5d5d5; padding:9px 8px; vertical-align:top; }
-.doc-table tbody tr:first-child td{ border-top:1px solid #d5d5d5; }
-.doc-table-fill tbody{ border-bottom:1px solid #d5d5d5; }
-.doc-blank-row td{ height:28px; border-top:1px solid #ececec; }
+.doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:20px; text-align:center; }
+.doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
+.doc-table tbody tr:first-child td{ border-top:2px solid #333; }
+.doc-table-fill tbody{ border-bottom:2px solid #333; }
+.doc-blank-row td{ height:28px; border-top:1.5px solid #ccc; }
 .doc-desc{ white-space:pre-wrap; }
 .doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 .doc-center{ text-align:center; }
-.doc-foot-empty{ border:1px solid #d5d5d5; }
-.doc-foot-label{ border:1px solid #d5d5d5; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
-.doc-foot-total{ border:1px solid #d5d5d5; font-weight:700; background:#fafafa; }
+.doc-foot-empty{ border:2px solid #333; }
+.doc-foot-label{ border:2px solid #333; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
+.doc-foot-total{ border:2px solid #333; font-weight:700; background:#fafafa; }
 
 .doc-footer-grid{ display:flex; justify-content:space-between; gap:16px; margin-bottom:4px; font-size:18px; }
 .dfg-left{ flex:1.4; display:flex; flex-direction:column; justify-content:flex-end; gap:8px; }
 .dfg-cheque{ line-height:1.5; color:#444; }
-.dfg-bahttext{ border:1px solid #d5d5d5; border-radius:2px; padding:6px 10px; font-weight:600; text-align:center; background:#fafafa; }
+.dfg-bahttext{ border:2px solid #333; border-radius:2px; padding:6px 10px; font-weight:600; text-align:center; background:#fafafa; }
 .dfg-right{ flex:1; display:flex; flex-direction:column; gap:4px; }
 .dfg-right-full{ flex:1; max-width:320px; margin-left:auto; }
 .dfg-row{ display:flex; justify-content:space-between; padding:2px 0; }
-.dfg-total{ border-top:1.5px solid var(--ink); padding-top:6px; font-weight:700; font-size:20px; color:var(--maroon); }
+.dfg-total{ border-top:3px solid var(--ink); padding-top:6px; font-weight:700; font-size:20px; color:var(--maroon); }
 
 /* ช่องลงนามใบวางบิล — เหลือฝั่งลูกค้าเท่านั้น (ฝั่งบริษัทแสดงไว้ที่กล่องขวาบนแล้ว) */
 .doc-sign-billing{ margin-top:auto; padding-top:22px; font-size:18px; }
 .dsbn-single{ max-width:340px; }
 .dsbn-inname{ color:#555; margin-bottom:26px; font-weight:500; }
-.dsbn-line{ border-bottom:1px solid #333; height:1px; margin-bottom:8px; }
+.dsbn-line{ border-bottom:2.5px solid #222; height:1px; margin-bottom:8px; }
 .dsbn-labels{ font-weight:600; margin-bottom:14px; }
 .dsbn-daterow{ display:flex; gap:20px; }
 .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
-.dsbn-subline{ flex:1; border-bottom:1px dotted #999; min-height:12px; }
+.dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
 .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:auto; padding-top:2px; font-size:18px; }
 .doc-sign-grid-quote{ justify-content:flex-end; gap:60px; margin-top:36px; }
@@ -432,8 +432,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:auto; padding-top:46px; }
 .quote-sig-col{ flex:1; text-align:center; }
 .quote-sig-inname{ font-size:18px; color:#555; margin-bottom:26px; font-weight:600; }
-.quote-sig-line{ border-bottom:1.5px solid #222; height:68px; margin-bottom:10px; }
-.quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:1.5px solid #222; }
+.quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
+.quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
 .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
 .quote-sig-name{ font-size:18px; font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
 .quote-sig-name.quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
@@ -441,31 +441,31 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .quote-sig-role{ font-size:18px; color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }
 .quote-sig-date{ font-size:18px; color:#777; }
 
-.payment-terms-box{ border:1px solid #d5d5d5; border-radius:3px; padding:8px 12px; margin-bottom:10px; font-size:18px; background:#fafafa; }
+.payment-terms-box{ border:2px solid #333; border-radius:3px; padding:8px 12px; margin-bottom:10px; font-size:18px; background:#fafafa; }
 .payment-terms-title{ font-weight:700; margin-bottom:3px; }
 .payment-terms-body{ white-space:pre-wrap; line-height:1.6; color:#333; }
 .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
 .dsg-note{ color:#333; }
 .dsg-field{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
-.dsg-line{ flex:1; border-bottom:1px dotted #555; min-width:20px; }
+.dsg-line{ flex:1; border-bottom:2px dotted #444; min-width:20px; }
 .dsg-line-sm{ flex:0.6; }
 .dsg-line-name{ flex:1; text-align:center; font-family:'Noto Serif Thai',serif; font-style:italic; }
 .dsg-paren{ text-align:center; margin-top:2px; }
 .dsg-check{ display:flex; align-items:baseline; gap:6px; margin-top:4px; }
-.dsg-box{ width:11px; height:11px; border:1px solid #333; display:inline-flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+.dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
 .dsg-box-checked{ background:#eee; }
 .dsg-col-sign{ justify-content:flex-end; gap:22px; }
 .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
-.dsg-sig-line{ width:100%; border-bottom:1px solid #333; height:30px; }
+.dsg-sig-line{ width:100%; border-bottom:2.5px solid #222; height:30px; }
 .dsg-role{ color:#555; font-weight:600; }
 
 /* BOQ print */
 .boq-info{ font-size:18px; line-height:1.4; margin-bottom:4px; }
 .boq-print-table th{ font-size:18px; font-weight:700; }
 .boq-print-table td{ font-size:18px; }
-.boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:1.5px solid #333 !important; }
-.boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:1.5px solid #333 !important; font-size:12px; }
-.boq-bahttext{ text-align:center; font-style:italic; font-size:18px; padding:6px !important; border:1px solid #d5d5d5 !important; }
+.boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:2.5px solid #222 !important; }
+.boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:2.5px solid #222 !important; font-size:18px; }
+.boq-bahttext{ text-align:center; font-style:italic; font-size:18px; padding:6px !important; border:2px solid #333 !important; }
 .boq-note{ font-size:18px; margin:10px 0; color:#333; }
 .boq-sign{ margin-top:30px; }
 .dsg-sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
