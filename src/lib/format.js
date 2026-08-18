@@ -162,3 +162,29 @@ export function computeBoqTotals(items, markupPercent, vat, discount) {
   const total = afterMarkup + vatAmount - (Number(discount) || 0);
   return { materialTotal, laborTotal, constructionTotal, markupAmount, afterMarkup, vatAmount, total };
 }
+
+/* ---------------------------------------------------------
+   Export CSV — ดาวน์โหลดตารางข้อมูลเป็น CSV เปิดใน Excel ได้ทันที
+   headers: string[]   rows: array ของ array ค่าต่อแถว (เรียงตาม headers)
+--------------------------------------------------------- */
+export function exportToCSV(filename, headers, rows) {
+  const escapeCell = (cell) => {
+    const str = String(cell ?? "");
+    if (/[",\n\r]/.test(str)) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  };
+  const lines = [headers, ...rows].map((row) => row.map(escapeCell).join(","));
+  const csvContent = lines.join("\r\n");
+  // ใส่ BOM ให้ Excel เปิดภาษาไทยถูกต้อง ไม่กลายเป็นตัวอักษรมั่ว
+  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename.endsWith(".csv") ? filename : `${filename}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
