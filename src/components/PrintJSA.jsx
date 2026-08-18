@@ -16,6 +16,13 @@ export default function PrintJSA({ jsa, data, onClose }) {
     return () => { clearTimeout(t); window.removeEventListener("afterprint", onAfterPrint); };
   }, [onClose]);
 
+  // ตั้งชื่อไฟล์ตอนพิมพ์/บันทึก PDF ให้ตรงกับรหัส JSA อัตโนมัติ
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = jsa.code;
+    return () => { document.title = prevTitle; };
+  }, [jsa.code]);
+
   const company = { ...COMPANY_DEFAULT, ...(data.company || {}) };
   const signer = data.signers.find((s) => s.id === jsa.approverId);
 

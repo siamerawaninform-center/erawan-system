@@ -16,6 +16,13 @@ export default function PrintBOQ({ boq, data, onClose }) {
     return () => { clearTimeout(t); window.removeEventListener("afterprint", onAfterPrint); };
   }, [onClose]);
 
+  // ตั้งชื่อไฟล์ตอนพิมพ์/บันทึก PDF ให้ตรงกับรหัส BOQ อัตโนมัติ
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = boq.code;
+    return () => { document.title = prevTitle; };
+  }, [boq.code]);
+
   const company = { ...COMPANY_DEFAULT, ...(data.company || {}) };
   const project = data.projects.find((p) => p.id === boq.projectId);
   const signer = data.signers.find((s) => s.id === boq.estimatorId);

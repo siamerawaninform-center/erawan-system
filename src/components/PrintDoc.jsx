@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Logo } from "./UI.jsx";
 import {
   baht, bahtText, formatShortThaiDate, computeFinTotal, lineTotal, num,
@@ -32,6 +32,13 @@ export default function PrintDoc({ payload, data, onClose }) {
   const docCode = record.kind === "salesSet"
     ? buildDocCode(printType, record.period, record.running)
     : record.code;
+
+  // ตั้งชื่อไฟล์ตอนพิมพ์/บันทึก PDF ให้ตรงกับเลขที่เอกสารอัตโนมัติ
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = docCode;
+    return () => { document.title = prevTitle; };
+  }, [docCode]);
 
   // ใบวางบิลอ้างอิงเลขใบกำกับภาษีของชุดเดียวกัน
   const taxInvoiceCode = record.kind === "salesSet"

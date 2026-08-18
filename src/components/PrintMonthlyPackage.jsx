@@ -15,7 +15,7 @@ const PRINT_CSS = `
   @page { size: A4; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'Sarabun',sans-serif; color:#171717; font-size:12px; }
+  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:13.5px; }
   .sheet{ width:210mm; min-height:297mm; padding:16mm 16mm 14mm; page-break-after:always; }
   .sheet:last-child{ page-break-after:auto; }
   .hdr{ display:flex; align-items:center; gap:12px; border-bottom:3px solid #880808; padding-bottom:10px; margin-bottom:16px; }

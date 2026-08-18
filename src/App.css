@@ -348,13 +348,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 .print-area.a4{
   background:#fff; width:210mm; min-height:297mm; padding:14mm 16mm 12mm;
-  color:#171717; font-family:'Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
-  font-size:12px; position:relative; overflow:hidden;
+  color:#171717; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
+  font-size:13.5px; position:relative; overflow:hidden;
 }
 .print-area.a4-landscape{
   background:#fff; width:297mm; min-height:210mm; padding:12mm 14mm;
-  color:#171717; font-family:'Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
-  font-size:12px; position:relative; overflow:hidden;
+  color:#171717; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun', sans-serif; box-shadow:0 4px 24px rgba(0,0,0,.3);
+  font-size:13.5px; position:relative; overflow:hidden;
 }
 
 /* ป้ายมุมต้นฉบับ/สำเนา */
@@ -378,7 +378,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   font-family:'Noto Serif Thai',serif; font-weight:700; font-size:14.5px; border-radius:2px;
 }
 
-.doc-party{ display:flex; border:1px solid #d5d5d5; border-radius:3px; margin-bottom:12px; font-size:10.5px; overflow:hidden; }
+.doc-party{ display:flex; border:1px solid #d5d5d5; border-radius:3px; margin-bottom:12px; font-size:12px; overflow:hidden; }
 .dp-left{ flex:1.6; padding:10px 14px; border-right:1px solid #d5d5d5; display:flex; flex-direction:column; gap:4px; background:#fff; }
 .dp-right{ flex:1; padding:10px 14px; display:flex; flex-direction:column; gap:6px; background:#fafafa; }
 .dp-row{ display:grid; grid-template-columns:70px 1fr 90px 1fr; gap:4px; align-items:baseline; }
@@ -392,12 +392,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dp-sig-line-inline{ flex:1; border-bottom:1px dotted #999; min-width:40px; }
 .dp-sig-name{ white-space:nowrap; }
 
-.doc-table{ width:100%; border-collapse:collapse; font-size:10.5px; margin-bottom:10px; }
+.doc-table{ width:100%; border-collapse:collapse; font-size:12px; margin-bottom:10px; }
 .doc-table th{ background:var(--ink); color:#fff; border:1px solid var(--ink); padding:7px 6px; font-weight:600; text-align:center; }
 .doc-table td{ border-left:1px solid #d5d5d5; border-right:1px solid #d5d5d5; padding:6px 7px; vertical-align:top; }
 .doc-table tbody tr:first-child td{ border-top:1px solid #d5d5d5; }
 .doc-table-fill tbody{ border-bottom:1px solid #d5d5d5; }
-.doc-blank-row td{ height:15px; border-top:1px solid #ececec; }
+.doc-blank-row td{ height:13px; border-top:1px solid #ececec; }
 .doc-desc{ white-space:pre-wrap; }
 .doc-num{ text-align:right; font-family:'IBM Plex Mono',monospace; }
 .doc-center{ text-align:center; }
@@ -459,9 +459,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .dsg-role{ color:#555; }
 
 /* BOQ print */
-.boq-info{ font-size:11px; line-height:1.8; margin-bottom:10px; }
+.boq-info{ font-size:12.5px; line-height:1.8; margin-bottom:10px; }
 .boq-print-table th{ font-size:9.5px; }
-.boq-print-table td{ font-size:10px; }
+.boq-print-table td{ font-size:11.5px; }
 .boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:1.5px solid #333 !important; }
 .boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:1.5px solid #333 !important; font-size:12px; }
 .boq-bahttext{ text-align:center; font-style:italic; font-size:10.5px; padding:6px !important; border:1px solid #d5d5d5 !important; }
@@ -487,9 +487,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; width:180px; font-size:10.5px; }
 
 /* JSA print */
-.jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:11px; margin-bottom:12px; }
+.jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:12.5px; margin-bottom:12px; }
 .jsa-table th{ font-size:9px; line-height:1.4; }
-.jsa-cell{ font-size:9.5px; padding:6px 6px !important; white-space:pre-wrap; }
+.jsa-cell{ font-size:11px; padding:6px 6px !important; white-space:pre-wrap; }
 .jsa-sign{ margin-top:30px; display:flex; justify-content:flex-end; }
 
 @media print{
