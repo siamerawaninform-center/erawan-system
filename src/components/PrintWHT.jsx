@@ -9,48 +9,68 @@ import { COMPANY_DEFAULT, WHT_TABLE_ROWS, WHT_PND_TYPES, WHT_ISSUE_TYPES } from 
 
 const PRINT_CSS = `
   @page { size: A4; margin: 0; }
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:15.5px; font-weight:600; }
-  .sheet{ width:210mm; min-height:297mm; padding:12mm 14mm 10mm; page-break-after:always; }
-  .sheet:last-child{ page-break-after:auto; }
-  .copy-tag{ text-align:right; font-size:10px; margin-bottom:4px; }
-  .hdr{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .hdr img{ width:38px; height:38px; object-fit:contain; }
-  .hdr-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:13px; }
-  .hdr-meta{ font-size:10.5px; color:#444; }
-  .title-wrap{ text-align:center; margin-bottom:2px; }
-  .title{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:15px; }
-  .subtitle{ text-align:center; font-size:10px; margin-bottom:4px; }
-  .copy-note{ text-align:center; font-size:9px; color:#555; margin-bottom:10px; }
-  .booknum{ display:flex; justify-content:flex-end; gap:16px; font-size:10px; margin-bottom:8px; }
-  .party{ border:1px solid #999; padding:8px 10px; margin-bottom:8px; font-size:11.5px; line-height:2; }
-  .party b{ color:#000; }
-  .dotted{ border-bottom:1px dotted #999; display:inline-block; min-width:60%; }
-  table.wht{ width:100%; border-collapse:collapse; font-size:11px; margin-top:6px; }
-  table.wht th{ border:1px solid #999; padding:4px; background:#f2f2f2; font-weight:600; }
-  table.wht td{ border:1px solid #999; padding:4px 6px; vertical-align:top; }
-  .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; }
+  :root{ --ink:#1a1a1a; --maroon:#880808; }
+  body{ margin:0; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
+  .sheet-wrap{ padding:20px 0; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:14mm 16mm 12mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:15px; font-weight:500; position:relative; }
+
+  .copy-tag{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:8px 22px; font-size:14px; border-bottom-left-radius:6px; }
+
+  .hdr{ display:flex; align-items:center; gap:14px; margin-bottom:6px; padding-right:110px; }
+  .hdr img{ width:56px; height:56px; object-fit:contain; }
+  .hdr-name{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:18px; color:var(--ink); }
+  .hdr-meta{ font-size:13.5px; color:#444; margin-top:2px; }
+  .top-rule{ height:3px; background:var(--maroon); margin:6px 0 14px; border-radius:1px; }
+
+  .title-wrap{ text-align:center; margin-bottom:4px; }
+  .title{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
+  .subtitle{ text-align:center; font-size:13.5px; margin-bottom:6px; color:#333; }
+  .copy-note{ text-align:center; font-size:12px; color:#666; margin-bottom:14px; font-style:italic; }
+  .booknum{ display:flex; justify-content:flex-end; gap:24px; font-size:13.5px; margin-bottom:12px; font-weight:600; }
+
+  .party{ border:2px solid #333; border-radius:3px; padding:12px 14px; margin-bottom:10px; font-size:14.5px; line-height:2; background:#fafafa; }
+  .party b{ color:var(--maroon); }
+  .dotted{ border-bottom:1.5px dotted #999; display:inline-block; min-width:60%; }
+
+  table.wht{ width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+  table.wht th{ border:2px solid #333; padding:8px 6px; background:var(--ink); color:#fff; font-weight:700; }
+  table.wht td{ border:2px solid #333; padding:8px 8px; vertical-align:top; }
+  .num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; font-weight:600; }
   .center{ text-align:center; }
-  .total-row td{ font-weight:700; background:#f8f8f8; }
-  .bahttext-row td{ font-style:italic; font-size:9.5px; }
-  .pnd-row{ font-size:9.5px; margin-top:8px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-  .pnd-row b{ margin-right:4px; }
-  .chk{ display:inline-flex; align-items:center; gap:3px; margin-right:8px; white-space:nowrap; }
-  .box{ width:10px; height:10px; border:1px solid #333; display:inline-flex; align-items:center; justify-content:center; font-size:8px; }
-  .payer-row{ font-size:9.5px; margin-top:8px; }
-  .fund-row{ font-size:9.5px; margin-top:6px; }
-  .certify{ font-size:10px; margin-top:16px; text-align:center; }
-  .sign-line{ margin-top:34px; text-align:center; font-size:10px; }
-  .sig-under{ border-bottom:1px solid #333; width:220px; height:34px; margin:0 auto 6px; display:flex; align-items:flex-end; justify-content:center; }
-  .sig-img{ max-height:40px; max-width:170px; object-fit:contain; }
-  .warn{ margin-top:16px; font-size:8.5px; color:#555; border-top:1px solid #ddd; padding-top:8px; line-height:1.7; }
-  .note{ font-size:8.5px; color:#999; margin-top:8px; }
+  .total-row td{ font-weight:700; background:#f2f2f2; }
+  .bahttext-row td{ font-style:italic; font-size:13px; }
+
+  .pnd-row{ font-size:13px; margin-top:14px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .pnd-row b{ margin-right:6px; color:var(--maroon); }
+  .chk{ display:inline-flex; align-items:center; gap:5px; margin-right:10px; white-space:nowrap; }
+  .box{ width:14px; height:14px; border:2px solid #333; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .payer-row{ font-size:13px; margin-top:12px; }
+  .fund-row{ font-size:13px; margin-top:10px; line-height:1.7; }
+
+  .certify{ font-size:14px; margin-top:24px; text-align:center; font-weight:600; }
+
+  .sign-line{ margin-top:20px; text-align:center; font-size:14px; }
+  .sig-under{ border-bottom:2.5px solid #222; width:260px; height:52px; margin:0 auto 8px; display:flex; align-items:flex-end; justify-content:center; }
+  .sig-img{ max-height:48px; max-width:200px; object-fit:contain; }
+
+  .warn{ margin-top:22px; font-size:11.5px; color:#555; border-top:1.5px solid #ccc; padding-top:10px; line-height:1.8; }
+  .note{ font-size:11px; color:#999; margin-top:10px; }
+
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
   .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:13px; }
-  @media print { .no-print{ display:none !important; } }
+
+  @media print {
+    body{ background:#fff; }
+    .no-print{ display:none !important; }
+    .sheet-wrap{ padding:0; }
+    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:0; height:297mm; page-break-after:always; }
+    .sheet:last-child{ page-break-after:auto; }
+    .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  }
 `;
 
 function esc(s) {
@@ -86,6 +106,7 @@ function buildSheet({ copyLabel, copyNote, company, vendorName, vendorAddress, v
         <div class="hdr-meta">${esc(company.address)} · โทร ${esc(company.phone)}</div>
       </div>
     </div>
+    <div class="top-rule"></div>
 
     <div class="title-wrap"><div class="title">หนังสือรับรองการหักภาษี ณ ที่จ่าย</div></div>
     <div class="subtitle">ตามมาตรา 50 ทวิ แห่งประมวลรัษฎากร</div>
@@ -195,7 +216,9 @@ export function openWhtCertPrint({ expense, data, supplier }) {
   <span class="pv-label">พรีวิวก่อนพิมพ์ — หนังสือรับรองหัก ณ ที่จ่าย</span>
   <button onclick="window.print()">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
+<div class="sheet-wrap">
 ${sheet1}${sheet2}
+</div>
 <script>
   window.onafterprint = function () { window.close(); };
 </script>
