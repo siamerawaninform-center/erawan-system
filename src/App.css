@@ -190,9 +190,9 @@ th{ text-align:left; font-size:10.5px; letter-spacing:.05em; text-transform:uppe
 td{ padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
 tr:last-child td{ border-bottom:none; }
 .row-actions{ display:flex; gap:6px; }
-.mono-code{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:11.5px; color:var(--maroon); font-weight:600; }
-.mono-amt{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:0.88em; }
-.mono-amt-lg{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1.2em; font-weight:600; color:var(--maroon); }
+.mono-code{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:12.5px; color:var(--maroon); font-weight:700; }
+.mono-amt{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
+.mono-amt-lg{ font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1.25em; font-weight:700; color:var(--maroon); }
 
 .empty{ text-align:center; padding:46px 20px; border:1px dashed var(--line); background:var(--paper); display:flex; flex-direction:column; align-items:center; gap:8px; }
 .empty-mark{ width:36px; height:36px; border:1.5px solid var(--maroon); color:var(--maroon); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:4px; }
@@ -399,7 +399,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .doc-table-fill tbody{ border-bottom:1px solid #d5d5d5; }
 .doc-blank-row td{ height:14px; border-top:1px solid #ececec; }
 .doc-desc{ white-space:pre-wrap; }
-.doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:0.88em; }
+.doc-num{ text-align:right; font-family:'TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 .doc-center{ text-align:center; }
 .doc-foot-empty{ border:1px solid #d5d5d5; }
 .doc-foot-label{ border:1px solid #d5d5d5; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
