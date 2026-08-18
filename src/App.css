@@ -212,9 +212,9 @@ tr:last-child td{ border-bottom:none; }
 .form-row{ display:flex; flex-direction:column; gap:6px; }
 .form-row-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
 .field-hint{ font-size:11px; color:var(--steel-light); }
-.sig-preview{ max-width:140px; max-height:50px; overflow:hidden; margin:2px 0; }
+.sig-preview{ max-width:140px; max-height:50px; overflow:hidden; margin:2px 0; background-image:linear-gradient(45deg,#e8e8e8 25%,transparent 25%),linear-gradient(-45deg,#e8e8e8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e8e8e8 75%),linear-gradient(-45deg,transparent 75%,#e8e8e8 75%); background-size:10px 10px; background-position:0 0,0 5px,5px -5px,-5px 0; }
+.sig-preview-lg{ max-width:220px; max-height:90px; border:1px dashed var(--line); padding:8px; background-image:linear-gradient(45deg,#e8e8e8 25%,transparent 25%),linear-gradient(-45deg,#e8e8e8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e8e8e8 75%),linear-gradient(-45deg,transparent 75%,#e8e8e8 75%); background-size:12px 12px; background-position:0 0,0 6px,6px -6px,-6px 0; background-color:#fff; }
 .sig-preview img{ max-width:100%; max-height:50px; object-fit:contain; }
-.sig-preview-lg{ max-width:220px; max-height:90px; border:1px dashed var(--line); padding:8px; background:#fff; }
 .sig-preview-lg img{ max-height:74px; }
 .sig-upload-row{ display:flex; gap:8px; align-items:center; }
 .sig-upload-btn{ cursor:pointer; }
@@ -432,8 +432,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .quote-sig-col{ flex:1; text-align:center; }
 .quote-sig-inname{ font-size:11px; color:#555; margin-bottom:30px; font-weight:500; }
 .quote-sig-line{ border-bottom:1.5px solid #222; height:46px; margin-bottom:10px; }
-.quote-sig-imgwrap{ height:46px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:1.5px solid #222; }
-.quote-sig-img{ max-height:42px; max-width:180px; object-fit:contain; }
+.quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:1.5px solid #222; }
+.quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
 .quote-sig-name{ font-size:14px; font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
 .quote-sig-name.quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
 .quote-sig-blank-space{ display:inline-block; width:230px; }
@@ -508,7 +508,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   .print-area.a4-landscape, .print-area.a4-landscape *{
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    color-adjust: exact !important;
   }
   @page{ size:A4; margin:0; }
 }

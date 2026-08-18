@@ -109,14 +109,27 @@ function SignerForm({ mode, item, onSave, onClose }) {
     reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        // ย่อขนาดไม่ให้ไฟล์ใหญ่เกินไป (กว้างสุด 320px พื้นหลังใส/ขาวคงเดิม)
-        const maxW = 320;
+        // ย่อขนาดไม่ให้ไฟล์ใหญ่เกินไป (กว้างสุด 480px)
+        const maxW = 480;
         const scale = Math.min(1, maxW / img.width);
         const canvas = document.createElement("canvas");
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // ลบพื้นหลังสีขาว/สว่างออกให้โปร่งใส เหลือแต่เส้นลายเซ็น
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+        const WHITE_THRESHOLD = 235;
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          if (r > WHITE_THRESHOLD && g > WHITE_THRESHOLD && b > WHITE_THRESHOLD) {
+            d[i + 3] = 0; // โปร่งใสสนิท
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
         setF((prev) => ({ ...prev, signatureImage: canvas.toDataURL("image/png") }));
       };
       img.src = reader.result;
