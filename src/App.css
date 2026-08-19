@@ -263,6 +263,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .boq-row-editable{ grid-template-columns:40px 2fr 70px 70px 100px 100px 90px 76px; }
 .boq-row-no{ text-align:center; color:var(--steel); }
 .boq-row-tools{ display:flex; gap:2px; }
+.boq-row-header-edit{ background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); }
+.boq-row-no-header{ color:var(--maroon); font-weight:700; }
+.boq-header-input{ grid-column:2 / 8; font-weight:700; color:var(--maroon); background:transparent !important; border:none !important; }
+.boq-add-row-buttons{ display:flex; gap:8px; margin-top:2px; }
 .boq-row-tools .icon-btn{ font-size:18px; padding:2px 4px; }
 .boq-row-tools .icon-btn:disabled{ opacity:.25; cursor:not-allowed; }
 .boq-row-head span{ font-size:18px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }

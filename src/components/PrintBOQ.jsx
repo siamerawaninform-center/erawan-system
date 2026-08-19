@@ -52,6 +52,8 @@ const PRINT_CSS = `
 
   .boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:2.5px solid #222 !important; }
   .boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:2.5px solid #222 !important; font-size:18px; }
+  .boq-header-row td{ background:var(--maroon); }
+  .boq-header-cell{ color:#fff; font-weight:700; padding:7px 10px !important; letter-spacing:.02em; }
   .boq-bahttext{ text-align:center; font-style:italic; font-size:17px; padding:4px !important; border:2px solid #333 !important; }
   .boq-note{ font-size:17px; margin:6px 0; color:#333; }
 
@@ -84,12 +86,20 @@ export default function PrintBOQ({ boq, data, onClose }) {
     const signer = data.signers.find((s) => s.id === boq.estimatorId);
     const totals = computeBoqTotals(boq.items, boq.markupPercent, boq.vat, boq.discount);
 
-    const itemRows = (boq.items || []).map((it, idx) => {
+    let runningNo = 0;
+    const itemRows = (boq.items || []).map((it) => {
+      if (it.isHeader) {
+        return `
+        <tr class="boq-header-row">
+          <td colspan="9" class="boq-header-cell">${esc(it.description)}</td>
+        </tr>`;
+      }
+      runningNo += 1;
       const matTotal = (Number(it.qty) || 0) * (Number(it.materialUnitPrice) || 0);
       const laborTotalLine = (Number(it.qty) || 0) * (Number(it.laborUnitPrice) || 0);
       return `
         <tr>
-          <td class="doc-center">${idx + 1}</td>
+          <td class="doc-center">${runningNo}</td>
           <td class="doc-desc">${esc(it.description)}</td>
           <td class="doc-center">${esc(num(it.qty))}</td>
           <td class="doc-center">${esc(it.unit)}</td>

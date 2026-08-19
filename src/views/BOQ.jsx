@@ -114,7 +114,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
       estimatorId: data.signers.find((s) => s.isDefault)?.id || "",
       showSignature: false,
       note: "",
-      items: [{ id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0 }],
+      items: [{ id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false }],
     };
   });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -132,8 +132,13 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
   const setItem = (id, key, value) =>
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, [key]: value } : it)) });
   const addItem = () => {
-    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0 }] });
+    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false }] });
   };
+  const addHeaderRow = () => {
+    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 0, unit: "", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: true }] });
+  };
+  const toggleHeader = (id) =>
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, qty: it.isHeader ? 1 : 0 } : it)) });
   const removeItem = (id) => setF({ ...f, items: f.items.filter((it) => it.id !== id) });
   const moveItem = (idx, dir) => {
     const next = idx + dir;
@@ -169,33 +174,60 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
           </div>
         </div>
 
-        <FormDivider>รายการหมวดงาน</FormDivider>
+        <FormDivider>รายการหมวดงาน (ปรับลำดับ/แทรกหัวข้อได้อิสระแบบสเปรดชีต)</FormDivider>
         <div className="boq-table">
           <div className="boq-row boq-row-head boq-row-editable">
             <span>ลำดับ</span><span>รายการ</span><span>ปริมาณ</span><span>หน่วย</span>
             <span>ค่าวัสดุ/หน่วย</span><span>ค่าแรง/หน่วย</span><span>รวม</span><span></span>
           </div>
-          {f.items.map((it, idx) => {
-            const lineTotal = (Number(it.qty) || 0) * ((Number(it.materialUnitPrice) || 0) + (Number(it.laborUnitPrice) || 0));
-            return (
-              <div className="boq-row boq-row-editable" key={it.id}>
-                <span className="mono-amt boq-row-no">{idx + 1}</span>
-                <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder="เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก" />
-                <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
-                <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
-                <input type="number" min="0" step="0.01" value={it.materialUnitPrice} onChange={(e) => setItem(it.id, "materialUnitPrice", e.target.value)} />
-                <input type="number" min="0" step="0.01" value={it.laborUnitPrice} onChange={(e) => setItem(it.id, "laborUnitPrice", e.target.value)} />
-                <span className="mono-amt">฿{baht(lineTotal)}</span>
-                <div className="boq-row-tools">
-                  <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
-                  <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
-                  <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบ">✕</button>
+          {(() => {
+            let runningNo = 0;
+            return f.items.map((it, idx) => {
+              if (it.isHeader) {
+                return (
+                  <div className="boq-row boq-row-editable boq-row-header-edit" key={it.id}>
+                    <span className="boq-row-no boq-row-no-header">—</span>
+                    <input
+                      className="boq-header-input"
+                      value={it.description}
+                      onChange={(e) => setItem(it.id, "description", e.target.value)}
+                      placeholder="พิมพ์หัวข้อ/พื้นที่ทำงาน เช่น หมวดงานฐานราก, ชั้น 2 ฝั่งตะวันออก…"
+                    />
+                    <div className="boq-row-tools">
+                      <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
+                      <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
+                      <button type="button" className="icon-btn" onClick={() => toggleHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
+                      <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบ">✕</button>
+                    </div>
+                  </div>
+                );
+              }
+              runningNo += 1;
+              const lineTotal = (Number(it.qty) || 0) * ((Number(it.materialUnitPrice) || 0) + (Number(it.laborUnitPrice) || 0));
+              return (
+                <div className="boq-row boq-row-editable" key={it.id}>
+                  <span className="mono-amt boq-row-no">{runningNo}</span>
+                  <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder="เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก" />
+                  <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
+                  <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
+                  <input type="number" min="0" step="0.01" value={it.materialUnitPrice} onChange={(e) => setItem(it.id, "materialUnitPrice", e.target.value)} />
+                  <input type="number" min="0" step="0.01" value={it.laborUnitPrice} onChange={(e) => setItem(it.id, "laborUnitPrice", e.target.value)} />
+                  <span className="mono-amt">฿{baht(lineTotal)}</span>
+                  <div className="boq-row-tools">
+                    <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
+                    <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
+                    <button type="button" className="icon-btn" onClick={() => toggleHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ/พื้นที่ทำงาน" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
+                    <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบ">✕</button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </div>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มหมวดงาน</button>
+        <div className="boq-add-row-buttons">
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มหมวดงาน</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addHeaderRow}>+ เพิ่มหัวข้อ/พื้นที่ทำงาน</button>
+        </div>
 
         <div className="form-grid-3">
           <div className="form-row">
