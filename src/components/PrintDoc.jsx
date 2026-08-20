@@ -68,6 +68,8 @@ const PRINT_CSS = `
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
   .doc-blank-row td{ height:22px; border-top:1.5px solid #ccc; }
+  .doc-header-row td{ background:var(--maroon); }
+  .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
   .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
@@ -182,15 +184,22 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         </tr></tfoot>
       </table>`;
   } else {
-    const itemRows = (record.items || []).map((it, i) => `
+    let itemRunningNo = 0;
+    const itemRows = (record.items || []).map((it) => {
+      if (it.isHeader) {
+        return `<tr class="doc-header-row"><td colspan="6" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
+      }
+      itemRunningNo += 1;
+      return `
       <tr>
-        <td class="doc-center">${i + 1}</td>
+        <td class="doc-center">${itemRunningNo}</td>
         <td class="doc-desc">${esc(it.desc)}</td>
         <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>
         <td class="doc-num">${esc(baht(it.price))}</td>
         <td class="doc-num">${esc(baht(it.discount))}</td>
         <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
-      </tr>`).join("");
+      </tr>`;
+    }).join("");
     const blankCount = Math.max(0, 4 - (record.items?.length || 0));
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join("");

@@ -303,6 +303,7 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
   const [markup, setMarkup] = useState(boq.markupPercent || BOQ_DEFAULT_MARKUP);
 
   const preview = (boq.items || []).map((it) => {
+    if (it.isHeader) return { ...it, unitCost: 0, sellPrice: 0 };
     const unitCost = (Number(it.materialUnitPrice) || 0) + (Number(it.laborUnitPrice) || 0);
     const sellPrice = unitCost * (1 + (Number(markup) || 0) / 100);
     return { ...it, unitCost, sellPrice };
@@ -335,8 +336,8 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
       signerApprover: defaultSigner?.name || "",
       signerSales: defaultSigner?.name || "",
       items: preview.map((it) => ({
-        id: uid("it"), desc: it.description, qty: it.qty, unit: it.unit,
-        price: Math.round(it.sellPrice * 100) / 100, discount: 0,
+        id: uid("it"), desc: it.description, qty: it.isHeader ? "" : it.qty, unit: it.isHeader ? "" : it.unit,
+        price: it.isHeader ? 0 : Math.round(it.sellPrice * 100) / 100, discount: 0, isHeader: !!it.isHeader,
       })),
       paymentTerms: "",
       boqId: boq.id, // ลิงก์อ้างอิงภายในเท่านั้น — ไม่แสดงในเอกสารที่พิมพ์
@@ -373,12 +374,18 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
             <span>รายการ</span><span>ปริมาณ</span><span>หน่วย</span><span>ราคา/หน่วย (ที่ลูกค้าเห็น)</span>
           </div>
           {preview.map((it) => (
-            <div className="boq-row" key={it.id} style={{ gridTemplateColumns: "2fr 70px 70px 100px" }}>
-              <span>{it.description || "—"}</span>
-              <span>{it.qty}</span>
-              <span>{it.unit}</span>
-              <span className="mono-amt">฿{baht(it.sellPrice)}</span>
-            </div>
+            it.isHeader ? (
+              <div className="boq-row boq-row-header-preview" key={it.id} style={{ gridTemplateColumns: "1fr" }}>
+                <span>{it.description || "—"}</span>
+              </div>
+            ) : (
+              <div className="boq-row" key={it.id} style={{ gridTemplateColumns: "2fr 70px 70px 100px" }}>
+                <span>{it.description || "—"}</span>
+                <span>{it.qty}</span>
+                <span>{it.unit}</span>
+                <span className="mono-amt">฿{baht(it.sellPrice)}</span>
+              </div>
+            )
           ))}
         </div>
 

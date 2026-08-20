@@ -330,7 +330,11 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
   const setItem = (id, key, value) =>
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, [key]: value } : it)) });
   const addItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, discount: 0 }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, discount: 0, isHeader: false }] });
+  const addHeaderItem = () =>
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, discount: 0, isHeader: true }] });
+  const toggleItemHeader = (id) =>
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, qty: it.isHeader ? 1 : "", unit: it.isHeader ? "งาน" : "" } : it)) });
   const removeItem = (id) =>
     setF({ ...f, items: f.items.filter((it) => it.id !== id) });
 
@@ -471,23 +475,42 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
             <span>ราคา/หน่วย</span><span>ส่วนลด</span><span>จำนวนเงิน</span><span></span>
           </div>
           {f.items.map((it) => (
-            <div className="items-row" key={it.id}>
-              <textarea
-                rows={2}
-                value={it.desc}
-                onChange={(e) => setItem(it.id, "desc", e.target.value)}
-                placeholder="เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"
-              />
-              <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
-              <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
-              <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
-              <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
-              <span className="mono-amt">฿{baht(lineTotal(it))}</span>
-              <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
-            </div>
+            it.isHeader ? (
+              <div className="items-row items-row-header" key={it.id}>
+                <input
+                  className="boq-header-input"
+                  value={it.desc}
+                  onChange={(e) => setItem(it.id, "desc", e.target.value)}
+                  placeholder="พิมพ์หัวข้อ/หมวดงาน เช่น งวดที่ 1 — งานฐานราก"
+                />
+                <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
+                <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+              </div>
+            ) : (
+              <div className="items-row" key={it.id}>
+                <textarea
+                  rows={2}
+                  value={it.desc}
+                  onChange={(e) => setItem(it.id, "desc", e.target.value)}
+                  placeholder="เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"
+                />
+                <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
+                <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
+                <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
+                <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
+                <span className="mono-amt">฿{baht(lineTotal(it))}</span>
+                <div className="row-actions">
+                  <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
+                  <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+                </div>
+              </div>
+            )
           ))}
         </div>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มรายการ</button>
+        <div className="boq-add-row-buttons">
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มรายการ</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addHeaderItem}>+ เพิ่มหัวข้อ/หมวดงาน</button>
+        </div>
 
         <div className="form-grid-2">
           <div className="form-row">
