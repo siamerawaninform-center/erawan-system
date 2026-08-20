@@ -86,15 +86,20 @@ function readIntegerGroup(numStr) {
 function readInteger(n) {
   if (n === 0) return "ศูนย์";
   let s = String(n);
-  let out = "";
-  // แยกกลุ่มล้าน
-  while (s.length > 6) {
-    const head = s.slice(0, s.length - 6);
-    const tail = s.slice(s.length - 6);
-    out = readIntegerGroup(tail) + "ล้าน" + out;
-    s = head;
+  const groups = [];
+  while (s.length > 0) {
+    groups.unshift(s.slice(-6));
+    s = s.slice(0, -6);
   }
-  return readIntegerGroup(s) + out;
+  // groups[0] = หลักสูงสุด (นับล้าน), groups[groups.length-1] = หลักหน่วยล่างสุด
+  // ทุกกลุ่มยกเว้นกลุ่มสุดท้าย ต้องมีคำว่า "ล้าน" ต่อท้ายตัวเอง (ไม่ใช่ต่อท้ายกลุ่มถัดไป)
+  return groups
+    .map((g, i) => {
+      const text = readIntegerGroup(g);
+      const isLast = i === groups.length - 1;
+      return text + (isLast ? "" : "ล้าน");
+    })
+    .join("");
 }
 
 /** จำนวนเงิน → ตัวหนังสือไทย */

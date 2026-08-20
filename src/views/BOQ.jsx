@@ -55,7 +55,7 @@ export default function BOQ({ data, upsert, remove, onPrint, setView }) {
                 <div className="card-top"><span className="mono-code">{b.code}</span></div>
                 <h4>{proj?.name || "—"}</h4>
                 <p className="card-sub">{proj?.address || ""}</p>
-                <p className="card-line">{(b.items || []).length} หมวดงาน · กำไร {b.markupPercent || 0}%</p>
+                <p className="card-line">{(b.items || []).filter((it) => !it.isHeader).length} รายการ · กำไร {b.markupPercent || 0}%</p>
                 <div className="amount-line">
                   <span>รวมเป็นเงินทั้งสิ้น</span>
                   <span className="mono-amt-lg">฿{baht(t.total)}</span>
