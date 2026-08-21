@@ -30,6 +30,8 @@ const PRINT_CSS = `
   .sheet-wrap{ padding:20px 0; }
 
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:18px; font-size:var(--fs-base); font-weight:600; }
+  /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
+  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:23px; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -159,7 +161,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   let tableHtml;
   if (isBilling) {
-    const blankRows = Array.from({ length: 6 })
+    const blankRows = Array.from({ length: 9 })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
@@ -200,7 +202,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
       </tr>`;
     }).join("");
-    const blankCount = Math.max(0, 4 - (record.items?.length || 0));
+    const blankMin = isQuote ? 4 : 7;
+    const blankCount = Math.max(0, blankMin - (record.items?.length || 0));
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
@@ -322,7 +325,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
     <div class="dp-row2"><span class="dp-k">พนักงานขาย</span><span class="dp-v">${esc(record.signerSales || "—")}</span></div>`;
 
   return `
-<div class="sheet">
+<div class="sheet${isQuote ? "" : " sheet-billing"}">
   <div class="doc-ribbon">${esc(ribbonLabel)}</div>
   <div class="doc-top">
     <div class="doc-company">
