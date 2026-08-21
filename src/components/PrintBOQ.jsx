@@ -198,13 +198,20 @@ ${sheetHtml}
   // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 เฉพาะกรณีล้นเล็กน้อย ไม่บีบถ้ารายการเยอะจริง
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
+    var MIN_FONT_PX = 10;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = "";
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
-        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
-        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
-        sheet.style.fontSize = (currentSize * ratio) + "px";
+      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
+
+      var size = parseFloat(getComputedStyle(sheet).fontSize);
+      for (var i = 0; i < 30; i++) {
+        var h = sheet.scrollHeight;
+        if (h <= PAGE_HEIGHT_PX) break;
+        size -= 0.4;
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
+        sheet.style.fontSize = size + "px";
       }
     });
   }

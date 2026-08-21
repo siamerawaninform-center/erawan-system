@@ -407,13 +407,21 @@ ${sheetHtml}
   // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 40%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
+    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40; // ล้นได้ไม่เกิน 40% ถึงจะพยายามบีบ
+    var MIN_FONT_PX = 10; // ไม่ลดต่ำกว่านี้ กันอ่านไม่ออก
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = ""; // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
-        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97; // เผื่อกันชนอีกนิด
-        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
-        sheet.style.fontSize = (currentSize * ratio) + "px";
+      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return; // พอดีอยู่แล้ว หรือล้นเยอะเกินจนไม่ควรบีบ
+
+      // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
+      var size = parseFloat(getComputedStyle(sheet).fontSize);
+      for (var i = 0; i < 30; i++) {
+        var h = sheet.scrollHeight;
+        if (h <= PAGE_HEIGHT_PX) break;
+        size -= 0.4;
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
+        sheet.style.fontSize = size + "px";
       }
     });
   }
@@ -481,13 +489,20 @@ ${sheetsHtml}
   // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 ต่อแผ่น เฉพาะกรณีล้นเล็กน้อย เหมือนหน้าเดี่ยว
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
+    var MIN_FONT_PX = 10;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = "";
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
-        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
-        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
-        sheet.style.fontSize = (currentSize * ratio) + "px";
+      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
+
+      var size = parseFloat(getComputedStyle(sheet).fontSize);
+      for (var i = 0; i < 30; i++) {
+        var h = sheet.scrollHeight;
+        if (h <= PAGE_HEIGHT_PX) break;
+        size -= 0.4;
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
+        sheet.style.fontSize = size + "px";
       }
     });
   }
