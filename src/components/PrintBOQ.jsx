@@ -18,29 +18,29 @@ const PRINT_CSS = `
   body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7647); cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
-  .pv-label{ font-size:13px; }
+  .pv-label{ font-size:calc(var(--fs-base) * 0.7647); }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:17px; font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:17px; font-size:var(--fs-base); font-weight:600; }
 
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
-  .doc-company-text{ font-size:18px; line-height:1.4; }
-  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; margin-bottom:2px; color:var(--ink); }
-  .dc-line{ color:#333; font-size:18px; }
+  .doc-company-text{ font-size:calc(var(--fs-base) * 1.0588); line-height:1.4; }
+  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); margin-bottom:2px; color:var(--ink); }
+  .dc-line{ color:#333; font-size:calc(var(--fs-base) * 1.0588); }
   .dc-taxid{ margin-left:14px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); border-radius:2px; display:inline-block; }
 
-  .boq-info{ font-size:17px; line-height:1.3; margin-bottom:3px; }
+  .boq-info{ font-size:var(--fs-base); line-height:1.3; margin-bottom:3px; }
 
-  .doc-table{ width:100%; border-collapse:collapse; font-size:18px; margin-bottom:4px; }
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:17px; text-align:center; }
+  .doc-table{ width:100%; border-collapse:collapse; font-size:calc(var(--fs-base) * 1.0588); margin-bottom:4px; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:var(--fs-base); text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:5px 7px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
@@ -51,13 +51,13 @@ const PRINT_CSS = `
   .doc-foot-total{ border:2px solid #333; font-weight:700; background:#fafafa; }
 
   .boq-subtotal-row td{ background:#fafafa; font-weight:600; border-top:2.5px solid #222 !important; }
-  .boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:2.5px solid #222 !important; font-size:18px; }
+  .boq-grand-row td{ background:var(--concrete); font-weight:700; border-top:2.5px solid #222 !important; font-size:calc(var(--fs-base) * 1.0588); }
   .boq-header-row td{ background:var(--maroon); }
   .boq-header-cell{ color:#fff; font-weight:700; padding:7px 10px !important; letter-spacing:.02em; }
-  .boq-bahttext{ text-align:center; font-style:italic; font-size:17px; padding:4px !important; border:2px solid #333 !important; }
-  .boq-note{ font-size:17px; margin:6px 0; color:#333; }
+  .boq-bahttext{ text-align:center; font-style:italic; font-size:var(--fs-base); padding:4px !important; border:2px solid #333 !important; }
+  .boq-note{ font-size:var(--fs-base); margin:6px 0; color:#333; }
 
-  .doc-sign-grid{ display:flex; justify-content:flex-end; gap:14px; margin-top:14px; font-size:17px; }
+  .doc-sign-grid{ display:flex; justify-content:flex-end; gap:14px; margin-top:14px; font-size:var(--fs-base); }
   .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
   .dsg-sig-line{ width:180px; border-bottom:2.5px solid #222; height:30px; display:block; }
   .dsg-sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
@@ -201,7 +201,7 @@ ${sheetHtml}
     var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
     var MIN_FONT_PX = 10;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      sheet.style.fontSize = "";
+      sheet.style.removeProperty('--fs-base');
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
 
@@ -210,8 +210,8 @@ ${sheetHtml}
         var h = sheet.scrollHeight;
         if (h <= PAGE_HEIGHT_PX) break;
         size -= 0.4;
-        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
-        sheet.style.fontSize = size + "px";
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
+        sheet.style.setProperty('--fs-base', size + "px");
       }
     });
   }

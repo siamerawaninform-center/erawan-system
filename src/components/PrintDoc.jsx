@@ -23,30 +23,30 @@ const PRINT_CSS = `
   body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7222); cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
-  .pv-label{ font-size:13px; }
-  .pv-bar select{ padding:6px 10px; font-size:12.5px; border-radius:4px; border:none; }
+  .pv-label{ font-size:calc(var(--fs-base) * 0.7222); }
+  .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:18px; font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:18px; font-size:var(--fs-base); font-weight:600; }
 
-  .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:12.5px; color:var(--maroon); font-weight:700; }
+  .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .mono-amt-lg{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1.25em; font-weight:700; color:var(--maroon); }
 
-  .doc-ribbon{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:9px 24px; font-size:16px; border-bottom-left-radius:6px; }
+  .doc-ribbon{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:9px 24px; font-size:calc(var(--fs-base) * 0.8889); border-bottom-left-radius:6px; }
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-right:130px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
-  .doc-company-text{ font-size:18px; line-height:1.4; }
-  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; margin-bottom:2px; color:var(--ink); }
-  .dc-line{ color:#333; font-size:18px; }
+  .doc-company-text{ font-size:var(--fs-base); line-height:1.4; }
+  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:var(--fs-base); margin-bottom:2px; color:var(--ink); }
+  .dc-line{ color:#333; font-size:var(--fs-base); }
   .dc-taxid{ margin-left:14px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:4px 0 5px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 6px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:18px; border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:var(--fs-base); border-radius:2px; display:inline-block; }
 
-  .doc-party{ display:flex; border:2px solid #333; border-radius:3px; margin-bottom:6px; font-size:18px; overflow:hidden; }
+  .doc-party{ display:flex; border:2px solid #333; border-radius:3px; margin-bottom:6px; font-size:var(--fs-base); overflow:hidden; }
   .dp-left{ flex:1.6; padding:10px 14px; border-right:2px solid #333; display:flex; flex-direction:column; gap:4px; background:#fff; }
   .dp-right{ flex:1; padding:10px 14px; display:flex; flex-direction:column; gap:6px; background:#fafafa; }
   .dp-row{ display:grid; grid-template-columns:70px 1fr 90px 1fr; gap:4px; align-items:baseline; }
@@ -56,12 +56,12 @@ const PRINT_CSS = `
   .dp-v{ font-weight:600; }
   .dp-strong{ font-weight:700; color:var(--ink); }
   .dp-row2{ display:flex; justify-content:space-between; gap:8px; }
-  .dp-sig-inline{ margin-top:14px; display:flex; align-items:baseline; gap:6px; font-size:18px; }
+  .dp-sig-inline{ margin-top:14px; display:flex; align-items:baseline; gap:6px; font-size:var(--fs-base); }
   .dp-sig-line-inline{ flex:1; border-bottom:1px dotted #999; min-width:40px; }
   .dp-sig-name{ white-space:nowrap; }
 
-  .doc-table{ width:100%; border-collapse:collapse; font-size:18px; margin-bottom:4px; }
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:20px; text-align:center; }
+  .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-base); margin-bottom:4px; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
@@ -77,18 +77,18 @@ const PRINT_CSS = `
   .doc-foot-label{ border:2px solid #333; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
   .doc-foot-total{ border:2px solid #333; font-weight:700; background:#fafafa; }
 
-  .payment-terms-box{ border:2px solid #333; border-radius:3px; padding:8px 12px; margin-bottom:10px; font-size:18px; background:#fafafa; }
+  .payment-terms-box{ border:2px solid #333; border-radius:3px; padding:8px 12px; margin-bottom:10px; font-size:var(--fs-base); background:#fafafa; }
   .payment-terms-title{ font-weight:700; margin-bottom:3px; }
   .payment-terms-body{ white-space:pre-wrap; line-height:1.6; color:#333; }
 
-  .doc-footer-grid{ display:flex; justify-content:space-between; gap:16px; margin-bottom:4px; font-size:18px; }
+  .doc-footer-grid{ display:flex; justify-content:space-between; gap:16px; margin-bottom:4px; font-size:var(--fs-base); }
   .dfg-left{ flex:1.4; display:flex; flex-direction:column; justify-content:flex-end; gap:8px; }
   .dfg-cheque{ line-height:1.5; color:#444; }
   .dfg-bahttext{ border:2px solid #333; border-radius:2px; padding:6px 10px; font-weight:600; text-align:center; background:#fafafa; }
   .dfg-right{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .dfg-right-full{ flex:1; max-width:320px; margin-left:auto; }
   .dfg-row{ display:flex; justify-content:space-between; padding:2px 0; }
-  .dfg-total{ border-top:3px solid var(--ink); padding-top:6px; font-weight:700; font-size:20px; color:var(--maroon); }
+  .dfg-total{ border-top:3px solid var(--ink); padding-top:6px; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); color:var(--maroon); }
 
   .dsbn-single{ max-width:340px; margin-top:22px; }
   .dsbn-inname{ color:#555; margin-bottom:26px; font-weight:500; }
@@ -98,7 +98,7 @@ const PRINT_CSS = `
   .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
   .dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
-  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:16px; font-size:18px; }
+  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:16px; font-size:var(--fs-base); }
   .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .dsg-note{ color:#333; }
   .dsg-field{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
@@ -106,7 +106,7 @@ const PRINT_CSS = `
   .dsg-line-sm{ flex:0.6; }
   .dsg-paren{ text-align:center; margin-top:2px; }
   .dsg-check{ display:flex; align-items:baseline; gap:6px; margin-top:4px; }
-  .dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+  .dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:calc(var(--fs-base) * 0.5000); flex-shrink:0; }
   .dsg-box-checked{ background:#eee; }
   .dsg-col-sign{ justify-content:flex-end; gap:22px; }
   .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
@@ -115,15 +115,15 @@ const PRINT_CSS = `
 
   .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:26px; }
   .quote-sig-col{ flex:1; text-align:center; }
-  .quote-sig-inname{ font-size:18px; color:#555; margin-bottom:26px; font-weight:600; }
+  .quote-sig-inname{ font-size:var(--fs-base); color:#555; margin-bottom:26px; font-weight:600; }
   .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
   .quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
   .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
-  .quote-sig-name{ font-size:18px; font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
+  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
   .quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
   .quote-sig-blank-space{ display:inline-block; width:230px; }
-  .quote-sig-role{ font-size:18px; color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }
-  .quote-sig-date{ font-size:18px; color:#777; }
+  .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }
+  .quote-sig-date{ font-size:var(--fs-base); color:#777; }
 
   @media print {
     body{ background:#fff; }
@@ -410,18 +410,19 @@ ${sheetHtml}
     var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40; // ล้นได้ไม่เกิน 40% ถึงจะพยายามบีบ
     var MIN_FONT_PX = 10; // ไม่ลดต่ำกว่านี้ กันอ่านไม่ออก
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      sheet.style.fontSize = ""; // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
+      sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return; // พอดีอยู่แล้ว หรือล้นเยอะเกินจนไม่ควรบีบ
 
       // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
+      // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
       var size = parseFloat(getComputedStyle(sheet).fontSize);
       for (var i = 0; i < 30; i++) {
         var h = sheet.scrollHeight;
         if (h <= PAGE_HEIGHT_PX) break;
         size -= 0.4;
-        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
-        sheet.style.fontSize = size + "px";
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
+        sheet.style.setProperty('--fs-base', size + "px");
       }
     });
   }
@@ -492,7 +493,7 @@ ${sheetsHtml}
     var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
     var MIN_FONT_PX = 10;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      sheet.style.fontSize = "";
+      sheet.style.removeProperty('--fs-base');
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
 
@@ -501,8 +502,8 @@ ${sheetsHtml}
         var h = sheet.scrollHeight;
         if (h <= PAGE_HEIGHT_PX) break;
         size -= 0.4;
-        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.fontSize = size + "px"; break; }
-        sheet.style.fontSize = size + "px";
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
+        sheet.style.setProperty('--fs-base', size + "px");
       }
     });
   }
