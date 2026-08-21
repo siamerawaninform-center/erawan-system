@@ -199,7 +199,7 @@ ${sheetHtml}
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
     var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
-    var MIN_FONT_PX = 10;
+    var MIN_FONT_PX = 15;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
       var natural = sheet.scrollHeight;
