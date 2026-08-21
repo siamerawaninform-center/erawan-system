@@ -201,7 +201,7 @@ ${sheetHtml}
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = "";
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
         var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
         var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
         sheet.style.fontSize = (currentSize * ratio) + "px";

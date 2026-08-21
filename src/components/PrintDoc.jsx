@@ -404,13 +404,13 @@ ${sheetHtml}
   window.onafterprint = function () { window.close(); };
 
   // ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ให้กลับมาพอดี 1 หน้า A4
-  // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 28%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
+  // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 40%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = ""; // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
         var ratio = (PAGE_HEIGHT_PX / natural) * 0.97; // เผื่อกันชนอีกนิด
         var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
         sheet.style.fontSize = (currentSize * ratio) + "px";
@@ -484,7 +484,7 @@ ${sheetsHtml}
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.fontSize = "";
       var natural = sheet.scrollHeight;
-      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.40) {
         var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
         var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
         sheet.style.fontSize = (currentSize * ratio) + "px";
