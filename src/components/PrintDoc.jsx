@@ -391,7 +391,7 @@ export default function PrintDoc({ payload, data, onClose }) {
     <option value="ต้นฉบับ">ต้นฉบับ (ORIGINAL)</option>
     <option value="สำเนา">สำเนา (COPY)</option>
   </select>
-  <button onclick="window.print()">🖶 พิมพ์ / บันทึก PDF</button>
+  <button onclick="fitToPage(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
 <div class="sheet-wrap">
 ${sheetHtml}
@@ -402,6 +402,23 @@ ${sheetHtml}
     if (ribbon) ribbon.textContent = e.target.value;
   });
   window.onafterprint = function () { window.close(); };
+
+  // ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ให้กลับมาพอดี 1 หน้า A4
+  // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 28%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
+  function fitToPage() {
+    var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
+    document.querySelectorAll('.sheet').forEach(function (sheet) {
+      sheet.style.fontSize = ""; // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
+      var natural = sheet.scrollHeight;
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97; // เผื่อกันชนอีกนิด
+        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
+        sheet.style.fontSize = (currentSize * ratio) + "px";
+      }
+    });
+  }
+  fitToPage();
+  window.addEventListener("load", fitToPage); // คำนวณซ้ำเมื่อฟอนต์โหลดเสร็จสมบูรณ์
 </script>
 </body></html>`;
 
@@ -453,13 +470,29 @@ export function PrintDocSet({ payload, data, onClose }) {
 </head><body>
 <div class="pv-bar no-print">
   <span class="pv-label">พรีวิวก่อนพิมพ์ — ชุดเอกสาร (${pages.length} แผ่น)</span>
-  <button onclick="window.print()">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
+  <button onclick="fitToPage(); window.print();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
 </div>
 <div class="sheet-wrap">
 ${sheetsHtml}
 </div>
 <script>
   window.onafterprint = function () { window.close(); };
+
+  // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 ต่อแผ่น เฉพาะกรณีล้นเล็กน้อย เหมือนหน้าเดี่ยว
+  function fitToPage() {
+    var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    document.querySelectorAll('.sheet').forEach(function (sheet) {
+      sheet.style.fontSize = "";
+      var natural = sheet.scrollHeight;
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
+        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
+        sheet.style.fontSize = (currentSize * ratio) + "px";
+      }
+    });
+  }
+  fitToPage();
+  window.addEventListener("load", fitToPage);
 </script>
 </body></html>`;
 

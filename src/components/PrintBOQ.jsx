@@ -187,13 +187,29 @@ export default function PrintBOQ({ boq, data, onClose }) {
 </head><body>
 <div class="pv-bar no-print">
   <span class="pv-label">พรีวิวก่อนพิมพ์ — BOQ</span>
-  <button onclick="window.print()">🖶 พิมพ์ / บันทึก PDF</button>
+  <button onclick="fitToPage(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
 <div class="sheet-wrap">
 ${sheetHtml}
 </div>
 <script>
   window.onafterprint = function () { window.close(); };
+
+  // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 เฉพาะกรณีล้นเล็กน้อย ไม่บีบถ้ารายการเยอะจริง
+  function fitToPage() {
+    var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    document.querySelectorAll('.sheet').forEach(function (sheet) {
+      sheet.style.fontSize = "";
+      var natural = sheet.scrollHeight;
+      if (natural > PAGE_HEIGHT_PX && natural <= PAGE_HEIGHT_PX * 1.28) {
+        var ratio = (PAGE_HEIGHT_PX / natural) * 0.97;
+        var currentSize = parseFloat(getComputedStyle(sheet).fontSize);
+        sheet.style.fontSize = (currentSize * ratio) + "px";
+      }
+    });
+  }
+  fitToPage();
+  window.addEventListener("load", fitToPage);
 </script>
 </body></html>`;
 
