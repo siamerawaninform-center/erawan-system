@@ -7,7 +7,7 @@ import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear, exportToCSV } from "../lib/format.js";
 import { allocateDocNumber, buildDocCode } from "../lib/docNumber.js";
 import {
-  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES,
+  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES, UNIT_SUGGESTIONS,
 } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
@@ -495,7 +495,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
                   placeholder="เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"
                 />
                 <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
-                <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
+                <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
                 <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
                 <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
                 <span className="mono-amt">฿{baht(lineTotal(it))}</span>
@@ -643,6 +643,9 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           <button type="button" className="btn btn-ghost" onClick={onClose}>ยกเลิก</button>
           <button type="submit" className="btn btn-primary">บันทึกเอกสาร</button>
         </div>
+        <datalist id="unit-suggestions">
+          {UNIT_SUGGESTIONS.map((u) => <option key={u} value={u} />)}
+        </datalist>
       </form>
     </Modal>
   );

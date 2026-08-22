@@ -3,7 +3,7 @@ import { TitleBlock, Modal, EmptyState, Toolbar, FormDivider } from "../componen
 import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, bahtText, computeBoqTotals } from "../lib/format.js";
 import { nextBoqCode, allocateDocNumber } from "../lib/docNumber.js";
-import { BOQ_DEFAULT_MARKUP, FIN_STATUSES } from "../lib/constants.js";
+import { BOQ_DEFAULT_MARKUP, FIN_STATUSES, UNIT_SUGGESTIONS } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
    BOQ (Bill of Quantity) — รายการประมาณราคา ต่อโปรเจกต์
@@ -209,7 +209,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
                   <span className="mono-amt boq-row-no">{runningNo}</span>
                   <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder="เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก" />
                   <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
-                  <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} />
+                  <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
                   <input type="number" min="0" step="0.01" value={it.materialUnitPrice} onChange={(e) => setItem(it.id, "materialUnitPrice", e.target.value)} />
                   <input type="number" min="0" step="0.01" value={it.laborUnitPrice} onChange={(e) => setItem(it.id, "laborUnitPrice", e.target.value)} />
                   <span className="mono-amt">฿{baht(lineTotal)}</span>
@@ -289,6 +289,9 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
           <button type="button" className="btn btn-ghost" onClick={onClose}>ยกเลิก</button>
           <button type="submit" className="btn btn-primary">บันทึก BOQ</button>
         </div>
+        <datalist id="unit-suggestions">
+          {UNIT_SUGGESTIONS.map((u) => <option key={u} value={u} />)}
+        </datalist>
       </form>
     </Modal>
   );
