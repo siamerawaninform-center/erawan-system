@@ -7,7 +7,7 @@ import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear, exportToCSV } from "../lib/format.js";
 import { allocateDocNumber, buildDocCode } from "../lib/docNumber.js";
 import {
-  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES, UNIT_SUGGESTIONS,
+  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES,
 } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
@@ -644,7 +644,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           <button type="submit" className="btn btn-primary">บันทึกเอกสาร</button>
         </div>
         <datalist id="unit-suggestions">
-          {UNIT_SUGGESTIONS.map((u) => <option key={u} value={u} />)}
+          {(data.units || []).map((u) => <option key={u.id} value={u.name} />)}
         </datalist>
       </form>
     </Modal>

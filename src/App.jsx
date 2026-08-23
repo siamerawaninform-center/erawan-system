@@ -23,6 +23,7 @@ import Company from "./views/Company.jsx";
 import Customers from "./views/Customers.jsx";
 import Suppliers from "./views/Suppliers.jsx";
 import Signers from "./views/Signers.jsx";
+import Units from "./views/Units.jsx";
 
 /* ---------------------------------------------------------
    SIAM ERAWAN CONSTRUCTION — ระบบภายใน (เฟส 1-2)
@@ -41,19 +42,20 @@ const NAV_REGISTRY = [
   { key: "customers", label: "ลูกค้า", eyebrow: "07" },
   { key: "suppliers", label: "ซัพพลายเออร์", eyebrow: "08" },
   { key: "signers", label: "ผู้ลงนาม", eyebrow: "09" },
+  { key: "units", label: "หน่วยนับ", eyebrow: "10" },
 ];
 
 const NAV_PROJECT_DOCS = [
-  { key: "boq", label: "BOQ (ประมาณราคา)", eyebrow: "10" },
-  { key: "plan", label: "แผนงาน (Timeline)", eyebrow: "11" },
-  { key: "jsa", label: "JSA (ความปลอดภัย)", eyebrow: "12" },
+  { key: "boq", label: "BOQ (ประมาณราคา)", eyebrow: "11" },
+  { key: "plan", label: "แผนงาน (Timeline)", eyebrow: "12" },
+  { key: "jsa", label: "JSA (ความปลอดภัย)", eyebrow: "13" },
 ];
 
 const NAV_ACCOUNTING = [
-  { key: "expenses", label: "รายจ่าย/ภาษีซื้อ", eyebrow: "13" },
-  { key: "monthly", label: "คลังเอกสารรายเดือน", eyebrow: "14" },
-  { key: "debts", label: "ทะเบียนหนี้สิน", eyebrow: "15" },
-  { key: "analysis", label: "วิเคราะห์การเงิน", eyebrow: "16" },
+  { key: "expenses", label: "รายจ่าย/ภาษีซื้อ", eyebrow: "14" },
+  { key: "monthly", label: "คลังเอกสารรายเดือน", eyebrow: "15" },
+  { key: "debts", label: "ทะเบียนหนี้สิน", eyebrow: "16" },
+  { key: "analysis", label: "วิเคราะห์การเงิน", eyebrow: "17" },
 ];
 
 export default function App() {
@@ -186,6 +188,7 @@ export default function App() {
         {view === "customers" && <Customers {...viewProps} />}
         {view === "suppliers" && <Suppliers {...viewProps} />}
         {view === "signers" && <Signers {...viewProps} />}
+        {view === "units" && <Units {...viewProps} />}
       </main>
 
       {printJob?.kind === "finance" && (

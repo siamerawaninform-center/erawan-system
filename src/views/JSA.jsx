@@ -17,7 +17,7 @@ export default function JSA({ data, upsert, remove, onPrint }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="12 — ความปลอดภัย"
+        eyebrow="13 — ความปลอดภัย"
         title="JSA (Job Safety Analysis)"
         sheetNo={`${list.length} ฉบับ`}
         note="ตารางวิเคราะห์ความปลอดภัยในการทำงาน — ใช้ส่งให้โรงงานลูกค้าก่อนเริ่มงานบางประเภท"

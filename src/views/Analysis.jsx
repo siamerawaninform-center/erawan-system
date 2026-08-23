@@ -49,7 +49,7 @@ export default function Analysis({ data }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="16 — วิเคราะห์การเงิน"
+        eyebrow="17 — วิเคราะห์การเงิน"
         title="วิเคราะห์การเงิน"
         sheetNo={`${perProject.length} โปรเจกต์`}
         note="คำนวณจากเอกสารขายและรายจ่ายที่มีอยู่แล้วในระบบ อัปเดตอัตโนมัติทุกครั้งที่เข้าหน้านี้"

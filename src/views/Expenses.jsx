@@ -62,7 +62,7 @@ export default function Expenses({ data, upsert, remove }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="13 — รายจ่าย/ภาษีซื้อ"
+        eyebrow="14 — รายจ่าย/ภาษีซื้อ"
         title="รายจ่าย / ภาษีซื้อ / หัก ณ ที่จ่าย"
         sheetNo={`${filtered.length}/${list.length}`}
         note="บันทึกใบกำกับภาษีซื้อที่ได้รับจากผู้ขายทีละใบ สะสมไว้ใช้สรุปส่งบัญชีรายเดือนที่เมนู 'คลังเอกสารรายเดือน'"

@@ -18,7 +18,7 @@ export default function Plan({ data, upsert, remove, onPrint }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="11 — แผนงาน"
+        eyebrow="12 — แผนงาน"
         title="แผนงานโครงการ (Timeline)"
         sheetNo={`${list.length} ฉบับ`}
         note="กำหนดช่วงเวลาทำงานของแต่ละรายการ พิมพ์เป็นตาราง Gantt ขนาด A4 แนวนอน"

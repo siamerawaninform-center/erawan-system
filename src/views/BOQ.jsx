@@ -3,7 +3,7 @@ import { TitleBlock, Modal, EmptyState, Toolbar, FormDivider } from "../componen
 import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, bahtText, computeBoqTotals } from "../lib/format.js";
 import { nextBoqCode, allocateDocNumber } from "../lib/docNumber.js";
-import { BOQ_DEFAULT_MARKUP, FIN_STATUSES, UNIT_SUGGESTIONS } from "../lib/constants.js";
+import { BOQ_DEFAULT_MARKUP, FIN_STATUSES } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
    BOQ (Bill of Quantity) — รายการประมาณราคา ต่อโปรเจกต์
@@ -21,7 +21,7 @@ export default function BOQ({ data, upsert, remove, onPrint, setView }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="10 — ประมาณราคา"
+        eyebrow="11 — ประมาณราคา"
         title="BOQ (Bill of Quantity)"
         sheetNo={`${list.length} ฉบับ`}
         note="วิเคราะห์ต้นทุนก่อสร้างแยกค่าวัสดุ/ค่าแรง เพื่อคำนวณราคาที่บวกกำไรก่อนออกใบเสนอราคา"
@@ -290,7 +290,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
           <button type="submit" className="btn btn-primary">บันทึก BOQ</button>
         </div>
         <datalist id="unit-suggestions">
-          {UNIT_SUGGESTIONS.map((u) => <option key={u} value={u} />)}
+          {(data.units || []).map((u) => <option key={u.id} value={u.name} />)}
         </datalist>
       </form>
     </Modal>

@@ -25,7 +25,7 @@ export default function Debts({ data, upsert, remove }) {
   return (
     <div className="view">
       <TitleBlock
-        eyebrow="15 — ภาระหนี้สิน"
+        eyebrow="16 — ภาระหนี้สิน"
         title="ทะเบียนหนี้สิน"
         sheetNo={`${list.length} รายการ`}
         note="ติดตามภาระหนี้ทั้งในระบบและนอกระบบ ใช้วางแผนกระแสเงินสดล่วงหน้า"
