@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TitleBlock, Modal, EmptyState, Toolbar, ChipRow, Stamp, FormDivider } from "../components/UI.jsx";
 import { Autocomplete } from "../components/Autocomplete.jsx";
-import { uid, baht, todayISO, formatShortThaiDate, computeExpenseTotal, exportToCSV, monthKey, formatThaiMonthYear } from "../lib/format.js";
+import { uid, baht, todayISO, formatShortThaiDate, computeExpenseTotal, exportToCSV } from "../lib/format.js";
 import { nextExpenseCode, nextWhtCertNo } from "../lib/docNumber.js";
 import { EXPENSE_CATEGORIES, WHT_RATES, WHT_INCOME_TYPES, WHT_PND_TYPES, WHT_ISSUE_TYPES } from "../lib/constants.js";
 import { openWhtCertPrint } from "../components/PrintWHT.jsx";
@@ -21,7 +21,6 @@ export default function Expenses({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
   const [filterCat, setFilterCat] = useState("ทั้งหมด");
   const [q, setQ] = useState("");
-  const [collapsed, setCollapsed] = useState({});
   const list = data.expenses || [];
   const supplier = (id) => data.suppliers.find((s) => s.id === id);
   const project = (id) => data.projects.find((p) => p.id === id);
@@ -37,29 +36,6 @@ export default function Expenses({ data, upsert, remove }) {
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
   const monthTotal = filtered.reduce((s, e) => s + computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate).totalWithVat, 0);
-
-  // จัดกลุ่มเป็น "โฟลเดอร์" ตามเดือนภาษี (เดือน+ปี) — คำนวณจากวันที่ใบกำกับภาษีทุกครั้ง
-  // ช่วยเช็คยอดตอนยื่น ภ.พ.30 รายเดือน และดูสัดส่วนรายปีได้ชัดเจน
-  const groupMap = {};
-  filtered.forEach((e) => {
-    const key = monthKey(e.date) || "ไม่ระบุวันที่";
-    (groupMap[key] = groupMap[key] || []).push(e);
-  });
-  const monthGroups = Object.keys(groupMap)
-    .sort((a, b) => b.localeCompare(a))
-    .map((key) => ({ key, items: groupMap[key] }));
-
-  const toggleGroup = (key, isNewest) =>
-    setCollapsed({ ...collapsed, [key]: collapsed[key] === undefined ? isNewest : !collapsed[key] });
-  const isGroupCollapsed = (key, isNewest) =>
-    collapsed[key] === undefined ? !isNewest : collapsed[key];
-
-  const groupSummary = (items) => {
-    const base = items.reduce((s, e) => s + computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate).base, 0);
-    const vatAmt = items.reduce((s, e) => s + (e.vat ? computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate).vatAmount : 0), 0);
-    const netPaid = items.reduce((s, e) => s + computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate).netPaid, 0);
-    return { base, vatAmt, netPaid };
-  };
 
   const handleExportCSV = () => {
     const headers = [
@@ -123,68 +99,46 @@ export default function Expenses({ data, upsert, remove }) {
       ) : filtered.length === 0 ? (
         <EmptyState title="ไม่พบรายการที่ค้นหา" body="ลองค้นหาด้วยคำอื่นหรือเปลี่ยนหมวดหมู่" />
       ) : (
-        <div className="project-groups">
-          {monthGroups.map((g, idx) => {
-            const isNewest = idx === 0;
-            const closed = isGroupCollapsed(g.key, isNewest);
-            const monthLabel = g.key === "ไม่ระบุวันที่" ? g.key : formatThaiMonthYear(g.key);
-            const sum = groupSummary(g.items);
-            return (
-              <div className="project-group" key={g.key}>
-                <button className="project-group-head" onClick={() => toggleGroup(g.key, isNewest)}>
-                  <span className={`pg-arrow ${closed ? "pg-arrow-closed" : ""}`}>▾</span>
-                  <span className="pg-month-label">{monthLabel}</span>
-                  <span className="pg-count">{g.items.length} รายการ</span>
-                  <span className="pg-count mono-amt">มูลค่าก่อนภาษี ฿{baht(sum.base)}</span>
-                  <span className="pg-count mono-amt">VAT ฿{baht(sum.vatAmt)}</span>
-                  <span className="pg-count mono-amt">สุทธิที่จ่าย ฿{baht(sum.netPaid)}</span>
-                </button>
-                {!closed && (
-                  <div className="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>รหัส</th><th>วันที่</th><th>ผู้ขาย</th><th>หมวด</th><th>โปรเจกต์</th>
-                          <th>มูลค่าก่อนภาษี</th><th>VAT</th><th>หัก ณ ที่จ่าย</th><th>สุทธิที่จ่าย</th><th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {g.items.map((e) => {
-                          const t = computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate);
-                          const vendorText = e.vendorId ? supplier(e.vendorId)?.nameTh : e.vendorName;
-                          const proj = project(e.projectId);
-                          return (
-                            <tr key={e.id}>
-                              <td className="mono-code">{e.code}</td>
-                              <td>{formatShortThaiDate(e.date)}</td>
-                              <td>{vendorText || "—"}</td>
-                              <td><Stamp label={e.category} variant={expenseStatusVariant(e.whtApplicable, e.vat)} /></td>
-                              <td>{proj ? proj.code : <span className="muted">ทั่วไป</span>}</td>
-                              <td className="mono-amt">{baht(t.base)}</td>
-                              <td className="mono-amt">{e.vat ? baht(t.vatAmount) : "—"}</td>
-                              <td className="mono-amt">{e.whtApplicable ? `${e.whtRate}% (${baht(t.whtAmount)})` : "—"}</td>
-                              <td className="mono-amt">{baht(t.netPaid)}</td>
-                              <td className="row-actions">
-                                <button className="icon-btn" onClick={() => setModal({ mode: "edit", item: e })} aria-label="แก้ไข">✎</button>
-                                {e.whtApplicable && (
-                                  <button className="icon-btn" onClick={() => handlePrintWht(e)} aria-label="พิมพ์ 50 ทวิ" title="พิมพ์หนังสือรับรองหัก ณ ที่จ่าย (50 ทวิ)">🖶</button>
-                                )}
-                                <button
-                                  className="icon-btn"
-                                  onClick={() => { if (confirm(`ลบรายการ "${e.code}"?`)) remove("expenses", e.id, "รายจ่าย"); }}
-                                  aria-label="ลบ"
-                                >🗑</button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>รหัส</th><th>วันที่</th><th>ผู้ขาย</th><th>หมวด</th><th>โปรเจกต์</th>
+                <th>มูลค่าก่อนภาษี</th><th>VAT</th><th>หัก ณ ที่จ่าย</th><th>สุทธิที่จ่าย</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((e) => {
+                const t = computeExpenseTotal(e.amount, e.vat, e.whtApplicable, e.whtRate);
+                const vendorText = e.vendorId ? supplier(e.vendorId)?.nameTh : e.vendorName;
+                const proj = project(e.projectId);
+                return (
+                  <tr key={e.id}>
+                    <td className="mono-code">{e.code}</td>
+                    <td>{formatShortThaiDate(e.date)}</td>
+                    <td>{vendorText || "—"}</td>
+                    <td><Stamp label={e.category} variant={expenseStatusVariant(e.whtApplicable, e.vat)} /></td>
+                    <td>{proj ? proj.code : <span className="muted">ทั่วไป</span>}</td>
+                    <td className="mono-amt">{baht(t.base)}</td>
+                    <td className="mono-amt">{e.vat ? baht(t.vatAmount) : "—"}</td>
+                    <td className="mono-amt">{e.whtApplicable ? `${e.whtRate}% (${baht(t.whtAmount)})` : "—"}</td>
+                    <td className="mono-amt">{baht(t.netPaid)}</td>
+                    <td className="row-actions">
+                      <button className="icon-btn" onClick={() => setModal({ mode: "edit", item: e })} aria-label="แก้ไข">✎</button>
+                      {e.whtApplicable && (
+                        <button className="icon-btn" onClick={() => handlePrintWht(e)} aria-label="พิมพ์ 50 ทวิ" title="พิมพ์หนังสือรับรองหัก ณ ที่จ่าย (50 ทวิ)">🖶</button>
+                      )}
+                      <button
+                        className="icon-btn"
+                        onClick={() => { if (confirm(`ลบรายการ "${e.code}"?`)) remove("expenses", e.id, "รายจ่าย"); }}
+                        aria-label="ลบ"
+                      >🗑</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -232,6 +186,20 @@ function ExpenseForm({ mode, item, data, onSave, onClose }) {
     return item ? { ...defaults, ...item } : defaults;
   });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
+  // ช่องพิมพ์ค้นหาโปรเจกต์แบบ datalist (ไม่มีลูกศร แต่พิมพ์แล้วขึ้นตัวเลือกให้เลือก)
+  const projectLabel = (id) => {
+    const p = data.projects.find((x) => x.id === id);
+    return p ? `${p.code} — ${p.name}` : "";
+  };
+  const [projectQuery, setProjectQuery] = useState(() => projectLabel(f.projectId));
+  const onProjectInput = (typed) => {
+    setProjectQuery(typed);
+    if (typed === "") { setF({ ...f, projectId: "" }); return; }
+    const match = data.projects.find((p) => `${p.code} — ${p.name}` === typed);
+    if (match) setF({ ...f, projectId: match.id });
+  };
+  const onProjectBlur = () => setProjectQuery(projectLabel(f.projectId));
 
   const changeVendor = (vendorId) => {
     const v = data.suppliers.find((s) => s.id === vendorId);
@@ -300,13 +268,17 @@ function ExpenseForm({ mode, item, data, onSave, onClose }) {
             </select>
           </div>
           <div className="form-row">
-            <label>โปรเจกต์ (ไม่บังคับ — พิมพ์เพื่อค้นหา)</label>
-            <Autocomplete
-              options={data.projects.map((p) => ({ id: p.id, label: p.name, sublabel: p.code }))}
-              value={f.projectId}
-              onChange={(id) => setF({ ...f, projectId: id })}
+            <label>โปรเจกต์ (ไม่บังคับ — พิมพ์เพื่อค้นหา จะได้คำนวณต้นทุนจริงต่อโปรเจกต์ได้ถูกต้อง)</label>
+            <input
+              value={projectQuery}
+              onChange={(e) => onProjectInput(e.target.value)}
+              onBlur={onProjectBlur}
+              list="project-suggestions"
               placeholder="เว้นว่าง = ค่าใช้จ่ายทั่วไป"
             />
+            <datalist id="project-suggestions">
+              {data.projects.map((p) => <option key={p.id} value={`${p.code} — ${p.name}`} />)}
+            </datalist>
           </div>
         </div>
 
