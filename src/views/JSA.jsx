@@ -3,6 +3,7 @@ import { TitleBlock, Modal, EmptyState, Toolbar, FormDivider } from "../componen
 import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, todayISO, formatShortThaiDate } from "../lib/format.js";
 import { nextJsaCode } from "../lib/docNumber.js";
+import { analyzeSafety } from "../lib/safetyKnowledge.js";
 
 /* ---------------------------------------------------------
    JSA (Job Safety Analysis) — ตารางวิเคราะห์ความปลอดภัยในการทำงาน
@@ -117,6 +118,69 @@ function JsaForm({ mode, item, data, onSave, onClose }) {
   const addRow = () => setF({ ...f, rows: [...f.rows, DEFAULT_ROW()] });
   const removeRow = (id) => setF({ ...f, rows: f.rows.filter((r) => r.id !== id) });
 
+  // ดึงขั้นตอนการทำงานจากแผนงาน (Gantt) ของโปรเจกต์นี้ — ใช้ description ของแต่ละ task เป็นขั้นตอนงาน
+  const pullStepsFromPlan = () => {
+    if (!f.projectId) return;
+    const plansOfProject = (data.plans || [])
+      .filter((p) => p.projectId === f.projectId)
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const plan = plansOfProject[0];
+    if (!plan) { alert("ยังไม่มีแผนงานของโปรเจกต์นี้ในระบบ"); return; }
+    const steps = (plan.tasks || []).filter((t) => (t.description || "").trim());
+    if (steps.length === 0) { alert("แผนงานนี้ยังไม่มีรายการขั้นตอนงาน"); return; }
+    setF({
+      ...f,
+      rows: steps.map((t) => ({
+        id: uid("jr"), step: t.description, hazards: "", controls: "",
+        inspector: "จป. หัวหน้างาน/วิชาชีพ",
+      })),
+    });
+  };
+
+  // ดึงขั้นตอนการทำงานตรงจากใบเสนอราคาของโปรเจกต์นี้ (กรณียังไม่มีแผนงาน)
+  const pullStepsFromQuote = () => {
+    if (!f.projectId) return;
+    const quotesOfProject = (data.quotes || [])
+      .filter((q) => q.projectId === f.projectId && q.kind === "quote")
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const quote = quotesOfProject[0];
+    if (!quote) { alert("ยังไม่มีใบเสนอราคาของโปรเจกต์นี้ในระบบ"); return; }
+    const lineItems = (quote.items || []).filter((it) => !it.isHeader && (it.desc || "").trim());
+    if (lineItems.length === 0) { alert("ใบเสนอราคานี้ยังไม่มีรายการที่ดึงมาใช้ได้"); return; }
+    setF({
+      ...f,
+      rows: lineItems.map((it) => ({
+        id: uid("jr"), step: it.desc, hazards: "", controls: "",
+        inspector: "จป. หัวหน้างาน/วิชาชีพ",
+      })),
+    });
+  };
+
+  // วิเคราะห์อันตราย+มาตรการป้องกันอัตโนมัติจากคำสำคัญในขั้นตอนงานของทุกแถว
+  // (จับคู่จากคลังความรู้ในเครื่อง — ไม่ได้เรียก AI ภายนอก) ผลลัพธ์ยังแก้ไข/ตรวจสอบต่อได้ทุกจุด
+  const analyzeAllRows = () => {
+    setF({
+      ...f,
+      rows: f.rows.map((r) => {
+        if (!r.step.trim()) return r;
+        const { hazards, controls } = analyzeSafety(r.step);
+        return {
+          ...r,
+          hazards: hazards.map((h, i) => `${i + 1}. ${h}`).join("\n"),
+          controls: controls.map((c, i) => `${i + 1}. ${c}`).join("\n"),
+        };
+      }),
+    });
+  };
+
+  const analyzeOneRow = (id) => {
+    const row = f.rows.find((r) => r.id === id);
+    if (!row || !row.step.trim()) { alert("กรอกขั้นตอนการทำงานก่อน จึงจะวิเคราะห์ได้"); return; }
+    const { hazards, controls } = analyzeSafety(row.step);
+    setRow(id, "hazards", hazards.map((h, i) => `${i + 1}. ${h}`).join("\n"));
+    setRow(id, "controls", controls.map((c, i) => `${i + 1}. ${c}`).join("\n"));
+  };
+
   const signer = data.signers.find((s) => s.id === f.approverId);
 
   return (
@@ -158,6 +222,26 @@ function JsaForm({ mode, item, data, onSave, onClose }) {
         </div>
 
         <FormDivider>ตารางวิเคราะห์ความปลอดภัยในการทำงาน</FormDivider>
+        <div className="jsa-toolbar-row">
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={pullStepsFromPlan}
+            disabled={!f.projectId}
+          >⤵ ดึงขั้นตอนงานจากแผนงานของโปรเจกต์นี้</button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={pullStepsFromQuote}
+            disabled={!f.projectId}
+          >⤵ ดึงขั้นตอนงานจากใบเสนอราคาโดยตรง</button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={analyzeAllRows}
+          >🤖 วิเคราะห์อันตราย/มาตรการทุกแถวอัตโนมัติ</button>
+        </div>
+        <p className="field-hint">ผลวิเคราะห์อัตโนมัติจับคู่จากคลังความรู้ความปลอดภัยงานก่อสร้างในเครื่อง — ตรวจสอบและแก้ไขให้ตรงกับหน้างานจริงก่อนใช้งานเสมอ</p>
         <div className="jsa-rows">
           <div className="jsa-row jsa-row-head">
             <span>ลำดับ</span><span>ขั้นตอนการทำงาน</span><span>อันตรายที่อาจเกิดขึ้น</span>
@@ -170,7 +254,10 @@ function JsaForm({ mode, item, data, onSave, onClose }) {
               <textarea rows={2} value={r.hazards} onChange={(e) => setRow(r.id, "hazards", e.target.value)} placeholder="เช่น บุคคลภายนอกเข้าพื้นที่" />
               <textarea rows={2} value={r.controls} onChange={(e) => setRow(r.id, "controls", e.target.value)} placeholder="เช่น จัดทำ Work Permit" />
               <input value={r.inspector} onChange={(e) => setRow(r.id, "inspector", e.target.value)} />
-              <button type="button" className="icon-btn" onClick={() => removeRow(r.id)} aria-label="ลบ">✕</button>
+              <div className="jsa-row-tools">
+                <button type="button" className="icon-btn" onClick={() => analyzeOneRow(r.id)} title="วิเคราะห์แถวนี้อัตโนมัติ" aria-label="วิเคราะห์อัตโนมัติ">🤖</button>
+                <button type="button" className="icon-btn" onClick={() => removeRow(r.id)} aria-label="ลบ">✕</button>
+              </div>
             </div>
           ))}
         </div>

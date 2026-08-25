@@ -132,6 +132,47 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
   const removeTask = (id) =>
     setF({ ...f, tasks: f.tasks.filter((t) => t.id !== id).map((t, i) => ({ ...t, no: i + 1 })) });
 
+  // ดึงรายการงานจากใบเสนอราคาของโปรเจกต์นี้ (ข้ามแถวหัวข้อ/หมวดงาน) แล้วกระจายช่วงวันที่ให้อัตโนมัติ
+  // ตามลำดับรายการ ครอบคลุมตลอดช่วงแผนงานที่ตั้งไว้ — ปรับแก้แต่ละแถวได้ต่อทุกจุด
+  const pullTasksFromQuote = () => {
+    if (!f.projectId) return;
+    const quotesOfProject = (data.quotes || [])
+      .filter((q) => q.projectId === f.projectId && q.kind === "quote")
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const quote = quotesOfProject[0];
+    if (!quote) { alert("ยังไม่มีใบเสนอราคาของโปรเจกต์นี้ในระบบ"); return; }
+    const lineItems = (quote.items || []).filter((it) => !it.isHeader && (it.desc || "").trim());
+    if (lineItems.length === 0) { alert("ใบเสนอราคานี้ยังไม่มีรายการที่ดึงมาใช้ได้"); return; }
+
+    const startBase = isHour ? f.hourDate : f.startDate;
+    const endBase = isHour ? f.hourDate : f.endDate;
+    let newTasks;
+    if (isHour) {
+      // โหมดรายชั่วโมง: กระจายเท่าๆ กันในช่วงเวลาเริ่ม-สิ้นสุดของวันนั้น
+      const totalHours = Math.max(1, Number(f.endHour) - Number(f.startHour));
+      const slice = totalHours / lineItems.length;
+      newTasks = lineItems.map((it, i) => ({
+        id: uid("tsk"), no: i + 1, description: it.desc,
+        start: Math.round(Number(f.startHour) + slice * i),
+        end: Math.round(Number(f.startHour) + slice * (i + 1)),
+      }));
+    } else {
+      const start = new Date(startBase + "T00:00:00");
+      const end = new Date(endBase + "T00:00:00");
+      const totalDays = Math.max(1, Math.round((end - start) / (24 * 60 * 60 * 1000)));
+      const slice = totalDays / lineItems.length;
+      newTasks = lineItems.map((it, i) => {
+        const s = new Date(start); s.setDate(s.getDate() + Math.round(slice * i));
+        const e = new Date(start); e.setDate(e.getDate() + Math.max(Math.round(slice * (i + 1)) - 1, Math.round(slice * i)));
+        return {
+          id: uid("tsk"), no: i + 1, description: it.desc,
+          start: s.toISOString().slice(0, 10), end: e.toISOString().slice(0, 10),
+        };
+      });
+    }
+    setF({ ...f, tasks: newTasks });
+  };
+
   const isHour = f.unit === "hour";
   const signer = data.signers.find((s) => s.id === f.preparerId);
   const hourOptions = Array.from({ length: 24 }, (_, h) => h);
@@ -229,6 +270,13 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
         )}
 
         <FormDivider>รายการงาน</FormDivider>
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          onClick={pullTasksFromQuote}
+          disabled={!f.projectId}
+          style={{ marginBottom: 8 }}
+        >⤵ ดึงรายการงานจากใบเสนอราคาของโปรเจกต์นี้</button>
         <div className="plan-tasks">
           <div className="plan-task-row plan-task-head">
             <span>ลำดับ</span><span>รายละเอียดงาน</span><span>เริ่ม</span><span>สิ้นสุด</span><span></span>
