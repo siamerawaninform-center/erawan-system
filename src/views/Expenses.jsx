@@ -239,6 +239,9 @@ function ExpenseForm({ mode, item, data, onSave, onClose }) {
     return p ? `${p.code} — ${p.name}` : "";
   };
   const [projectQuery, setProjectQuery] = useState(() => projectLabel(f.projectId));
+  // บังคับให้ตัดสินใจทุกครั้งว่าเป็นค่าใช้จ่ายของโปรเจกต์ไหน หรือค่าใช้จ่ายทั่วไปจริงๆ
+  // กันการ "ข้ามไปเฉยๆ" แบบที่เคยเกิดขึ้น (ค่าใช้จ่ายเก่าไม่มีรายการไหนผูกโปรเจกต์เลย)
+  const [isGeneral, setIsGeneral] = useState(() => (item ? !item.projectId : false));
   const onProjectInput = (typed) => {
     setProjectQuery(typed);
     if (typed === "") { setF({ ...f, projectId: "" }); return; }
@@ -264,7 +267,15 @@ function ExpenseForm({ mode, item, data, onSave, onClose }) {
     <Modal title={mode === "add" ? "บันทึกรายจ่าย" : "แก้ไขรายจ่าย"} onClose={onClose} wide>
       <form
         className="form"
-        onSubmit={(e) => { e.preventDefault(); if (!f.amount) return; onSave(f); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!f.amount) return;
+          if (!isGeneral && !f.projectId) {
+            alert("กรุณาเลือกโปรเจกต์ หรือติ๊ก \"ค่าใช้จ่ายทั่วไป\" ก่อนบันทึก");
+            return;
+          }
+          onSave(isGeneral ? { ...f, projectId: "" } : f);
+        }}
       >
         <div className="form-grid-3">
           <div className="form-row">
@@ -314,17 +325,30 @@ function ExpenseForm({ mode, item, data, onSave, onClose }) {
             </select>
           </div>
           <div className="form-row">
-            <label>โปรเจกต์ (ไม่บังคับ — พิมพ์เพื่อค้นหา จะได้คำนวณต้นทุนจริงต่อโปรเจกต์ได้ถูกต้อง)</label>
+            <label>โปรเจกต์ * (พิมพ์เพื่อค้นหา — จำเป็น เพื่อคำนวณต้นทุนจริงต่อโปรเจกต์ได้ถูกต้อง)</label>
             <input
               value={projectQuery}
-              onChange={(e) => onProjectInput(e.target.value)}
+              onChange={(e) => { onProjectInput(e.target.value); if (e.target.value) setIsGeneral(false); }}
               onBlur={onProjectBlur}
               list="project-suggestions"
-              placeholder="เว้นว่าง = ค่าใช้จ่ายทั่วไป"
+              placeholder="พิมพ์ชื่อ/รหัสโปรเจกต์…"
+              disabled={isGeneral}
+              required={!isGeneral}
             />
             <datalist id="project-suggestions">
               {data.projects.map((p) => <option key={p.id} value={`${p.code} — ${p.name}`} />)}
             </datalist>
+            <label className="check-item" style={{ marginTop: 6 }}>
+              <input
+                type="checkbox"
+                checked={isGeneral}
+                onChange={(e) => {
+                  setIsGeneral(e.target.checked);
+                  if (e.target.checked) { setF({ ...f, projectId: "" }); setProjectQuery(""); }
+                }}
+              />
+              เป็นค่าใช้จ่ายทั่วไป ไม่ผูกกับโปรเจกต์ไหน (เช่น ค่าเช่าสำนักงาน)
+            </label>
           </div>
         </div>
 
