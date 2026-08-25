@@ -320,6 +320,7 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
       id: uid("fin"),
       kind: "quote",
       type: "ใบเสนอราคา",
+      issuedAs: "นามบริษัท", // งานที่มาจาก BOQ ถือเป็นงานในนามบริษัทเสมอ
       period: alloc.period,
       running: alloc.running,
       code: alloc.code,
