@@ -280,7 +280,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
     const date = e.target.value;
     let next = { ...f, date };
     if (mode === "add") {
-      const alloc = allocateDocNumber(data.quotes, f.type, date, data.company);
+      const alloc = allocateDocNumber(data.quotes, f.type, date, data.company, f.issuedAs);
       next = { ...next, period: alloc.period, running: alloc.running, code: alloc.code };
     }
     // คำนวณวันครบกำหนดจากเครดิต
@@ -288,6 +288,18 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       const d = new Date(date + "T00:00:00");
       d.setDate(d.getDate() + Number(f.creditDays));
       next.dueDate = d.toISOString().slice(0, 10);
+    }
+    setF(next);
+  };
+
+  /* เปลี่ยน "ออกในนาม" → คิดเลขวิ่งใหม่จากชุดนับที่ตรงกัน
+     (นามบริษัท กับ นามบุคคล ใช้คนละชุดเลขวิ่ง กันเลขที่ใบกำกับภาษีบริษัทเกิดช่องว่าง) */
+  const changeIssuedAs = (e) => {
+    const issuedAs = e.target.value;
+    let next = { ...f, issuedAs };
+    if (mode === "add") {
+      const alloc = allocateDocNumber(data.quotes, f.type, f.date, data.company, issuedAs);
+      next = { ...next, period: alloc.period, running: alloc.running, code: alloc.code };
     }
     setF(next);
   };
@@ -409,9 +421,12 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
         <div className="form-grid-3">
           <div className="form-row">
             <label>ออกในนาม * (เพื่อดูรายได้รวมจริงของธุรกิจ แยกจากที่ต้องยื่นภาษีในนามบริษัท)</label>
-            <select value={f.issuedAs} onChange={set("issuedAs")}>
+            <select value={f.issuedAs} onChange={changeIssuedAs}>
               {ISSUED_AS_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
+            <p className="field-hint">
+              เลขที่เอกสารนามบริษัท กับ นามบุคคล นับแยกคนละชุดกัน — เลขที่ใบกำกับภาษีของบริษัทจะไม่มีช่องว่างจากการสลับนาม
+            </p>
           </div>
         </div>
 
