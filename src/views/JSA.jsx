@@ -110,6 +110,7 @@ function JsaForm({ mode, item, data, onSave, onClose }) {
       projectCode: proj?.code || "",
       code: mode === "add" ? nextJsaCode(data.jsas, proj?.code || "") : f.code,
       location: f.location || proj?.address || "",
+      jobTitle: f.jobTitle || proj?.name || "",
     });
   };
 
