@@ -7,7 +7,7 @@ import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear, exportToCSV } from "../lib/format.js";
 import { allocateDocNumber, buildDocCode } from "../lib/docNumber.js";
 import {
-  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES,
+  FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES, ISSUED_AS_OPTIONS,
 } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
@@ -238,7 +238,8 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
   const defaultSigner = data.signers.find((s) => s.isDefault) || data.signers[0];
 
   const [f, setF] = useState(() => {
-    if (item) return item;
+    // รายการเก่าที่สร้างไว้ก่อนมีช่องนี้ ให้ถือว่าเป็น "นามบริษัท" เป็นค่าเริ่มต้น
+    if (item) return { issuedAs: ISSUED_AS_OPTIONS[0], ...item };
     const type = isSet ? "ใบกำกับภาษี" : "ใบเสนอราคา";
     const alloc = allocateDocNumber(data.quotes, type, todayISO(), data.company);
     return {
@@ -259,6 +260,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       refPO: "",
       vat: true,
       discount: 0,
+      issuedAs: ISSUED_AS_OPTIONS[0], // ค่าเริ่มต้น: นามบริษัท
       paymentMethod: "",
       chequeNo: "",
       signerIssuer: defaultSigner?.name || "",
@@ -400,6 +402,15 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
             <label>สถานะเอกสาร</label>
             <select value={f.status} onChange={set("status")}>
               {FIN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="form-grid-3">
+          <div className="form-row">
+            <label>ออกในนาม * (เพื่อดูรายได้รวมจริงของธุรกิจ แยกจากที่ต้องยื่นภาษีในนามบริษัท)</label>
+            <select value={f.issuedAs} onChange={set("issuedAs")}>
+              {ISSUED_AS_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
           </div>
         </div>
