@@ -32,12 +32,18 @@ export function cePeriod(dateStr) {
 /**
  * หาเลขวิ่งถัดไปของเอกสารชุดขายในเดือนนั้น
  * นับจากเอกสารทุกใบที่มี period เดียวกัน (ไม่แยกตามประเภท เพราะใช้เลขร่วมกัน)
+ *
+ * แยกเลขวิ่งตาม "ออกในนาม" (นามบริษัท / นามบุคคล) เป็นคนละชุดกัน
+ * เพราะเลขที่ใบกำกับภาษีของบริษัทต้องเรียงต่อเนื่องไม่มีช่องว่างสำหรับยื่น VAT จริง
+ * ถ้าเอาเอกสารที่ออกนามบุคคล (ไม่ใช่ใบกำกับภาษีของบริษัท) มาแทรกเลขวิ่งเดียวกัน
+ * จะทำให้เลขที่ยื่นสรรพากรเกิดช่องว่าง อธิบายยาก
  */
-export function nextSalesRunning(existingFin, dateStr, startFrom = 1) {
+export function nextSalesRunning(existingFin, dateStr, startFrom = 1, issuedAs = "นามบริษัท") {
   const period = bePeriod(dateStr);
   let max = 0;
   (existingFin || []).forEach((f) => {
     if (!f.running || f.period !== period) return;
+    if ((f.issuedAs || "นามบริษัท") !== issuedAs) return;
     const n = Number(f.running);
     if (!isNaN(n) && n > max) max = n;
   });
@@ -46,12 +52,13 @@ export function nextSalesRunning(existingFin, dateStr, startFrom = 1) {
   return Math.max(max + 1, Number(startFrom) || 1);
 }
 
-/** หาเลขวิ่งถัดไปของใบเสนอราคาในเดือนนั้น */
-export function nextQuoteRunning(existingFin, dateStr, startFrom = 1) {
+/** หาเลขวิ่งถัดไปของใบเสนอราคาในเดือนนั้น (แยกเลขวิ่งตาม "ออกในนาม" เช่นกัน) */
+export function nextQuoteRunning(existingFin, dateStr, startFrom = 1, issuedAs = "นามบริษัท") {
   const period = cePeriod(dateStr);
   let max = 0;
   (existingFin || []).forEach((f) => {
     if (f.type !== "ใบเสนอราคา" || f.period !== period || !f.running) return;
+    if ((f.issuedAs || "นามบริษัท") !== issuedAs) return;
     const n = Number(f.running);
     if (!isNaN(n) && n > max) max = n;
   });
@@ -71,14 +78,14 @@ export function buildDocCode(type, period, running) {
  * สร้าง period + running + code สำหรับเอกสารใหม่
  * คืนค่า { period, running, code }
  */
-export function allocateDocNumber(existingFin, type, dateStr, company) {
+export function allocateDocNumber(existingFin, type, dateStr, company, issuedAs = "นามบริษัท") {
   if (type === "ใบเสนอราคา") {
     const period = cePeriod(dateStr);
-    const running = nextQuoteRunning(existingFin, dateStr, company?.startingRunning?.quote);
+    const running = nextQuoteRunning(existingFin, dateStr, company?.startingRunning?.quote, issuedAs);
     return { period, running, code: buildDocCode(type, period, running) };
   }
   const period = bePeriod(dateStr);
-  const running = nextSalesRunning(existingFin, dateStr, company?.startingRunning?.salesSet);
+  const running = nextSalesRunning(existingFin, dateStr, company?.startingRunning?.salesSet, issuedAs);
   return { period, running, code: buildDocCode(type, period, running) };
 }
 
