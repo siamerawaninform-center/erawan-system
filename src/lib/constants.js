@@ -99,6 +99,10 @@ export const BILLING_STATUSES = [
 export const PAYMENT_METHODS = ["เงินสด", "เงินโอน", "เช็คธนาคาร"];
 export const COPY_TYPES = ["ต้นฉบับ (ORIGINAL)", "สำเนา (COPY)"];
 
+// ออกเอกสารในนามใคร — ไว้แยกรายได้ที่ผ่านบริษัทจริง กับที่ออกในนามบุคคล
+// เพื่อให้เห็นภาพรวมรายได้ทั้งหมดของธุรกิจ (ใช้วิเคราะห์เอง ไม่ใช่แบบฟอร์มยื่นภาษี)
+export const ISSUED_AS_OPTIONS = ["นามบริษัท", "นามบุคคล"];
+
 /* ---------- รายจ่าย / ภาษีซื้อ ---------- */
 export const EXPENSE_CATEGORIES = [
   "วัสดุ",
