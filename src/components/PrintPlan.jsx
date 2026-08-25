@@ -19,8 +19,7 @@ const PRINT_CSS = `
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
   thead th{ background:#5c0505; color:#fff; font-size:10px; padding:4px 1px; font-weight:700; }
-  .gantt-month{ background:#3a0303; font-size:10px; letter-spacing:.03em; border-left:1px solid rgba(255,255,255,.25); }
-  .gantt-corner{ background:#3a0303; }
+  .gantt-month{ font-size:10px; letter-spacing:.03em; border-left:1px solid rgba(255,255,255,.25); }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
   .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; }
@@ -127,7 +126,7 @@ export default function PrintPlan({ plan, data, onClose }) {
   </div>
   <table>
     <thead>
-      ${monthHeadCells ? `<tr><th class="gantt-no gantt-corner" rowspan="2"></th><th class="gantt-desc gantt-corner" rowspan="2"></th>${monthHeadCells}</tr>` : ""}
+      ${monthHeadCells ? `<tr><th class="gantt-no" rowspan="2">NO.</th><th class="gantt-desc" rowspan="2">DESCRIPTION</th>${monthHeadCells}</tr>` : ""}
       <tr>${monthHeadCells ? "" : `<th class="gantt-no">NO.</th><th class="gantt-desc">DESCRIPTION</th>`}${headCells}</tr>
     </thead>
     <tbody>${bodyRows}</tbody>
