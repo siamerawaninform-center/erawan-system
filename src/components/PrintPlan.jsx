@@ -19,6 +19,8 @@ const PRINT_CSS = `
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
   thead th{ background:#5c0505; color:#fff; font-size:10px; padding:4px 1px; font-weight:700; }
+  .gantt-month{ background:#3a0303; font-size:10px; letter-spacing:.03em; border-left:1px solid rgba(255,255,255,.25); }
+  .gantt-corner{ background:#3a0303; }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
   .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; }
@@ -68,6 +70,28 @@ export default function PrintPlan({ plan, data, onClose }) {
 
     const headCells = columns.map((c) => `<th class="gantt-col">${esc(isHour ? c.label : c.day)}</th>`).join("");
 
+    // แถวเดือน (รวมช่องวันที่อยู่เดือนเดียวกันไว้ด้วยกันด้วย colspan) — เฉพาะโหมดรายวัน
+    let monthHeadCells = "";
+    if (!isHour && columns.length > 0) {
+      const cells = [];
+      let i = 0;
+      while (i < columns.length) {
+        let span = 1;
+        while (
+          i + span < columns.length &&
+          columns[i + span].date.getMonth() === columns[i].date.getMonth() &&
+          columns[i + span].date.getFullYear() === columns[i].date.getFullYear()
+        ) {
+          span++;
+        }
+        const col = columns[i];
+        const yearBE = col.date.getFullYear() + 543;
+        cells.push(`<th colspan="${span}" class="gantt-month">${esc(col.monthLabel)} ${yearBE}</th>`);
+        i += span;
+      }
+      monthHeadCells = cells.join("");
+    }
+
     const bodyRows = (plan.tasks || []).map((t, idx) => {
       const { startIdx, endIdx } = taskRange(t);
       const cells = columns.map((c, i) =>
@@ -102,7 +126,10 @@ export default function PrintPlan({ plan, data, onClose }) {
     </div>
   </div>
   <table>
-    <thead><tr><th class="gantt-no">NO.</th><th class="gantt-desc">DESCRIPTION</th>${headCells}</tr></thead>
+    <thead>
+      ${monthHeadCells ? `<tr><th class="gantt-no gantt-corner" rowspan="2"></th><th class="gantt-desc gantt-corner" rowspan="2"></th>${monthHeadCells}</tr>` : ""}
+      <tr>${monthHeadCells ? "" : `<th class="gantt-no">NO.</th><th class="gantt-desc">DESCRIPTION</th>`}${headCells}</tr>
+    </thead>
     <tbody>${bodyRows}</tbody>
   </table>
   <div class="plan-sign">
