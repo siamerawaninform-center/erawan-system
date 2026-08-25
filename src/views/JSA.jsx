@@ -94,7 +94,7 @@ function JsaForm({ mode, item, data, onSave, onClose }) {
       jobTitle: "",
       date: todayISO(),
       location: "",
-      supervisorName: "",
+      supervisorName: "นาย สมัคร พืมขุนทด",
       rows: [DEFAULT_ROW()],
       approverId: data.signers.find((s) => s.isDefault)?.id || "",
       showSignature: false,

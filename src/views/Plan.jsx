@@ -96,7 +96,7 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
       projectCode: proj?.code || "",
       code: nextPlanCode(data.plans, proj?.code || ""),
       title: proj?.name || "แผนงานโครงการ",
-      managerName: "",
+      managerName: "นาย สมัคร พืมขุนทด",
       date: today,
       unit: "day",
       startDate: today,
