@@ -106,6 +106,8 @@ export function useAppData() {
           .upsert({ id: "main", data: next, updated_at: new Date().toISOString() });
         if (error) throw error;
         setSyncState("live");
+        // เก็บสำเนาย้อนหลังไว้กู้คืนได้ — ไม่รอผลลัพธ์ ไม่ให้กระทบความเร็วตอนบันทึก
+        supabase.from("app_state_history").insert({ data: next }).then(() => {});
       } catch (e) {
         setSyncState("error");
         showToast("บันทึกขึ้นฐานข้อมูลกลางไม่สำเร็จ — บันทึกไว้ในเครื่องนี้แล้ว");
