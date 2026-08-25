@@ -129,7 +129,7 @@
 .chip-row-scroll{ overflow-x:auto; flex-wrap:nowrap; padding-bottom:2px; }
 .chip-row-scroll .chip{ flex-shrink:0; }
 .chip{ padding:12px 22px; border:2px solid var(--line); background:var(--paper); border-radius:30px; font-size:26px; font-weight:600; cursor:pointer; color:var(--steel); }
-.unit-chip{ display:flex; align-items:center; gap:8px; padding:10px 14px; border:2px solid var(--line); background:var(--paper); border-radius:6px; font-weight:600; color:var(--ink); }
+.unit-chip{ display:flex; align-items:center; gap:8px; padding:10px 14px; border:2px solid var(--line); background:var(--paper); border-radius:6px; font-size:26px; font-weight:600; color:var(--ink); }
 .chip-active{ background:var(--ink); color:#fff; border-color:var(--ink); }
 .muted{ color:var(--steel-light); font-size:26px; }
 
