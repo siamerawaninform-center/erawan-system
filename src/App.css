@@ -241,14 +241,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 .project-groups{ display:flex; flex-direction:column; gap:14px; }
 .project-group-head{
-  display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  display:flex; align-items:center; gap:10px; width:100%; text-align:left; flex-wrap:wrap;
   background:var(--paper); border:1.5px solid var(--line); padding:10px 14px; cursor:pointer;
   border-radius:var(--radius); margin-bottom:10px; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif;
 }
 .project-group-head:hover{ border-color:var(--ink); }
 .pg-arrow{ color:var(--steel-light); font-size:26px; transition:transform .15s; }
 .pg-arrow-closed{ transform:rotate(-90deg); }
-.pg-count{ color:var(--steel); font-size:26px; margin-left:auto; }
+.pg-count{ color:var(--steel); font-size:26px; }
+.pg-count:first-of-type{ margin-left:auto; }
 .pg-month-label{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:26px; color:var(--ink); }
 
 .vat-toggle{ display:flex; align-items:center; gap:6px; font-weight:600; color:var(--ink); font-size:26px; }
