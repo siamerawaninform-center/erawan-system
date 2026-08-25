@@ -228,6 +228,10 @@ input, select, textarea{
   border-radius:var(--radius); background:#fff; color:var(--ink); width:100%;
 }
 input:disabled{ background:var(--concrete); color:var(--steel-light); }
+/* ซ่อนไอคอนลูกศรที่ browser (โดยเฉพาะ Chrome/Edge) ใส่มาให้อัตโนมัติเวลาช่อง input ผูกกับ datalist
+   (ตัวช่วยพิมพ์หน่วยนับ) — ยังคงพิมพ์แล้วขึ้นตัวเลือกให้เหมือนเดิม แค่ไม่โชว์ไอคอนลูกศรเฉยๆ */
+input[list]::-webkit-calendar-picker-indicator{ display:none !important; }
+input[list]::-webkit-list-button{ display:none !important; opacity:0; }
 .mono-input{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
 input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible{ outline:2px solid var(--maroon); outline-offset:1px; }
 .form-actions{ display:flex; justify-content:flex-end; gap:10px; padding-top:6px; border-top:1.5px solid var(--line); margin-top:4px; position:sticky; bottom:-20px; background:var(--paper); padding-bottom:4px; }
