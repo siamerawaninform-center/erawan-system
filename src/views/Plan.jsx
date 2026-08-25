@@ -95,7 +95,7 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
       projectId: proj?.id || "",
       projectCode: proj?.code || "",
       code: nextPlanCode(data.plans, proj?.code || ""),
-      title: "แผนงานโครงการ",
+      title: proj?.name || "แผนงานโครงการ",
       managerName: "",
       date: today,
       unit: "day",
@@ -116,12 +116,14 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
 
   const changeProject = (projectId) => {
     const proj = data.projects.find((p) => p.id === projectId);
+    const isGenericTitle = !f.title || f.title === "แผนงานโครงการ";
     setF({
       ...f,
       projectId,
       projectCode: proj?.code || "",
       code: mode === "add" ? nextPlanCode(data.plans, proj?.code || "") : f.code,
       managerName: f.managerName || proj?.managerName || "",
+      title: isGenericTitle ? (proj?.name || f.title) : f.title,
     });
   };
 
