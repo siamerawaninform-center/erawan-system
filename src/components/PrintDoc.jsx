@@ -29,9 +29,9 @@ const PRINT_CSS = `
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:26px; font-size:var(--fs-base); font-weight:600; display:flex; flex-direction:column; }
-  /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
-  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:22px; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; display:flex; flex-direction:column; }
+  /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่าเล็กน้อย เต็มหน้ากระดาษกว่าใบเสนอราคา */
+  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:21px; }
   .sheet-top-block{ flex-shrink:0; }
   /* ดันก้อนท้ายเอกสาร (เงื่อนไขชำระ/สรุปยอด/ลายเซ็น) ลงไปชิดขอบล่างหน้ากระดาษเสมอ
      เอกสารรายการน้อยจะได้เต็มหน้าพอดี ไม่ใช่จบห้วนๆ กลางหน้าแล้วเหลือที่ว่างโล่งด้านล่าง */
@@ -434,8 +434,8 @@ ${sheetHtml}
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      // ใบเสนอราคาพื้นฐาน 26px ห้ามต่ำกว่านั้น / ชุดเอกสารวางบิลฯ พื้นฐาน 22px ห้ามต่ำกว่านั้น
-      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 22 : 26;
+      // ใบเสนอราคาพื้นฐาน 20px ห้ามต่ำกว่า 16px / ชุดเอกสารวางบิลฯ พื้นฐาน 21px ห้ามต่ำกว่า 17px
+      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
 
       var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
@@ -525,7 +525,7 @@ ${sheetsHtml}
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 22 : 26;
+      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base');
 
       var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
