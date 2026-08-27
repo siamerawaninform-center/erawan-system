@@ -238,8 +238,8 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
   const defaultSigner = data.signers.find((s) => s.isDefault) || data.signers[0];
 
   const [f, setF] = useState(() => {
-    // รายการเก่าที่สร้างไว้ก่อนมีช่องนี้ ให้ถือว่าเป็น "นามบริษัท" เป็นค่าเริ่มต้น
-    if (item) return { issuedAs: ISSUED_AS_OPTIONS[0], ...item };
+    // รายการเก่าที่สร้างไว้ก่อนมีช่องนี้ ให้ถือว่าเป็น "นามบริษัท" และ "ไม่แยกวัสดุ/แรง" เป็นค่าเริ่มต้น
+    if (item) return { issuedAs: ISSUED_AS_OPTIONS[0], splitMaterialLabor: false, ...item };
     const type = isSet ? "ใบกำกับภาษี" : "ใบเสนอราคา";
     const alloc = allocateDocNumber(data.quotes, type, todayISO(), data.company);
     return {
@@ -261,6 +261,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       vat: true,
       discount: 0,
       issuedAs: ISSUED_AS_OPTIONS[0], // ค่าเริ่มต้น: นามบริษัท
+      splitMaterialLabor: false, // ค่าเริ่มต้น: ราคา/หน่วยรวมเป็นก้อนเดียวเหมือนเดิม
       paymentMethod: "",
       chequeNo: "",
       signerIssuer: defaultSigner?.name || "",
@@ -342,15 +343,43 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
   };
 
   const setItem = (id, key, value) =>
-    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, [key]: value } : it)) });
+    setF({
+      ...f,
+      items: f.items.map((it) => {
+        if (it.id !== id) return it;
+        const next = { ...it, [key]: value };
+        // แยกวัสดุ/แรง: ราคา/หน่วยรวม (price) คำนวณจากผลบวกเสมอ ใช้ตัวเดียวกันกับตอนคำนวณยอดรวมเอกสาร
+        if (key === "materialPrice" || key === "laborPrice") {
+          next.price = (Number(next.materialPrice) || 0) + (Number(next.laborPrice) || 0);
+        }
+        return next;
+      }),
+    });
   const addItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, discount: 0, isHeader: false }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false }] });
   const addHeaderItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, discount: 0, isHeader: true }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true }] });
   const toggleItemHeader = (id) =>
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, qty: it.isHeader ? 1 : "", unit: it.isHeader ? "งาน" : "" } : it)) });
   const removeItem = (id) =>
     setF({ ...f, items: f.items.filter((it) => it.id !== id) });
+
+  /* สลับโหมดแยกค่าวัสดุ/ค่าแรง — ตอนเปิด ให้เอาราคา/หน่วยเดิมมาใส่ช่องวัสดุไว้ก่อน (แรงเริ่มที่ 0)
+     จะได้ไม่ต้องพิมพ์ราคาใหม่ทั้งหมด ค่อยแยกทีหลังได้ */
+  const toggleSplitMaterialLabor = (e) => {
+    const checked = e.target.checked;
+    setF({
+      ...f,
+      splitMaterialLabor: checked,
+      items: checked
+        ? f.items.map((it) => ({
+            ...it,
+            materialPrice: it.materialPrice || it.price || 0,
+            laborPrice: it.laborPrice || 0,
+          }))
+        : f.items,
+    });
+  };
 
   /* ปุ่มช่วยเติมข้อความงวดเบิกจากโปรเจกต์ */
   const project = data.projects.find((p) => p.id === f.projectId);
@@ -495,10 +524,19 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
         )}
 
         <FormDivider>รายการ</FormDivider>
+        <label className="check-item" style={{ marginBottom: 10 }}>
+          <input type="checkbox" checked={!!f.splitMaterialLabor} onChange={toggleSplitMaterialLabor} />
+          แยกค่าวัสดุ/ค่าแรงในเอกสาร (ไม่ติ๊ก = ราคา/หน่วยรวมเป็นก้อนเดียวแบบเดิม)
+        </label>
         <div className="items-table">
-          <div className="items-row items-row-head">
+          <div className={`items-row-head ${f.splitMaterialLabor ? "items-row-split" : "items-row"}`}>
             <span>รายการ</span><span>จำนวน</span><span>หน่วย</span>
-            <span>ราคา/หน่วย</span><span>ส่วนลด</span><span>จำนวนเงิน</span><span></span>
+            {f.splitMaterialLabor ? (
+              <><span>ค่าวัสดุ/หน่วย</span><span>ค่าแรง/หน่วย</span></>
+            ) : (
+              <span>ราคา/หน่วย</span>
+            )}
+            <span>ส่วนลด</span><span>จำนวนเงิน</span><span></span>
           </div>
           {f.items.map((it) => (
             it.isHeader ? (
@@ -513,7 +551,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
                 <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
               </div>
             ) : (
-              <div className="items-row" key={it.id}>
+              <div className={f.splitMaterialLabor ? "items-row-split" : "items-row"} key={it.id}>
                 <textarea
                   rows={2}
                   value={it.desc}
@@ -522,7 +560,14 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
                 />
                 <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
                 <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
-                <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
+                {f.splitMaterialLabor ? (
+                  <>
+                    <input type="number" min="0" step="0.01" value={it.materialPrice ?? 0} onChange={(e) => setItem(it.id, "materialPrice", e.target.value)} />
+                    <input type="number" min="0" step="0.01" value={it.laborPrice ?? 0} onChange={(e) => setItem(it.id, "laborPrice", e.target.value)} />
+                  </>
+                ) : (
+                  <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
+                )}
                 <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
                 <span className="mono-amt">฿{baht(lineTotal(it))}</span>
                 <div className="row-actions">
