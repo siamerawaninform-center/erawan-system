@@ -63,13 +63,13 @@ const PRINT_CSS = `
   .dp-sig-name{ white-space:nowrap; }
 
   .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-base); margin-bottom:4px; }
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
-  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:0.56em 0.44em; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
+  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:0.5em 0.44em; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
-  .doc-blank-row td{ height:22px; border-top:1.5px solid #ccc; }
+  .doc-blank-row td{ height:1.2em; border-top:1.5px solid #ccc; }
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
@@ -131,7 +131,7 @@ const PRINT_CSS = `
     body{ background:#fff; }
     .no-print{ display:none !important; }
     .sheet-wrap{ padding:0; }
-    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:0; height:297mm; page-break-after:always; }
+    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always; }
     .sheet:last-child{ page-break-after:auto; }
     .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page{ size:A4; margin:0; }
@@ -417,21 +417,27 @@ ${sheetHtml}
   });
   window.onafterprint = function () { window.close(); };
 
-  // ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ให้กลับมาพอดี 1 หน้า A4
-  // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 40%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
+  // บีบเนื้อหาให้พอดี 1 หน้า A4 เสมอ ทำ 2 ขั้น:
+  // 1) ตัดแถวว่างท้ายตาราง (มีไว้กันดูโหว่เฉยๆ ไม่ใช่ข้อมูลจริง) ออกก่อน ถ้ายังล้นอยู่
+  // 2) ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
-    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40; // ล้นได้ไม่เกิน 40% ถึงจะพยายามบีบ
-    var MIN_FONT_PX = 15; // ไม่ลดต่ำกว่านี้ กันอ่านไม่ออก
+    var MIN_FONT_PX = 13; // ไม่ลดต่ำกว่านี้ กันอ่านไม่ออก
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
+
+      var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
+      while (sheet.scrollHeight > PAGE_HEIGHT_PX && blanks.length) {
+        blanks.pop().remove();
+      }
+
       var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return; // พอดีอยู่แล้ว หรือล้นเยอะเกินจนไม่ควรบีบ
+      if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว ไม่ต้องบีบฟอนต์
 
       // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
       // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
       var size = parseFloat(getComputedStyle(sheet).fontSize);
-      for (var i = 0; i < 30; i++) {
+      for (var i = 0; i < 40; i++) {
         var h = sheet.scrollHeight;
         if (h <= PAGE_HEIGHT_PX) break;
         size -= 0.4;
@@ -501,18 +507,23 @@ ${sheetsHtml}
 <script>
   window.onafterprint = function () { window.close(); };
 
-  // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 ต่อแผ่น เฉพาะกรณีล้นเล็กน้อย เหมือนหน้าเดี่ยว
+  // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ตัดแถวว่างก่อน แล้วค่อยย่อฟอนต์) เหมือนหน้าเดี่ยว
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
-    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
-    var MIN_FONT_PX = 15;
+    var MIN_FONT_PX = 13;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
+
+      var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
+      while (sheet.scrollHeight > PAGE_HEIGHT_PX && blanks.length) {
+        blanks.pop().remove();
+      }
+
       var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
+      if (natural <= PAGE_HEIGHT_PX) return;
 
       var size = parseFloat(getComputedStyle(sheet).fontSize);
-      for (var i = 0; i < 30; i++) {
+      for (var i = 0; i < 40; i++) {
         var h = sheet.scrollHeight;
         if (h <= PAGE_HEIGHT_PX) break;
         size -= 0.4;
