@@ -451,8 +451,10 @@ ${sheetHtml}
       }
     });
   }
-  fitToPage();
-  window.addEventListener("load", fitToPage); // คำนวณซ้ำเมื่อฟอนต์โหลดเสร็จสมบูรณ์
+  // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — ไม่เรียกทันทีตอนนี้
+  // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจตัดแถวว่างทิ้งทั้งที่ไม่จำเป็น
+  // (การตัดแถวว่างย้อนกลับไม่ได้ ต่างจากขนาดฟอนต์ที่รีเซ็ตใหม่ได้ทุกครั้ง)
+  window.addEventListener("load", fitToPage);
 </script>
 </body></html>`;
 
@@ -537,7 +539,7 @@ ${sheetsHtml}
       }
     });
   }
-  fitToPage();
+  // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — เหตุผลเดียวกับหน้าเดี่ยว
   window.addEventListener("load", fitToPage);
 </script>
 </body></html>`;
