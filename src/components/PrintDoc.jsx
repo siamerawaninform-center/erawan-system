@@ -29,9 +29,13 @@ const PRINT_CSS = `
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:26px; font-size:var(--fs-base); font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:26px; font-size:var(--fs-base); font-weight:600; display:flex; flex-direction:column; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
-  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:28px; }
+  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:22px; }
+  .sheet-top-block{ flex-shrink:0; }
+  /* ดันก้อนท้ายเอกสาร (เงื่อนไขชำระ/สรุปยอด/ลายเซ็น) ลงไปชิดขอบล่างหน้ากระดาษเสมอ
+     เอกสารรายการน้อยจะได้เต็มหน้าพอดี ไม่ใช่จบห้วนๆ กลางหน้าแล้วเหลือที่ว่างโล่งด้านล่าง */
+  .doc-bottom-block{ margin-top:auto; padding-top:12px; break-inside:avoid; page-break-inside:avoid; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -72,7 +76,7 @@ const PRINT_CSS = `
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
   .doc-table tbody tr, .doc-table thead tr{ break-inside:avoid; page-break-inside:avoid; } /* ห้ามตัดกลางแถว — แถวเดียวกันต้องอยู่หน้าเดียวกันทั้งแถว */
   .doc-blank-row td{ height:1.2em; border-top:1.5px solid #ccc; }
-  .doc-bottom-block{ break-inside:avoid; page-break-inside:avoid; } /* เงื่อนไขชำระ+สรุปยอด+ลายเซ็น ไปด้วยกันเป็นก้อนเดียว ไม่ใช่โผล่ไปแค่บรรทัดสองบรรทัดหน้าถัดไป */
+  /* .doc-bottom-block กำหนดไว้ด้านบนแล้ว (margin-top:auto ดันชิดขอบล่าง + break-inside:avoid กันตัดกลางก้อน) */
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
@@ -341,6 +345,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
   return `
 <div class="sheet${isQuote ? "" : " sheet-billing"}">
   <div class="doc-ribbon">${esc(ribbonLabel)}</div>
+  <div class="sheet-top-block">
   <div class="doc-top">
     <div class="doc-company">
       <img src="${logoUrl}" width="58" height="58" style="object-fit:contain;display:block" alt="โลโก้" />
@@ -377,6 +382,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
     </div>
   </div>
   ${tableHtml}
+  </div>
   <div class="doc-bottom-block">
     ${paymentTermsHtml}
     ${footerHtml}
@@ -427,8 +433,9 @@ ${sheetHtml}
   // 2) ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
-    var MIN_FONT_PX = 26; // ไม่ลดต่ำกว่านี้ — ขนาดตัวอักษรมาตรฐานขั้นต่ำของระบบ
     document.querySelectorAll('.sheet').forEach(function (sheet) {
+      // ใบเสนอราคาพื้นฐาน 26px ห้ามต่ำกว่านั้น / ชุดเอกสารวางบิลฯ พื้นฐาน 22px ห้ามต่ำกว่านั้น
+      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 22 : 26;
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
 
       var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
@@ -517,8 +524,8 @@ ${sheetsHtml}
   // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ตัดแถวว่างก่อน แล้วค่อยย่อฟอนต์) เหมือนหน้าเดี่ยว
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
-    var MIN_FONT_PX = 26;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
+      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 22 : 26;
       sheet.style.removeProperty('--fs-base');
 
       var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
