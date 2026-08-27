@@ -186,31 +186,42 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         </tr></tfoot>
       </table>`;
   } else {
+    const split = !!record.splitMaterialLabor;
+    const colCount = split ? 7 : 6;
     let itemRunningNo = 0;
     const itemRows = (record.items || []).map((it) => {
       if (it.isHeader) {
-        return `<tr class="doc-header-row"><td colspan="6" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
+        return `<tr class="doc-header-row"><td colspan="${colCount}" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
       }
       itemRunningNo += 1;
+      const priceCells = split
+        ? `
+        <td class="doc-num">${esc(baht(it.materialPrice || 0))}</td>
+        <td class="doc-num">${esc(baht(it.laborPrice || 0))}</td>`
+        : `
+        <td class="doc-num">${esc(baht(it.price))}</td>`;
       return `
       <tr>
         <td class="doc-center">${itemRunningNo}</td>
         <td class="doc-desc">${esc(it.desc)}</td>
-        <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>
-        <td class="doc-num">${esc(baht(it.price))}</td>
+        <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>${priceCells}
         <td class="doc-num">${esc(baht(it.discount))}</td>
         <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
       </tr>`;
     }).join("");
     const blankMin = isQuote ? 4 : 7;
     const blankCount = Math.max(0, blankMin - (record.items?.length || 0));
+    const blankCells = Array.from({ length: colCount }).map(() => "<td></td>").join("");
     const blankRows = Array.from({ length: blankCount })
-      .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
+      .map(() => `<tr class="doc-blank-row">${blankCells}</tr>`).join("");
+    const priceHeader = split
+      ? `<th style="width:12%">ค่าวัสดุ/หน่วย</th><th style="width:12%">ค่าแรง/หน่วย</th>`
+      : `<th style="width:14%">ราคา / หน่วย</th>`;
     tableHtml = `
       <table class="doc-table doc-table-fill">
         <thead><tr>
-          <th style="width:8%">ลำดับที่</th><th style="width:42%">รายการ</th><th style="width:10%">จำนวน</th>
-          <th style="width:14%">ราคา / หน่วย</th><th style="width:12%">ส่วนลด</th><th style="width:14%">จำนวนเงิน</th>
+          <th style="width:8%">ลำดับที่</th><th style="width:${split ? 30 : 42}%">รายการ</th><th style="width:10%">จำนวน</th>
+          ${priceHeader}<th style="width:12%">ส่วนลด</th><th style="width:14%">จำนวนเงิน</th>
         </tr></thead>
         <tbody>${itemRows}${blankRows}</tbody>
       </table>`;
