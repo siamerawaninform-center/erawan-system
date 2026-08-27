@@ -17,6 +17,7 @@ import JSA from "./views/JSA.jsx";
 import Expenses from "./views/Expenses.jsx";
 import MonthlyArchive from "./views/MonthlyArchive.jsx";
 import Debts from "./views/Debts.jsx";
+import FixedCosts from "./views/FixedCosts.jsx";
 import Analysis from "./views/Analysis.jsx";
 import Team from "./views/Team.jsx";
 import Company from "./views/Company.jsx";
@@ -55,7 +56,8 @@ const NAV_ACCOUNTING = [
   { key: "expenses", label: "รายจ่าย/ภาษีซื้อ", eyebrow: "14" },
   { key: "monthly", label: "คลังเอกสารรายเดือน", eyebrow: "15" },
   { key: "debts", label: "ทะเบียนหนี้สิน", eyebrow: "16" },
-  { key: "analysis", label: "วิเคราะห์การเงิน", eyebrow: "17" },
+  { key: "fixedcosts", label: "ค่าใช้จ่ายคงที่รายเดือน", eyebrow: "17" },
+  { key: "analysis", label: "วิเคราะห์การเงิน", eyebrow: "18" },
 ];
 
 export default function App() {
@@ -182,6 +184,7 @@ export default function App() {
         {view === "expenses" && <Expenses {...viewProps} />}
         {view === "monthly" && <MonthlyArchive data={data} />}
         {view === "debts" && <Debts {...viewProps} />}
+        {view === "fixedcosts" && <FixedCosts {...viewProps} />}
         {view === "analysis" && <Analysis data={data} />}
         {view === "team" && <Team {...viewProps} />}
         {view === "company" && <Company company={data.company} onSave={saveCompany} />}

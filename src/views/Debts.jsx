@@ -44,12 +44,6 @@ export default function Debts({ data, upsert, remove }) {
 
   const filteredList = categoryFilter === "ทั้งหมด" ? list : list.filter((d) => d.type === categoryFilter);
 
-  // ภาระ fix cost รายเดือน — เฉพาะรายการที่ยังมีภาระและมีค่างวด/เดือน เรียงตามวันที่ครบกำหนดของแต่ละเดือน
-  const fixedCostList = activeDebts
-    .filter((d) => Number(d.monthlyPayment) > 0)
-    .slice()
-    .sort((a, b) => (Number(a.paymentDueDay) || 99) - (Number(b.paymentDueDay) || 99));
-
   return (
     <div className="view">
       <TitleBlock
@@ -62,7 +56,7 @@ export default function Debts({ data, upsert, remove }) {
       <div className="kpi-grid kpi-grid-3">
         <Kpi label="ยอดเงินต้นคงเหลือรวม" value={`฿${baht(totalBalance)}`} />
         <Kpi label="ดอกเบี้ยสะสมค้างรวม" value={`฿${baht(totalAccruedInterest)}`} />
-        <Kpi label="ภาระ Fix Cost รวมต่อเดือน" value={`฿${baht(totalMonthly)}`} />
+        <Kpi label="ค่างวดผ่อนชำระหนี้รวมต่อเดือน" value={`฿${baht(totalMonthly)}`} />
       </div>
 
       {byCategory.length > 0 && (
@@ -89,33 +83,6 @@ export default function Debts({ data, upsert, remove }) {
         </>
       )}
 
-      {fixedCostList.length > 0 && (
-        <>
-          <FormDivider>ภาระ Fix Cost รายเดือน (ต้องจ่ายทุกเดือน)</FormDivider>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr><th>วันที่ครบกำหนด (ทุกเดือน)</th><th>เจ้าหนี้</th><th>ประเภท</th><th>ค่างวด/เดือน</th></tr>
-              </thead>
-              <tbody>
-                {fixedCostList.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.paymentDueDay ? `วันที่ ${d.paymentDueDay}` : "—"}</td>
-                    <td>{d.creditorName || "—"}</td>
-                    <td>{d.type}</td>
-                    <td className="mono-amt">{baht(d.monthlyPayment)}</td>
-                  </tr>
-                ))}
-                <tr>
-                  <td colSpan={3} style={{ textAlign: "right", fontWeight: 700 }}>รวม Fix Cost ต่อเดือน</td>
-                  <td className="mono-amt" style={{ fontWeight: 700 }}>{baht(totalMonthly)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
       <FormDivider>รายการหนี้สินทั้งหมด</FormDivider>
       <ChipRow options={DEBT_TYPES} value={categoryFilter} onChange={setCategoryFilter} allLabel="ทั้งหมด" scroll />
 
@@ -126,10 +93,10 @@ export default function Debts({ data, upsert, remove }) {
         <button
           className="btn btn-ghost"
           onClick={() => {
-            const headers = ["รหัส", "ประเภท", "เจ้าหนี้", "เงินต้น", "ดอกเบี้ยสะสมค้าง", "อัตราดอกเบี้ย (%)", "ค่างวด/เดือน", "วันครบกำหนดจ่ายรายเดือน", "ยอดคงเหลือ", "วันที่เริ่ม", "ครบกำหนด", "สถานะ"];
+            const headers = ["รหัส", "ประเภท", "เจ้าหนี้", "เงินต้น", "ดอกเบี้ยสะสมค้าง", "อัตราดอกเบี้ย (%)", "ค่างวด/เดือน", "ยอดคงเหลือ", "วันที่เริ่ม", "ครบกำหนด", "สถานะ"];
             const rows = filteredList.map((d) => [
               d.code, d.type, d.creditorName || "", d.principal || "", d.accruedInterest || "",
-              d.interestRate || "", d.monthlyPayment || "", d.paymentDueDay || "",
+              d.interestRate || "", d.monthlyPayment || "",
               d.balance || "", d.startDate || "", d.dueDate || "", d.status,
             ]);
             exportToCSV(`ทะเบียนหนี้สิน-${todayISO()}`, headers, rows);
@@ -210,7 +177,6 @@ function DebtForm({ mode, item, data, onSave, onClose }) {
       accruedInterest: "",
       interestRate: "",
       monthlyPayment: "",
-      paymentDueDay: "",
       balance: "",
       startDate: todayISO(),
       dueDate: "",
@@ -267,15 +233,11 @@ function DebtForm({ mode, item, data, onSave, onClose }) {
         </div>
         <p className="field-hint">"ดอกเบี้ยสะสมที่ค้างอยู่" คือยอดดอกเบี้ยจริงที่ค้างจ่าย ณ ตอนนี้ (หน่วยบาท) แยกต่างหากจากเงินต้น ไม่ต้องคำนวณเอง กรอกยอดจากใบแจ้งหนี้/statement ล่าสุดได้เลย</p>
 
-        <FormDivider>ภาระ Fix Cost รายเดือน</FormDivider>
+        <FormDivider>ค่างวดผ่อนชำระ</FormDivider>
         <div className="form-grid-3">
           <div className="form-row">
             <label>ค่างวดต่อเดือน (บาท)</label>
             <input type="number" min="0" step="0.01" value={f.monthlyPayment} onChange={set("monthlyPayment")} />
-          </div>
-          <div className="form-row">
-            <label>วันที่ครบกำหนดจ่ายในแต่ละเดือน (1-31)</label>
-            <input type="number" min="1" max="31" value={f.paymentDueDay} onChange={set("paymentDueDay")} placeholder="เช่น 5" />
           </div>
           <div className="form-row">
             <label>ยอดคงเหลือปัจจุบัน (บาท)</label>

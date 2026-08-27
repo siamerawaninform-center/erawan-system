@@ -162,6 +162,12 @@ export function nextDebtCode(existingDebts) {
   return `DEBT-${String(n).padStart(3, "0")}`;
 }
 
+/** รหัสค่าใช้จ่ายคงที่รายเดือน FIX-001 */
+export function nextFixedCostCode(existingFixedCosts) {
+  const n = (existingFixedCosts || []).length + 1;
+  return `FIX-${String(n).padStart(3, "0")}`;
+}
+
 /** รหัสเอกสารแนบ DOC-0001 */
 export function nextAttachCode(existingDocs) {
   return `DOC-${String((existingDocs?.length || 0) + 1).padStart(4, "0")}`;
