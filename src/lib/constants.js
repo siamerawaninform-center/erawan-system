@@ -202,6 +202,7 @@ export const EMPTY_DATA = {
   expenses: [],
   whts: [],
   debts: [],
+  fixedCosts: [],
   boqs: [],
   units: [],
   plans: [],
