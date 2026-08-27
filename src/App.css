@@ -257,6 +257,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 .items-table{ display:flex; flex-direction:column; gap:6px; }
 .items-row{ display:grid; grid-template-columns:2.2fr 65px 70px 100px 90px 130px 24px; gap:6px; align-items:center; }
+/* แบบแยกค่าวัสดุ/ค่าแรง — เพิ่มคอลัมน์ขึ้นอีก 1 (วัสดุ + แรง แทนที่ ราคา/หน่วย ช่องเดียว) */
+.items-row-split{ display:grid; grid-template-columns:1.8fr 55px 60px 85px 85px 80px 120px 24px; gap:6px; align-items:center; }
 .items-row-header{ display:grid; grid-template-columns:1fr 30px 24px; gap:6px; align-items:center; background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); padding:4px 6px; }
 .items-row textarea{ resize:vertical; min-height:38px; }
 .items-row-head span{ font-size:26px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }
