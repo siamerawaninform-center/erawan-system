@@ -63,13 +63,16 @@ const PRINT_CSS = `
   .dp-sig-name{ white-space:nowrap; }
 
   .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-base); margin-bottom:4px; }
+  .doc-table thead{ display:table-header-group; } /* ถ้าล้นไปหน้า 2 หัวตารางขึ้นซ้ำทุกหน้า ไม่ใช่ทิ้งไว้หน้าแรกหน้าเดียว */
   .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:0.56em 0.44em; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:0.5em 0.44em; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
+  .doc-table tbody tr, .doc-table thead tr{ break-inside:avoid; page-break-inside:avoid; } /* ห้ามตัดกลางแถว — แถวเดียวกันต้องอยู่หน้าเดียวกันทั้งแถว */
   .doc-blank-row td{ height:1.2em; border-top:1.5px solid #ccc; }
+  .doc-bottom-block{ break-inside:avoid; page-break-inside:avoid; } /* เงื่อนไขชำระ+สรุปยอด+ลายเซ็น ไปด้วยกันเป็นก้อนเดียว ไม่ใช่โผล่ไปแค่บรรทัดสองบรรทัดหน้าถัดไป */
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
@@ -374,9 +377,11 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
     </div>
   </div>
   ${tableHtml}
-  ${paymentTermsHtml}
-  ${footerHtml}
-  ${signHtml}
+  <div class="doc-bottom-block">
+    ${paymentTermsHtml}
+    ${footerHtml}
+    ${signHtml}
+  </div>
 </div>`;
 }
 
