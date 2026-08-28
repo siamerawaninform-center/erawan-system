@@ -45,6 +45,7 @@ const PRINT_CSS = `
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-desc{ white-space:pre-wrap; }
+  .doc-desc-sub{ padding-left:1.4em; color:#333; } /* รายละเอียดย่อย — เยื้องเข้าให้เห็นว่าอยู่ในรายการเดียวกับลำดับด้านบน */
   .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-label{ border:2px solid #333; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
@@ -94,13 +95,14 @@ export default function PrintBOQ({ boq, data, onClose }) {
           <td colspan="9" class="boq-header-cell">${esc(it.description)}</td>
         </tr>`;
       }
-      runningNo += 1;
+      // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน
+      if (!it.isSub) runningNo += 1;
       const matTotal = (Number(it.qty) || 0) * (Number(it.materialUnitPrice) || 0);
       const laborTotalLine = (Number(it.qty) || 0) * (Number(it.laborUnitPrice) || 0);
       return `
         <tr>
-          <td class="doc-center">${runningNo}</td>
-          <td class="doc-desc">${esc(it.description)}</td>
+          <td class="doc-center">${it.isSub ? "" : runningNo}</td>
+          <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.description)}</td>
           <td class="doc-center">${esc(num(it.qty))}</td>
           <td class="doc-center">${esc(it.unit)}</td>
           <td class="doc-num">${esc(baht(it.materialUnitPrice))}</td>

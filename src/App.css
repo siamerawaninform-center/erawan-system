@@ -256,12 +256,19 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .vat-toggle input{ width:auto; }
 
 .items-table{ display:flex; flex-direction:column; gap:6px; }
-.items-row{ display:grid; grid-template-columns:2.2fr 65px 70px 100px 90px 130px 24px; gap:6px; align-items:center; }
+/* คอลัมน์แรก 40px คือ "ลำดับ" — เลขที่แสดงต่อเนื่องเหมือนหน้า BOQ */
+.items-row{ display:grid; grid-template-columns:40px 2.2fr 65px 70px 100px 90px 130px 24px; gap:6px; align-items:center; }
 /* แบบแยกค่าวัสดุ/ค่าแรง — เพิ่มคอลัมน์ขึ้นอีก 1 (วัสดุ + แรง แทนที่ ราคา/หน่วย ช่องเดียว) */
-.items-row-split{ display:grid; grid-template-columns:1.8fr 55px 60px 85px 85px 80px 120px 24px; gap:6px; align-items:center; }
-.items-row-header{ display:grid; grid-template-columns:1fr 30px 24px; gap:6px; align-items:center; background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); padding:4px 6px; }
+.items-row-split{ display:grid; grid-template-columns:40px 1.8fr 55px 60px 85px 85px 80px 120px 24px; gap:6px; align-items:center; }
+.items-row-header{ display:grid; grid-template-columns:40px 1fr 30px 24px; gap:6px; align-items:center; background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); padding:4px 6px; }
 .items-row textarea{ resize:vertical; min-height:38px; }
 .items-row-head span{ font-size:26px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }
+.items-row-no{ text-align:center; color:var(--steel); }
+.items-row-no-header{ color:var(--maroon); font-weight:700; }
+.items-header-input{ font-weight:700; color:var(--maroon); background:transparent !important; border:none !important; }
+/* แถวรายละเอียดย่อย — อยู่ใต้ลำดับเดิม ไม่มีเลขของตัวเอง เยื้องเข้าเล็กน้อยให้เห็นว่าเป็นส่วนหนึ่งของรายการด้านบน */
+.items-row-sub{ background:rgba(0,0,0,.025); }
+.items-row-sub textarea{ font-style:italic; }
 .totals-box{ background:var(--concrete); border:1.5px solid var(--line); padding:12px 16px; display:flex; flex-direction:column; gap:6px; }
 .totals-box > div{ display:flex; justify-content:space-between; font-size:26px; }
 .totals-final{ border-top:1.5px solid var(--line); padding-top:6px; font-weight:600; }

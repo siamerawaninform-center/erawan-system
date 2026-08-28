@@ -356,11 +356,16 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       }),
     });
   const addItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: false }] });
   const addHeaderItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true, isSub: false }] });
+  // รายละเอียดย่อย — ยังนับยอดเงินตามปกติ แต่ไม่ขึ้นลำดับที่ใหม่ ยังถือว่าอยู่ในรายการเดียวกับแถวก่อนหน้า
+  const addSubItem = () =>
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: true }] });
   const toggleItemHeader = (id) =>
-    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, qty: it.isHeader ? 1 : "", unit: it.isHeader ? "งาน" : "" } : it)) });
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, isSub: false, qty: it.isHeader ? 1 : "", unit: it.isHeader ? "งาน" : "" } : it)) });
+  const toggleItemSub = (id) =>
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isSub: !it.isSub, isHeader: false } : it)) });
   const removeItem = (id) =>
     setF({ ...f, items: f.items.filter((it) => it.id !== id) });
 
@@ -530,7 +535,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
         </label>
         <div className="items-table">
           <div className={`items-row-head ${f.splitMaterialLabor ? "items-row-split" : "items-row"}`}>
-            <span>รายการ</span><span>จำนวน</span><span>หน่วย</span>
+            <span>ลำดับ</span><span>รายการ</span><span>จำนวน</span><span>หน่วย</span>
             {f.splitMaterialLabor ? (
               <><span>ค่าวัสดุ/หน่วย</span><span>ค่าแรง/หน่วย</span></>
             ) : (
@@ -538,48 +543,60 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
             )}
             <span>ส่วนลด</span><span>จำนวนเงิน</span><span></span>
           </div>
-          {f.items.map((it) => (
-            it.isHeader ? (
-              <div className="items-row items-row-header" key={it.id}>
-                <input
-                  className="boq-header-input"
-                  value={it.desc}
-                  onChange={(e) => setItem(it.id, "desc", e.target.value)}
-                  placeholder="พิมพ์หัวข้อ/หมวดงาน เช่น งวดที่ 1 — งานฐานราก"
-                />
-                <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
-                <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
-              </div>
-            ) : (
-              <div className={f.splitMaterialLabor ? "items-row-split" : "items-row"} key={it.id}>
-                <textarea
-                  rows={2}
-                  value={it.desc}
-                  onChange={(e) => setItem(it.id, "desc", e.target.value)}
-                  placeholder="เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"
-                />
-                <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
-                <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
-                {f.splitMaterialLabor ? (
-                  <>
-                    <input type="number" min="0" step="0.01" value={it.materialPrice ?? 0} onChange={(e) => setItem(it.id, "materialPrice", e.target.value)} />
-                    <input type="number" min="0" step="0.01" value={it.laborPrice ?? 0} onChange={(e) => setItem(it.id, "laborPrice", e.target.value)} />
-                  </>
-                ) : (
-                  <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
-                )}
-                <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
-                <span className="mono-amt">฿{baht(lineTotal(it))}</span>
-                <div className="row-actions">
-                  <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
-                  <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+          {(() => {
+            let runningNo = 0;
+            return f.items.map((it) => {
+              if (it.isHeader) {
+                return (
+                  <div className="items-row items-row-header" key={it.id}>
+                    <span className="items-row-no items-row-no-header">—</span>
+                    <input
+                      className="items-header-input"
+                      value={it.desc}
+                      onChange={(e) => setItem(it.id, "desc", e.target.value)}
+                      placeholder="พิมพ์หัวข้อ/หมวดงาน เช่น งวดที่ 1 — งานฐานราก"
+                    />
+                    <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
+                    <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+                  </div>
+                );
+              }
+              // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน
+              if (!it.isSub) runningNo += 1;
+              return (
+                <div className={`${f.splitMaterialLabor ? "items-row-split" : "items-row"} ${it.isSub ? "items-row-sub" : ""}`} key={it.id}>
+                  <span className="items-row-no">{it.isSub ? "↳" : runningNo}</span>
+                  <textarea
+                    rows={2}
+                    value={it.desc}
+                    onChange={(e) => setItem(it.id, "desc", e.target.value)}
+                    placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน เช่น เทคอนกรีต, ผูกเหล็ก" : "เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"}
+                  />
+                  <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
+                  <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
+                  {f.splitMaterialLabor ? (
+                    <>
+                      <input type="number" min="0" step="0.01" value={it.materialPrice ?? 0} onChange={(e) => setItem(it.id, "materialPrice", e.target.value)} />
+                      <input type="number" min="0" step="0.01" value={it.laborPrice ?? 0} onChange={(e) => setItem(it.id, "laborPrice", e.target.value)} />
+                    </>
+                  ) : (
+                    <input type="number" min="0" step="0.01" value={it.price} onChange={(e) => setItem(it.id, "price", e.target.value)} />
+                  )}
+                  <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
+                  <span className="mono-amt">฿{baht(lineTotal(it))}</span>
+                  <div className="row-actions">
+                    <button type="button" className="icon-btn" onClick={() => toggleItemSub(it.id)} title={it.isSub ? "เปลี่ยนเป็นรายการหลัก (ขึ้นลำดับใหม่)" : "เปลี่ยนเป็นรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)"} aria-label="สลับรายละเอียดย่อย">↳</button>
+                    <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
+                    <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+                  </div>
                 </div>
-              </div>
-            )
-          ))}
+              );
+            });
+          })()}
         </div>
         <div className="boq-add-row-buttons">
           <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มรายการ</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addSubItem}>+ เพิ่มรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={addHeaderItem}>+ เพิ่มหัวข้อ/หมวดงาน</button>
         </div>
 

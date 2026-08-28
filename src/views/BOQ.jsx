@@ -114,7 +114,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
       estimatorId: data.signers.find((s) => s.isDefault)?.id || "",
       showSignature: false,
       note: "",
-      items: [{ id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false }],
+      items: [{ id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false, isSub: false }],
     };
   });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -132,13 +132,19 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
   const setItem = (id, key, value) =>
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, [key]: value } : it)) });
   const addItem = () => {
-    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false }] });
+    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false, isSub: false }] });
   };
   const addHeaderRow = () => {
-    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 0, unit: "", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: true }] });
+    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 0, unit: "", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: true, isSub: false }] });
+  };
+  // รายละเอียดย่อย — ยังนับยอดเงินตามปกติ แต่ไม่ขึ้นลำดับที่ใหม่ ยังถือว่าอยู่ในรายการเดียวกับแถวก่อนหน้า
+  const addSubRow = () => {
+    setF({ ...f, items: [...f.items, { id: uid("bi"), description: "", qty: 1, unit: "งาน", materialUnitPrice: 0, laborUnitPrice: 0, isHeader: false, isSub: true }] });
   };
   const toggleHeader = (id) =>
-    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, qty: it.isHeader ? 1 : 0 } : it)) });
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, isSub: false, qty: it.isHeader ? 1 : 0 } : it)) });
+  const toggleSub = (id) =>
+    setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isSub: !it.isSub, isHeader: false } : it)) });
   const removeItem = (id) => setF({ ...f, items: f.items.filter((it) => it.id !== id) });
   const moveItem = (idx, dir) => {
     const next = idx + dir;
@@ -202,12 +208,13 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
                   </div>
                 );
               }
-              runningNo += 1;
+              // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน
+              if (!it.isSub) runningNo += 1;
               const lineTotal = (Number(it.qty) || 0) * ((Number(it.materialUnitPrice) || 0) + (Number(it.laborUnitPrice) || 0));
               return (
-                <div className="boq-row boq-row-editable" key={it.id}>
-                  <span className="mono-amt boq-row-no">{runningNo}</span>
-                  <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder="เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก" />
+                <div className={`boq-row boq-row-editable ${it.isSub ? "items-row-sub" : ""}`} key={it.id}>
+                  <span className="mono-amt boq-row-no">{it.isSub ? "↳" : runningNo}</span>
+                  <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน" : "เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก"} />
                   <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
                   <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
                   <input type="number" min="0" step="0.01" value={it.materialUnitPrice} onChange={(e) => setItem(it.id, "materialUnitPrice", e.target.value)} />
@@ -216,6 +223,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
                   <div className="boq-row-tools">
                     <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
                     <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
+                    <button type="button" className="icon-btn" onClick={() => toggleSub(it.id)} title={it.isSub ? "เปลี่ยนเป็นรายการหลัก (ขึ้นลำดับใหม่)" : "เปลี่ยนเป็นรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)"} aria-label="สลับรายละเอียดย่อย">↳</button>
                     <button type="button" className="icon-btn" onClick={() => toggleHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ/พื้นที่ทำงาน" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
                     <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบ">✕</button>
                   </div>
@@ -226,6 +234,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
         </div>
         <div className="boq-add-row-buttons">
           <button type="button" className="btn btn-ghost btn-sm" onClick={addItem}>+ เพิ่มหมวดงาน</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={addSubRow}>+ เพิ่มรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={addHeaderRow}>+ เพิ่มหัวข้อ/พื้นที่ทำงาน</button>
         </div>
 
@@ -341,7 +350,7 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
       signerSales: defaultSigner?.name || "",
       items: preview.map((it) => ({
         id: uid("it"), desc: it.description, qty: it.isHeader ? "" : it.qty, unit: it.isHeader ? "" : it.unit,
-        price: it.isHeader ? 0 : Math.round(it.sellPrice * 100) / 100, discount: 0, isHeader: !!it.isHeader,
+        price: it.isHeader ? 0 : Math.round(it.sellPrice * 100) / 100, discount: 0, isHeader: !!it.isHeader, isSub: !!it.isSub,
       })),
       paymentTerms: "",
       boqId: boq.id, // ลิงก์อ้างอิงภายในเท่านั้น — ไม่แสดงในเอกสารที่พิมพ์

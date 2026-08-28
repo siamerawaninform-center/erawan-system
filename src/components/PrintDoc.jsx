@@ -80,6 +80,7 @@ const PRINT_CSS = `
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
+  .doc-desc-sub{ padding-left:1.4em; color:#333; } /* รายละเอียดย่อย — เยื้องเข้าให้เห็นว่าอยู่ในรายการเดียวกับลำดับด้านบน */
   .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-empty{ border:2px solid #333; }
@@ -200,7 +201,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       if (it.isHeader) {
         return `<tr class="doc-header-row"><td colspan="${colCount}" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
       }
-      itemRunningNo += 1;
+      // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน (เยื้องเข้าให้ดูออกว่าเป็นรายละเอียดย่อย)
+      if (!it.isSub) itemRunningNo += 1;
       const priceCells = split
         ? `
         <td class="doc-num">${esc(baht(it.materialPrice || 0))}</td>
@@ -209,8 +211,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         <td class="doc-num">${esc(baht(it.price))}</td>`;
       return `
       <tr>
-        <td class="doc-center">${itemRunningNo}</td>
-        <td class="doc-desc">${esc(it.desc)}</td>
+        <td class="doc-center">${it.isSub ? "" : itemRunningNo}</td>
+        <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}</td>
         <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>${priceCells}
         <td class="doc-num">${esc(baht(it.discount))}</td>
         <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
