@@ -169,8 +169,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   let tableHtml;
   if (isBilling) {
-    // รวมกับแถวจริง 1 แถว = 11 แถว เต็มหน้ากระดาษพอดีของใบวางบิล
-    const blankRows = Array.from({ length: 10 })
+    // รวมกับแถวจริง 1 แถว = 20 แถว เต็มหน้ากระดาษพอดีของใบวางบิล
+    const blankRows = Array.from({ length: 19 })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
@@ -229,8 +229,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       </tr>`;
     }).join("");
     // ใบเสนอราคา: เติมแถวว่างให้ครบขั้นต่ำ 4 แถว (ไม่งั้นดูโหว่ถ้ารายการน้อย)
-    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 3 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ
-    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 3;
+    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 7 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ
+    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 7;
     const blankCells = Array.from({ length: colCount }).map(() => "<td></td>").join("");
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row">${blankCells}</tr>`).join("");
