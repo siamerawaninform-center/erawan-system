@@ -75,7 +75,7 @@ const PRINT_CSS = `
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
   .doc-table tbody tr, .doc-table thead tr{ break-inside:avoid; page-break-inside:avoid; } /* ห้ามตัดกลางแถว — แถวเดียวกันต้องอยู่หน้าเดียวกันทั้งแถว */
-  .doc-blank-row td{ height:1.2em; border-top:1.5px solid #ccc; }
+  .doc-blank-row td{ height:1.2em; } /* แถวว่างไม่มีเส้นคั่นระหว่างบรรทัด — ปิดท้ายด้วยเส้นขอบตารางปกติเท่านั้น */
   /* .doc-bottom-block กำหนดไว้ด้านบนแล้ว (margin-top:auto ดันชิดขอบล่าง + break-inside:avoid กันตัดกลางก้อน) */
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
@@ -169,7 +169,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   let tableHtml;
   if (isBilling) {
-    const blankRows = Array.from({ length: 9 })
+    // รวมกับแถวจริง 1 แถว = 11 แถว เต็มหน้ากระดาษพอดีของใบวางบิล
+    const blankRows = Array.from({ length: 10 })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
@@ -227,8 +228,9 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         <td class="doc-num">${showTotal ? esc(baht(lineTotal(it))) : ""}</td>
       </tr>`;
     }).join("");
-    const blankMin = isQuote ? 4 : 7;
-    const blankCount = Math.max(0, blankMin - (record.items?.length || 0));
+    // ใบเสนอราคา: เติมแถวว่างให้ครบขั้นต่ำ 4 แถว (ไม่งั้นดูโหว่ถ้ารายการน้อย)
+    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 3 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ
+    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 3;
     const blankCells = Array.from({ length: colCount }).map(() => "<td></td>").join("");
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row">${blankCells}</tr>`).join("");
