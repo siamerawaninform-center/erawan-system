@@ -27,7 +27,8 @@ const PRINT_CSS = `
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:calc(var(--fs-base) * 0.7222); }
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
-  .sheet-wrap{ padding:20px 0; }
+  /* ซ่อนไว้ก่อนจนกว่าจะคำนวณขนาดตัวอักษรเสร็จ กันเห็นภาพตัวหนังสือบีบอัดวาบๆ ตอนโหลด */
+  .sheet-wrap{ padding:20px 0; visibility:hidden; }
 
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; display:flex; flex-direction:column; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่าเล็กน้อย เต็มหน้ากระดาษกว่าใบเสนอราคา */
@@ -138,7 +139,7 @@ const PRINT_CSS = `
   @media print {
     body{ background:#fff; }
     .no-print{ display:none !important; }
-    .sheet-wrap{ padding:0; }
+    .sheet-wrap{ padding:0; visibility:visible !important; } /* พิมพ์/บันทึก PDF ต้องเห็นเสมอ ไม่ว่าจอจะซ่อนไว้ระหว่างคำนวณขนาดฟอนต์หรือไม่ */
     .sheet{ box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always; }
     .sheet:last-child{ page-break-after:auto; }
     .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
@@ -169,8 +170,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   let tableHtml;
   if (isBilling) {
-    // รวมกับแถวจริง 1 แถว = 23 แถว เต็มหน้ากระดาษพอดีของใบวางบิล
-    const blankRows = Array.from({ length: 22 })
+    // รวมกับแถวจริง 1 แถว = 20 แถว เต็มหน้ากระดาษพอดีของใบวางบิล (23 แถวล้นจนต้องบีบฟอนต์ ถอยกลับมาที่ 20)
+    const blankRows = Array.from({ length: 19 })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
@@ -229,8 +230,8 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       </tr>`;
     }).join("");
     // ใบเสนอราคา: เติมแถวว่างให้ครบขั้นต่ำ 4 แถว (ไม่งั้นดูโหว่ถ้ารายการน้อย)
-    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 15 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ
-    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 15;
+    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 7 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ (15 แถวล้นจนต้องบีบฟอนต์ ถอยกลับมาที่ 7)
+    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 7;
     const blankCells = Array.from({ length: colCount }).map(() => "<td></td>").join("");
     const blankRows = Array.from({ length: blankCount })
       .map(() => `<tr class="doc-blank-row">${blankCells}</tr>`).join("");
@@ -470,9 +471,15 @@ ${sheetHtml}
     });
   }
   // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — ไม่เรียกทันทีตอนนี้
-  // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจตัดแถวว่างทิ้งทั้งที่ไม่จำเป็น
-  // (การตัดแถวว่างย้อนกลับไม่ได้ ต่างจากขนาดฟอนต์ที่รีเซ็ตใหม่ได้ทุกครั้ง)
-  window.addEventListener("load", fitToPage);
+  // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจคำนวณผิด
+  // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
+  function fitAndReveal() {
+    try { fitToPage(); } finally {
+      var wrap = document.querySelector('.sheet-wrap');
+      if (wrap) wrap.style.visibility = 'visible';
+    }
+  }
+  window.addEventListener("load", fitAndReveal);
 </script>
 </body></html>`;
 
@@ -558,7 +565,14 @@ ${sheetsHtml}
     });
   }
   // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — เหตุผลเดียวกับหน้าเดี่ยว
-  window.addEventListener("load", fitToPage);
+  // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
+  function fitAndReveal() {
+    try { fitToPage(); } finally {
+      var wrap = document.querySelector('.sheet-wrap');
+      if (wrap) wrap.style.visibility = 'visible';
+    }
+  }
+  window.addEventListener("load", fitAndReveal);
 </script>
 </body></html>`;
 
