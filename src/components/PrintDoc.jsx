@@ -203,19 +203,28 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       }
       // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน (เยื้องเข้าให้ดูออกว่าเป็นรายละเอียดย่อย)
       if (!it.isSub) itemRunningNo += 1;
-      const priceCells = split
-        ? `
+      // แถวที่ไม่ได้กรอกทั้งจำนวนและราคาเลย ถือว่าเป็นบรรทัดกำกับ/หมายเหตุตัวหนังสือเฉยๆ — ไม่ใช่รายการที่คิดเงิน
+      // เว้นช่องจำนวน/ราคา/ส่วนลด/จำนวนเงินให้ว่างไปเลย ไม่ต้องโชว์ 0 ให้ดูรก
+      const noQty = !it.qty || Number(it.qty) === 0;
+      const noPrice = split
+        ? !(Number(it.materialPrice) || 0) && !(Number(it.laborPrice) || 0)
+        : !(Number(it.price) || 0);
+      const isTextOnly = noQty && noPrice;
+      const priceCells = isTextOnly
+        ? (split ? `<td class="doc-num"></td><td class="doc-num"></td>` : `<td class="doc-num"></td>`)
+        : split
+          ? `
         <td class="doc-num">${esc(baht(it.materialPrice || 0))}</td>
         <td class="doc-num">${esc(baht(it.laborPrice || 0))}</td>`
-        : `
+          : `
         <td class="doc-num">${esc(baht(it.price))}</td>`;
       return `
       <tr>
         <td class="doc-center">${it.isSub ? "" : itemRunningNo}</td>
         <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}</td>
-        <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>${priceCells}
-        <td class="doc-num">${esc(baht(it.discount))}</td>
-        <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
+        <td class="doc-center">${isTextOnly ? "" : `${esc(num(it.qty))} ${esc(it.unit)}`}</td>${priceCells}
+        <td class="doc-num">${isTextOnly ? "" : esc(baht(it.discount))}</td>
+        <td class="doc-num">${isTextOnly ? "" : esc(baht(lineTotal(it)))}</td>
       </tr>`;
     }).join("");
     const blankMin = isQuote ? 4 : 7;

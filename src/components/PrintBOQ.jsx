@@ -99,17 +99,21 @@ export default function PrintBOQ({ boq, data, onClose }) {
       if (!it.isSub) runningNo += 1;
       const matTotal = (Number(it.qty) || 0) * (Number(it.materialUnitPrice) || 0);
       const laborTotalLine = (Number(it.qty) || 0) * (Number(it.laborUnitPrice) || 0);
+      // แถวที่ไม่ได้กรอกทั้งจำนวนและราคาเลย ถือว่าเป็นบรรทัดกำกับ/หมายเหตุตัวหนังสือเฉยๆ — ไม่ใช่รายการที่คิดเงิน เว้นช่องตัวเลขให้ว่างไปเลย
+      const noQty = !it.qty || Number(it.qty) === 0;
+      const noPrice = !(Number(it.materialUnitPrice) || 0) && !(Number(it.laborUnitPrice) || 0);
+      const isTextOnly = noQty && noPrice;
       return `
         <tr>
           <td class="doc-center">${it.isSub ? "" : runningNo}</td>
           <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.description)}</td>
-          <td class="doc-center">${esc(num(it.qty))}</td>
-          <td class="doc-center">${esc(it.unit)}</td>
-          <td class="doc-num">${esc(baht(it.materialUnitPrice))}</td>
-          <td class="doc-num">${esc(baht(matTotal))}</td>
-          <td class="doc-num">${esc(baht(it.laborUnitPrice))}</td>
-          <td class="doc-num">${esc(baht(laborTotalLine))}</td>
-          <td class="doc-num">${esc(baht(matTotal + laborTotalLine))}</td>
+          <td class="doc-center">${isTextOnly ? "" : esc(num(it.qty))}</td>
+          <td class="doc-center">${isTextOnly ? "" : esc(it.unit)}</td>
+          <td class="doc-num">${isTextOnly ? "" : esc(baht(it.materialUnitPrice))}</td>
+          <td class="doc-num">${isTextOnly ? "" : esc(baht(matTotal))}</td>
+          <td class="doc-num">${isTextOnly ? "" : esc(baht(it.laborUnitPrice))}</td>
+          <td class="doc-num">${isTextOnly ? "" : esc(baht(laborTotalLine))}</td>
+          <td class="doc-num">${isTextOnly ? "" : esc(baht(matTotal + laborTotalLine))}</td>
         </tr>`;
     }).join("");
 
