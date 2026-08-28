@@ -99,21 +99,25 @@ export default function PrintBOQ({ boq, data, onClose }) {
       if (!it.isSub) runningNo += 1;
       const matTotal = (Number(it.qty) || 0) * (Number(it.materialUnitPrice) || 0);
       const laborTotalLine = (Number(it.qty) || 0) * (Number(it.laborUnitPrice) || 0);
-      // แถวที่ไม่ได้กรอกทั้งจำนวนและราคาเลย ถือว่าเป็นบรรทัดกำกับ/หมายเหตุตัวหนังสือเฉยๆ — ไม่ใช่รายการที่คิดเงิน เว้นช่องตัวเลขให้ว่างไปเลย
+      // ช่องไหนไม่ได้กรอก (ว่าง/0) ไม่ต้องโชว์เป็น "0" หรือ "฿0.00" — เว้นว่างไปเลย เช็คทีละช่องอิสระต่อกัน
       const noQty = !it.qty || Number(it.qty) === 0;
-      const noPrice = !(Number(it.materialUnitPrice) || 0) && !(Number(it.laborUnitPrice) || 0);
-      const isTextOnly = noQty && noPrice;
+      const noMaterial = !(Number(it.materialUnitPrice) || 0);
+      const noLabor = !(Number(it.laborUnitPrice) || 0);
+      // ยอดรวมวัสดุ/แรง/รวม ต่อบรรทัด คำนวณได้จริงก็ต่อเมื่อมีทั้งจำนวนและราคานั้นๆ ไม่งั้นเว้นว่างไว้ ไม่ใช่ 0
+      const showMatTotal = !noQty && !noMaterial;
+      const showLaborTotal = !noQty && !noLabor;
+      const showGrandTotal = !noQty && !(noMaterial && noLabor);
       return `
         <tr>
           <td class="doc-center">${it.isSub ? "" : runningNo}</td>
           <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.description)}</td>
-          <td class="doc-center">${isTextOnly ? "" : esc(num(it.qty))}</td>
-          <td class="doc-center">${isTextOnly ? "" : esc(it.unit)}</td>
-          <td class="doc-num">${isTextOnly ? "" : esc(baht(it.materialUnitPrice))}</td>
-          <td class="doc-num">${isTextOnly ? "" : esc(baht(matTotal))}</td>
-          <td class="doc-num">${isTextOnly ? "" : esc(baht(it.laborUnitPrice))}</td>
-          <td class="doc-num">${isTextOnly ? "" : esc(baht(laborTotalLine))}</td>
-          <td class="doc-num">${isTextOnly ? "" : esc(baht(matTotal + laborTotalLine))}</td>
+          <td class="doc-center">${noQty ? "" : esc(num(it.qty))}</td>
+          <td class="doc-center">${it.unit ? esc(it.unit) : ""}</td>
+          <td class="doc-num">${noMaterial ? "" : esc(baht(it.materialUnitPrice))}</td>
+          <td class="doc-num">${showMatTotal ? esc(baht(matTotal)) : ""}</td>
+          <td class="doc-num">${noLabor ? "" : esc(baht(it.laborUnitPrice))}</td>
+          <td class="doc-num">${showLaborTotal ? esc(baht(laborTotalLine)) : ""}</td>
+          <td class="doc-num">${showGrandTotal ? esc(baht(matTotal + laborTotalLine)) : ""}</td>
         </tr>`;
     }).join("");
 

@@ -203,28 +203,28 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       }
       // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน (เยื้องเข้าให้ดูออกว่าเป็นรายละเอียดย่อย)
       if (!it.isSub) itemRunningNo += 1;
-      // แถวที่ไม่ได้กรอกทั้งจำนวนและราคาเลย ถือว่าเป็นบรรทัดกำกับ/หมายเหตุตัวหนังสือเฉยๆ — ไม่ใช่รายการที่คิดเงิน
-      // เว้นช่องจำนวน/ราคา/ส่วนลด/จำนวนเงินให้ว่างไปเลย ไม่ต้องโชว์ 0 ให้ดูรก
+      // ช่องไหนไม่ได้กรอก (ว่าง/0) ไม่ต้องโชว์เป็น "0" หรือ "฿0.00" — เว้นว่างไปเลย เช็คทีละช่องอิสระต่อกัน
       const noQty = !it.qty || Number(it.qty) === 0;
-      const noPrice = split
-        ? !(Number(it.materialPrice) || 0) && !(Number(it.laborPrice) || 0)
-        : !(Number(it.price) || 0);
-      const isTextOnly = noQty && noPrice;
-      const priceCells = isTextOnly
-        ? (split ? `<td class="doc-num"></td><td class="doc-num"></td>` : `<td class="doc-num"></td>`)
-        : split
-          ? `
-        <td class="doc-num">${esc(baht(it.materialPrice || 0))}</td>
-        <td class="doc-num">${esc(baht(it.laborPrice || 0))}</td>`
-          : `
-        <td class="doc-num">${esc(baht(it.price))}</td>`;
+      const noMaterial = !(Number(it.materialPrice) || 0);
+      const noLabor = !(Number(it.laborPrice) || 0);
+      const noPriceSingle = !(Number(it.price) || 0);
+      const noPriceAny = split ? (noMaterial && noLabor) : noPriceSingle;
+      const noDiscount = !(Number(it.discount) || 0);
+      const priceCells = split
+        ? `
+        <td class="doc-num">${noMaterial ? "" : esc(baht(it.materialPrice))}</td>
+        <td class="doc-num">${noLabor ? "" : esc(baht(it.laborPrice))}</td>`
+        : `
+        <td class="doc-num">${noPriceSingle ? "" : esc(baht(it.price))}</td>`;
+      // จำนวนเงินรวมของบรรทัด คำนวณได้จริงก็ต่อเมื่อมีทั้งจำนวนและราคา — ไม่งั้นเว้นว่างไว้ ไม่ใช่ 0
+      const showTotal = !noQty && !noPriceAny;
       return `
       <tr>
         <td class="doc-center">${it.isSub ? "" : itemRunningNo}</td>
         <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}</td>
-        <td class="doc-center">${isTextOnly ? "" : `${esc(num(it.qty))} ${esc(it.unit)}`}</td>${priceCells}
-        <td class="doc-num">${isTextOnly ? "" : esc(baht(it.discount))}</td>
-        <td class="doc-num">${isTextOnly ? "" : esc(baht(lineTotal(it)))}</td>
+        <td class="doc-center">${noQty ? "" : `${esc(num(it.qty))} ${esc(it.unit)}`}</td>${priceCells}
+        <td class="doc-num">${noDiscount ? "" : esc(baht(it.discount))}</td>
+        <td class="doc-num">${showTotal ? esc(baht(lineTotal(it))) : ""}</td>
       </tr>`;
     }).join("");
     const blankMin = isQuote ? 4 : 7;
