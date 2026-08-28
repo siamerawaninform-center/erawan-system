@@ -175,8 +175,8 @@ export function nextAttachCode(existingDocs) {
 
 /** รหัส BOQ ต่อโปรเจกต์ BOQ-{รหัสโปรเจกต์}-{เลขวิ่ง} */
 export function nextBoqCode(existingBoqs, projectCode) {
-  const n = (existingBoqs || []).filter((b) => b.projectCode === projectCode).length + 1;
-  return `BOQ-${projectCode}-${String(n).padStart(2, "0")}`;
+  // ไม่มีเลขวิ่งท้ายรหัสแล้ว — รหัส BOQ ผูกกับโปรเจกต์ตรงๆ (ถ้าทำ BOQ หลายใบให้โปรเจกต์เดียวกัน รหัสจะซ้ำกัน แก้ชื่อ/หมายเหตุแยกเองได้)
+  return `BOQ-${projectCode}`;
 }
 
 /** รหัสแผนงาน PLAN-{รหัสโปรเจกต์}-{เลขวิ่ง} */
