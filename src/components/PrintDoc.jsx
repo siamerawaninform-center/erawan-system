@@ -451,11 +451,9 @@ ${sheetHtml}
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
 
-      var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
-      while (sheet.scrollHeight > PAGE_HEIGHT_PX && blanks.length) {
-        blanks.pop().remove();
-      }
-
+      // หมายเหตุ: ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้งอีกต่อไป — แถวว่างพวกนี้ตอนนี้ fix จำนวนไว้ตายตัว
+      // เพื่อให้เอกสารเต็มหน้ากระดาษเสมอ ถ้าตัดทิ้งจะเห็นวาบแรกเต็มหน้าแล้วหดกลับทันที (ตามที่เจอ)
+      // ถ้าล้นจริง ให้ย่อฟอนต์แทน ไม่แตะจำนวนแถว
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว ไม่ต้องบีบฟอนต์
 
