@@ -214,7 +214,7 @@ function BoqForm({ mode, item, data, onSave, onClose }) {
               return (
                 <div className={`boq-row boq-row-editable ${it.isSub ? "items-row-sub" : ""}`} key={it.id}>
                   <span className="mono-amt boq-row-no">{it.isSub ? "↳" : runningNo}</span>
-                  <input value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน" : "เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก"} />
+                  <textarea rows={2} value={it.description} onChange={(e) => setItem(it.id, "description", e.target.value)} placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน" : "เช่น งานโครงสร้างคอนกรีตเสริมเหล็ก"} />
                   <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
                   <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
                   <input type="number" min="0" step="0.01" value={it.materialUnitPrice} onChange={(e) => setItem(it.id, "materialUnitPrice", e.target.value)} />

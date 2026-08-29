@@ -257,11 +257,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 .items-table{ display:flex; flex-direction:column; gap:6px; }
 /* คอลัมน์แรก 40px คือ "ลำดับ" — เลขที่แสดงต่อเนื่องเหมือนหน้า BOQ */
-.items-row{ display:grid; grid-template-columns:40px 2.2fr 65px 70px 100px 90px 130px 24px; gap:6px; align-items:center; }
+.items-row{ display:grid; grid-template-columns:40px 2.8fr 65px 70px 100px 90px 130px 24px; gap:6px; align-items:start; }
 /* แบบแยกค่าวัสดุ/ค่าแรง — เพิ่มคอลัมน์ขึ้นอีก 1 (วัสดุ + แรง แทนที่ ราคา/หน่วย ช่องเดียว) */
-.items-row-split{ display:grid; grid-template-columns:40px 1.8fr 55px 60px 85px 85px 80px 120px 24px; gap:6px; align-items:center; }
+.items-row-split{ display:grid; grid-template-columns:40px 2.3fr 55px 60px 85px 85px 80px 120px 24px; gap:6px; align-items:start; }
 .items-row-header{ display:grid; grid-template-columns:40px 1fr 30px 24px; gap:6px; align-items:center; background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); padding:4px 6px; }
-.items-row textarea{ resize:vertical; min-height:38px; }
+/* พิมพ์รายการยาวๆ เห็นครบไม่ต้องเลื่อนดู — ขยายสูงขึ้นได้เอง (ลากขอบล่างขยายเพิ่มได้อีก) */
+.items-row textarea{ resize:vertical; min-height:60px; }
 .items-row-head span{ font-size:26px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }
 .items-row-no{ text-align:center; color:var(--steel); }
 .items-row-no-header{ color:var(--maroon); font-weight:700; }
@@ -275,8 +276,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .bahttext-hint{ text-align:right; font-size:26px; color:var(--steel); font-style:italic; font-weight:500; }
 
 .boq-table{ display:flex; flex-direction:column; gap:6px; }
-.boq-row{ display:grid; grid-template-columns:50px 2fr 70px 70px 110px 110px 130px 24px; gap:6px; align-items:center; }
-.boq-row-editable{ grid-template-columns:40px 2fr 70px 70px 110px 110px 130px 76px; }
+.boq-row{ display:grid; grid-template-columns:50px 2.6fr 70px 70px 110px 110px 130px 24px; gap:6px; align-items:start; }
+.boq-row-editable{ grid-template-columns:40px 2.6fr 70px 70px 110px 110px 130px 76px; }
+/* พิมพ์รายการยาวๆ เห็นครบไม่ต้องเลื่อนดู — ขยายสูงขึ้นได้เอง (ลากขอบล่างขยายเพิ่มได้อีก) */
+.boq-row textarea{ resize:vertical; min-height:60px; width:100%; font:inherit; }
 
 /* ตาราง JSA — ลำดับ / ขั้นตอนงาน / อันตราย / มาตรการป้องกัน / ผู้ตรวจสอบ / ปุ่มจัดการ */
 .jsa-rows{ display:flex; flex-direction:column; gap:8px; }
