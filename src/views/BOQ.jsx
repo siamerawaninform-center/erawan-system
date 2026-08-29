@@ -315,10 +315,14 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
   const [markup, setMarkup] = useState(boq.markupPercent || BOQ_DEFAULT_MARKUP);
 
   const preview = (boq.items || []).map((it) => {
-    if (it.isHeader) return { ...it, unitCost: 0, sellPrice: 0 };
+    if (it.isHeader) return { ...it, unitCost: 0, sellPrice: 0, materialSellPrice: 0, laborSellPrice: 0 };
+    // คิดราคาขายแยกวัสดุ/แรงงานไว้ตั้งแต่ตรงนี้เลย (บวก % เท่ากันทั้งคู่) เผื่อภายหลังไปติ๊ก
+    // "แยกค่าวัสดุ/ค่าแรง" ในใบเสนอราคา จะได้ตัวเลขที่แยกตาม BOQ จริง ไม่ใช่โยนรวมไว้ที่ช่องเดียว
+    const materialSellPrice = (Number(it.materialUnitPrice) || 0) * (1 + (Number(markup) || 0) / 100);
+    const laborSellPrice = (Number(it.laborUnitPrice) || 0) * (1 + (Number(markup) || 0) / 100);
     const unitCost = (Number(it.materialUnitPrice) || 0) + (Number(it.laborUnitPrice) || 0);
-    const sellPrice = unitCost * (1 + (Number(markup) || 0) / 100);
-    return { ...it, unitCost, sellPrice };
+    const sellPrice = materialSellPrice + laborSellPrice;
+    return { ...it, unitCost, sellPrice, materialSellPrice, laborSellPrice };
   });
 
   const createQuote = () => {
@@ -350,7 +354,11 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
       signerSales: defaultSigner?.name || "",
       items: preview.map((it) => ({
         id: uid("it"), desc: it.description, qty: it.isHeader ? "" : it.qty, unit: it.isHeader ? "" : it.unit,
-        price: it.isHeader ? 0 : Math.round(it.sellPrice * 100) / 100, discount: 0, isHeader: !!it.isHeader, isSub: !!it.isSub,
+        price: it.isHeader ? 0 : Math.round(it.sellPrice * 100) / 100,
+        // เก็บราคาขายแยกวัสดุ/แรงงานไว้ด้วย เผื่อภายหลังไปติ๊ก "แยกค่าวัสดุ/ค่าแรง" ในใบเสนอราคา — จะได้ตัวเลขตรงกับ BOQ ทันที ไม่ต้องแยกเอง
+        materialPrice: it.isHeader ? 0 : Math.round(it.materialSellPrice * 100) / 100,
+        laborPrice: it.isHeader ? 0 : Math.round(it.laborSellPrice * 100) / 100,
+        discount: 0, isHeader: !!it.isHeader, isSub: !!it.isSub,
       })),
       paymentTerms: "",
       boqId: boq.id, // ลิงก์อ้างอิงภายในเท่านั้น — ไม่แสดงในเอกสารที่พิมพ์

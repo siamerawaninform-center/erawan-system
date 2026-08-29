@@ -376,11 +376,13 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
     setF({
       ...f,
       splitMaterialLabor: checked,
+      // ถ้ารายการนี้มีค่าวัสดุ/ค่าแรงแยกอยู่แล้ว (เช่น ดึงมาจาก BOQ) ใช้ตัวเลขเดิมเป๊ะ แม้ค่าใดค่าหนึ่งจะเป็น 0 จริงๆ ก็ตาม
+      // เช็คว่า "มีฟิลด์นี้อยู่ไหม" (typeof) ไม่ใช่ "ค่าเป็น falsy ไหม" กันรายการที่ไม่มีค่าแรงจริงๆ (0) โดนยัดราคาทั้งก้อนไปเป็นค่าวัสดุซ้ำ
       items: checked
         ? f.items.map((it) => ({
             ...it,
-            materialPrice: it.materialPrice || it.price || 0,
-            laborPrice: it.laborPrice || 0,
+            materialPrice: typeof it.materialPrice === "number" ? it.materialPrice : (it.price || 0),
+            laborPrice: typeof it.laborPrice === "number" ? it.laborPrice : 0,
           }))
         : f.items,
     });
