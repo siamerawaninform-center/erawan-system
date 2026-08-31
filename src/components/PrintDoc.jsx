@@ -124,16 +124,16 @@ const PRINT_CSS = `
   .dsg-sig-line{ width:100%; border-bottom:2.5px solid #222; height:30px; }
   .dsg-role{ color:#555; font-weight:600; }
 
-  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:26px; }
+  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:1.3em; }
   .quote-sig-col{ flex:1; text-align:center; }
-  .quote-sig-inname{ font-size:var(--fs-base); color:#555; margin-bottom:26px; font-weight:600; }
-  .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
-  .quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
-  .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
-  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
+  .quote-sig-inname{ font-size:var(--fs-base); color:#555; margin-bottom:1.3em; font-weight:600; }
+  .quote-sig-line{ border-bottom:3px solid #222; height:3.4em; margin-bottom:0.5em; }
+  .quote-sig-imgwrap{ height:3.4em; margin-bottom:0.5em; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
+  .quote-sig-img{ max-height:3.2em; max-width:240px; object-fit:contain; }
+  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:0.25em; font-family:'Noto Serif Thai',serif; }
   .quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
   .quote-sig-blank-space{ display:inline-block; width:230px; }
-  .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }
+  .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:0.4em; }
   .quote-sig-date{ font-size:var(--fs-base); color:#777; }
 
   @media print {
