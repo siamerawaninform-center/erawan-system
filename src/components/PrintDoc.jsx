@@ -539,18 +539,14 @@ ${sheetsHtml}
 <script>
   window.onafterprint = function () { window.close(); };
 
-  // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ตัดแถวว่างก่อน แล้วค่อยย่อฟอนต์) เหมือนหน้าเดี่ยว
+  // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ย่อฟอนต์อย่างเดียว) เหมือนหน้าเดี่ยวทุกประการ
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base');
 
-      var blanks = Array.prototype.slice.call(sheet.querySelectorAll('.doc-blank-row'));
-      while (sheet.scrollHeight > PAGE_HEIGHT_PX && blanks.length) {
-        blanks.pop().remove();
-      }
-
+      // ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้ง — เหมือนหน้าเดี่ยว จำนวนแถวว่าง fix ไว้ตายตัวแล้ว
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX) return;
 
