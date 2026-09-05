@@ -11,6 +11,8 @@ import { FIN_TYPE_PREFIX, SALES_SET_TYPES } from "./constants.js";
    ใบเสนอราคา:
      QT-{YYYY ค.ศ.}{MM}{เลขวิ่ง 3 หลัก}
      เช่น QT-202602014
+     → เลขวิ่งต่อเนื่องตลอดทั้งปี ไม่รีเซ็ตทุกเดือน (เดือนในรหัสเปลี่ยนตามเดือนที่สร้างจริง
+       แต่เลขวิ่งนับต่อกันไปเรื่อยๆ จนขึ้นปีใหม่ค่อยรีเซ็ต) ถ้าลบใบเลขกลางๆ ทิ้ง เลขนั้นเป็นช่องว่างค้างไว้ ไม่ถูกใช้ซ้ำ
 --------------------------------------------------------- */
 
 /** คืนค่า YYMM แบบ พ.ศ. จาก ISO date เช่น 2026-06-04 → "6906" */
@@ -52,12 +54,19 @@ export function nextSalesRunning(existingFin, dateStr, startFrom = 1, issuedAs =
   return Math.max(max + 1, Number(startFrom) || 1);
 }
 
-/** หาเลขวิ่งถัดไปของใบเสนอราคาในเดือนนั้น (แยกเลขวิ่งตาม "ออกในนาม" เช่นกัน) */
+/**
+ * หาเลขวิ่งถัดไปของใบเสนอราคา — ต่อเนื่องตลอดทั้งปี ไม่รีเซ็ตทุกเดือน
+ * (นับจากใบทั้งหมดที่ "ปี" เดียวกัน ไม่สนว่าเดือนตรงกันไหม)
+ * ถ้าลบใบเลขกลางๆ ทิ้ง เลขนั้นจะเป็นช่องว่างค้างไว้ ไม่ถูกเอามาใช้ซ้ำ (นับจากเลขวิ่งสูงสุดที่เหลืออยู่เสมอ)
+ * แยกเลขวิ่งตาม "ออกในนาม" เช่นกัน
+ */
 export function nextQuoteRunning(existingFin, dateStr, startFrom = 1, issuedAs = "นามบริษัท") {
   const period = cePeriod(dateStr);
+  const year = period.slice(0, 4);
   let max = 0;
   (existingFin || []).forEach((f) => {
-    if (f.type !== "ใบเสนอราคา" || f.period !== period || !f.running) return;
+    if (f.type !== "ใบเสนอราคา" || !f.running || !f.period) return;
+    if (f.period.slice(0, 4) !== year) return; // เทียบแค่ปี ไม่เทียบเดือน — เลขวิ่งต่อเนื่องทั้งปี
     if ((f.issuedAs || "นามบริษัท") !== issuedAs) return;
     const n = Number(f.running);
     if (!isNaN(n) && n > max) max = n;
