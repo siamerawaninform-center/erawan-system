@@ -82,7 +82,6 @@ const PRINT_CSS = `
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
   .doc-desc-sub{ padding-left:1.4em; color:#333; } /* รายละเอียดย่อย — เยื้องเข้าให้เห็นว่าอยู่ในรายการเดียวกับลำดับด้านบน */
-  .doc-po-line{ font-size:1em; margin-top:2px; } /* PO ต่อรายการ — เฉพาะใบแจ้งหนี้/กำกับภาษี/เสร็จ ต่อท้ายรายการที่กรอกไว้เท่านั้น */
   .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-empty{ border:2px solid #333; }
@@ -221,13 +220,10 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         <td class="doc-num">${noPriceSingle ? "" : esc(baht(it.price))}</td>`;
       // จำนวนเงินรวมของบรรทัด คำนวณได้จริงก็ต่อเมื่อมีทั้งจำนวนและราคา — ไม่งั้นเว้นว่างไว้ ไม่ใช่ 0
       const showTotal = !noQty && !noPriceAny;
-      // เลขที่ PO ต่อรายการ — โชว์เฉพาะเอกสารชุดเรียกเก็บ (แจ้งหนี้/กำกับภาษี/เสร็จ) ไม่ใช่ใบเสนอราคา และโชว์เฉพาะรายการที่กรอกไว้จริง
-      const poLine = (!isQuote && it.po && String(it.po).trim())
-        ? `<div class="doc-po-line">PO เลขที่ ${esc(it.po)}</div>` : "";
       return `
       <tr>
         <td class="doc-center">${it.isSub ? "" : itemRunningNo}</td>
-        <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}${poLine}</td>
+        <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}</td>
         <td class="doc-center">${noQty ? "" : `${esc(num(it.qty))} ${esc(it.unit)}`}</td>${priceCells}
         <td class="doc-num">${noDiscount ? "" : esc(baht(it.discount))}</td>
         <td class="doc-num">${showTotal ? esc(baht(lineTotal(it))) : ""}</td>
