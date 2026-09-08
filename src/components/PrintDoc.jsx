@@ -451,7 +451,15 @@ ${sheetHtml}
   // 1) ตัดแถวว่างท้ายตาราง (มีไว้กันดูโหว่เฉยๆ ไม่ใช่ข้อมูลจริง) ออกก่อน ถ้ายังล้นอยู่
   // 2) ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก
   function fitToPage() {
-    var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
+    var MM_TO_PX = 3.7795275591; // ที่ 96dpi
+    var PAGE_HEIGHT_MM = 297;
+    // กันไว้ก่อน (buffer) — ตอนวัดสคริปต์ใช้ layout จอปกติ ไม่ใช่ layout ตอนพิมพ์จริง
+    // (ฟอนต์/การตัดคำอาจขยับเล็กน้อยระหว่างสองโหมดนี้) ถ้าวัดพอดีเป๊ะ 297mm เผื่อไม่พอ
+    // .doc-bottom-block ที่ห้ามตัดกลางก้อน (break-inside:avoid) จะถูกดันข้ามไปทั้งก้อนที่หน้า 2
+    // ทันที เหลือที่ว่างโล่งท้ายหน้า 1 — กันเคสนี้ด้วยการย่อฟอนต์ให้เหลือพื้นที่เผื่อไว้เสมอ
+    var SAFETY_MARGIN_MM = 10;
+    var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
+
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       // ใบเสนอราคาพื้นฐาน 20px ห้ามต่ำกว่า 16px / ชุดเอกสารวางบิลฯ พื้นฐาน 21px ห้ามต่ำกว่า 17px
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
@@ -461,7 +469,7 @@ ${sheetHtml}
       // เพื่อให้เอกสารเต็มหน้ากระดาษเสมอ ถ้าตัดทิ้งจะเห็นวาบแรกเต็มหน้าแล้วหดกลับทันที (ตามที่เจอ)
       // ถ้าล้นจริง ให้ย่อฟอนต์แทน ไม่แตะจำนวนแถว
       var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว ไม่ต้องบีบฟอนต์
+      if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว (รวมพื้นที่เผื่อ) ไม่ต้องบีบฟอนต์
 
       // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
       // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
@@ -546,7 +554,13 @@ ${sheetsHtml}
 
   // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ย่อฟอนต์อย่างเดียว) เหมือนหน้าเดี่ยวทุกประการ
   function fitToPage() {
-    var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    var MM_TO_PX = 3.7795275591;
+    var PAGE_HEIGHT_MM = 297;
+    // เผื่อพื้นที่ไว้เท่ากับหน้าเดี่ยว — กัน .doc-bottom-block (break-inside:avoid) โดนดันข้ามไปหน้าถัดไป
+    // ทั้งก้อนตอนพิมพ์จริง ทั้งที่วัดตอนสคริปต์ทำงานว่าเนื้อหาพอดีแล้ว (ดู fitToPage ของหน้าเดี่ยวประกอบ)
+    var SAFETY_MARGIN_MM = 10;
+    var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
+
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base');
