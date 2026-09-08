@@ -263,6 +263,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .items-row-header{ display:grid; grid-template-columns:40px 1fr 30px 24px; gap:6px; align-items:center; background:rgba(136,8,8,.08); border-left:3px solid var(--maroon); padding:4px 6px; }
 /* พิมพ์รายการยาวๆ เห็นครบไม่ต้องเลื่อนดู — ขยายสูงขึ้นได้เอง (ลากขอบล่างขยายเพิ่มได้อีก) */
 .items-row textarea{ resize:vertical; min-height:60px; }
+/* ช่องกรอก PO ต่อรายการ — อยู่ใต้รายละเอียดในคอลัมน์เดียวกัน เล็กกว่าช่องหลักเพราะเป็นข้อมูลรอง ไม่บังคับกรอก */
+.items-desc-wrap{ display:flex; flex-direction:column; gap:4px; }
+.items-po-input{ font-size:18px !important; padding:6px 10px !important; color:var(--maroon); }
 .items-row-head span{ font-size:26px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }
 .items-row-no{ text-align:center; color:var(--steel); }
 .items-row-no-header{ color:var(--maroon); font-weight:700; }

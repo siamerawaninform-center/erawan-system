@@ -268,7 +268,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       signerApprover: defaultSigner?.name || "",
       signerSales: defaultSigner?.name || "",
       showSignature: false,
-      items: [{ id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, discount: 0 }],
+      items: [{ id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, discount: 0, po: "" }],
       paymentTerms: "",
       note: "",
     };
@@ -356,12 +356,12 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       }),
     });
   const addItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: false }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: false, po: "" }] });
   const addHeaderItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true, isSub: false }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true, isSub: false, po: "" }] });
   // รายละเอียดย่อย — ยังนับยอดเงินตามปกติ แต่ไม่ขึ้นลำดับที่ใหม่ ยังถือว่าอยู่ในรายการเดียวกับแถวก่อนหน้า
   const addSubItem = () =>
-    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: true }] });
+    setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: true, po: "" }] });
   const toggleItemHeader = (id) =>
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isHeader: !it.isHeader, isSub: false, qty: it.isHeader ? 1 : "", unit: it.isHeader ? "งาน" : "" } : it)) });
   const toggleItemSub = (id) =>
@@ -568,12 +568,20 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
               return (
                 <div className={`${f.splitMaterialLabor ? "items-row-split" : "items-row"} ${it.isSub ? "items-row-sub" : ""}`} key={it.id}>
                   <span className="items-row-no">{it.isSub ? "↳" : runningNo}</span>
-                  <textarea
-                    rows={2}
-                    value={it.desc}
-                    onChange={(e) => setItem(it.id, "desc", e.target.value)}
-                    placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน เช่น เทคอนกรีต, ผูกเหล็ก" : "เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"}
-                  />
+                  <div className="items-desc-wrap">
+                    <textarea
+                      rows={2}
+                      value={it.desc}
+                      onChange={(e) => setItem(it.id, "desc", e.target.value)}
+                      placeholder={it.isSub ? "รายละเอียดย่อยของรายการด้านบน เช่น เทคอนกรีต, ผูกเหล็ก" : "เช่น งานปรับพื้นที่ดินและปลูกหญ้าบริเวณหน้าโรงงาน งวดที่ 1 เมื่อได้รับใบสั่งซื้อ เบิก 20%"}
+                    />
+                    <input
+                      className="items-po-input"
+                      value={it.po || ""}
+                      onChange={(e) => setItem(it.id, "po", e.target.value)}
+                      placeholder="PO เลขที่ (ถ้ามี — พิมพ์ต่อท้ายในใบแจ้งหนี้/ใบกำกับภาษี/ใบเสร็จ)"
+                    />
+                  </div>
                   <input type="number" min="0" step="0.01" value={it.qty} onChange={(e) => setItem(it.id, "qty", e.target.value)} />
                   <input value={it.unit} onChange={(e) => setItem(it.id, "unit", e.target.value)} list="unit-suggestions" />
                   {f.splitMaterialLabor ? (
