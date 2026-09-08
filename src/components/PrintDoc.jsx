@@ -37,6 +37,8 @@ const PRINT_CSS = `
   /* ดันก้อนท้ายเอกสาร (เงื่อนไขชำระ/สรุปยอด/ลายเซ็น) ลงไปชิดขอบล่างหน้ากระดาษเสมอ
      เอกสารรายการน้อยจะได้เต็มหน้าพอดี ไม่ใช่จบห้วนๆ กลางหน้าแล้วเหลือที่ว่างโล่งด้านล่าง */
   .doc-bottom-block{ margin-top:auto; padding-top:12px; break-inside:avoid; page-break-inside:avoid; }
+  /* เงื่อนไขการชำระเงิน (ใบเสนอราคา) — ให้ติดกับตารางรายการเลย ไม่ต้องมีช่องว่างเว้นเหมือนบล็อกอื่น */
+  .doc-bottom-block-tight{ padding-top:0; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -400,7 +402,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
   </div>
   ${tableHtml}
   </div>
-  <div class="doc-bottom-block">
+  <div class="doc-bottom-block${paymentTermsHtml ? " doc-bottom-block-tight" : ""}">
     ${paymentTermsHtml}
     ${footerHtml}
     ${signHtml}
