@@ -242,6 +242,11 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
     if (item) return { issuedAs: ISSUED_AS_OPTIONS[0], splitMaterialLabor: false, ...item };
     const type = isSet ? "ใบกำกับภาษี" : "ใบเสนอราคา";
     const alloc = allocateDocNumber(data.quotes, type, todayISO(), data.company);
+    const initDate = todayISO();
+    const initCreditDays = 30;
+    // คำนวณวันครบกำหนดชำระตั้งแต่เปิดฟอร์มเลย ไม่ต้องรอให้แก้วันที่/เครดิตก่อนถึงจะคำนวณ
+    const initDue = new Date(initDate + "T00:00:00");
+    initDue.setDate(initDue.getDate() + initCreditDays);
     return {
       id: uid("fin"),
       kind: isSet ? "salesSet" : "quote",
@@ -254,9 +259,9 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       customerName: "",
       status: FIN_STATUSES[0],
       billingStatus: isSet ? BILLING_STATUSES[0] : undefined,
-      date: todayISO(),
-      dueDate: "",
-      creditDays: 30,
+      date: initDate,
+      dueDate: initDue.toISOString().slice(0, 10),
+      creditDays: initCreditDays,
       refPO: "",
       vat: true,
       discount: 0,
