@@ -141,6 +141,9 @@ const PRINT_CSS = `
     .no-print{ display:none !important; }
     .sheet-wrap{ padding:0; visibility:visible !important; } /* พิมพ์/บันทึก PDF ต้องเห็นเสมอ ไม่ว่าจอจะซ่อนไว้ระหว่างคำนวณขนาดฟอนต์หรือไม่ */
     .sheet{ box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always; }
+    /* ถ้ารายการเยอะจนล้นจริงต้องขึ้นหน้า 2 — ให้ระยะขอบกระดาษ (padding เดิมของ .sheet) เกิดซ้ำในหน้าต่อไปด้วย
+       ไม่งั้นหน้า 2 จะเริ่มชิดขอบกระดาษพอดี ดูไม่มีขอบ ไม่สวย */
+    .sheet{ -webkit-box-decoration-break:clone; box-decoration-break:clone; }
     .sheet:last-child{ page-break-after:auto; }
     .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page{ size:A4; margin:0; }
