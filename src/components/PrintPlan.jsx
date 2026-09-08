@@ -19,10 +19,9 @@ const PRINT_CSS = `
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
   thead th{ background:#5c0505; color:#fff; font-size:10px; padding:4px 1px; font-weight:700; }
-  .gantt-month{ font-size:10px; letter-spacing:.03em; border-left:3px solid #fff; }
-  /* เส้นกั้นหนาตรงจุดที่ขึ้นเดือนใหม่ — ลากยาวทะลุทุกแถวของตาราง ไม่ใช่แค่แถวหัวเดือน ให้เห็นชัดว่าคอลัมน์ไหนข้ามเดือน */
-  thead th.month-start{ border-left:3px solid #fff !important; }
-  tbody td.month-start{ border-left:3px solid #171717 !important; }
+  .gantt-month{ font-size:10px; letter-spacing:.03em; }
+  /* เส้นกั้นหนาสีดำ เฉพาะตรงจุดที่ขึ้นเดือนใหม่เท่านั้น — ลากยาวทะลุทุกแถวของตาราง จุดอื่นไม่ขีดเพิ่ม */
+  th.month-start, td.month-start{ border-left:3px solid #000 !important; }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
   .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; }
