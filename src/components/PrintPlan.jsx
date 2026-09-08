@@ -19,7 +19,10 @@ const PRINT_CSS = `
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
   thead th{ background:#5c0505; color:#fff; font-size:10px; padding:4px 1px; font-weight:700; }
-  .gantt-month{ font-size:10px; letter-spacing:.03em; border-left:1px solid rgba(255,255,255,.25); }
+  .gantt-month{ font-size:10px; letter-spacing:.03em; border-left:3px solid #fff; }
+  /* เส้นกั้นหนาตรงจุดที่ขึ้นเดือนใหม่ — ลากยาวทะลุทุกแถวของตาราง ไม่ใช่แค่แถวหัวเดือน ให้เห็นชัดว่าคอลัมน์ไหนข้ามเดือน */
+  thead th.month-start{ border-left:3px solid #fff !important; }
+  tbody td.month-start{ border-left:3px solid #171717 !important; }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
   .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; }
@@ -67,9 +70,16 @@ export default function PrintPlan({ plan, data, onClose }) {
       return taskColumnRange(rangeStart, stepMs, columns.length, t.start + "T00:00:00", t.end + "T00:00:00");
     };
 
-    const headCells = columns.map((c) => `<th class="gantt-col">${esc(isHour ? c.label : c.day)}</th>`).join("");
+    // จุดที่ขึ้นเดือนใหม่ (เทียบกับคอลัมน์ก่อนหน้า) — ใช้ตีเส้นหนาทะลุทั้งตาราง เฉพาะโหมดรายวันที่มีวันที่จริงต่อคอลัมน์
+    const monthStart = columns.map((c, i) =>
+      !isHour && i > 0 &&
+      (c.date.getMonth() !== columns[i - 1].date.getMonth() || c.date.getFullYear() !== columns[i - 1].date.getFullYear())
+    );
+
+    const headCells = columns.map((c, i) => `<th class="gantt-col${monthStart[i] ? " month-start" : ""}">${esc(isHour ? c.label : c.day)}</th>`).join("");
 
     // แถวเดือน (รวมช่องวันที่อยู่เดือนเดียวกันไว้ด้วยกันด้วย colspan) — เฉพาะโหมดรายวัน
+    // ลิงค์ตรงจากช่วงวันที่/ระยะห่างคอลัมน์ที่กรอกไว้ในแผนงาน (buildDayColumns) ไม่ใช่ค่าตายตัว
     let monthHeadCells = "";
     if (!isHour && columns.length > 0) {
       const cells = [];
@@ -85,7 +95,7 @@ export default function PrintPlan({ plan, data, onClose }) {
         }
         const col = columns[i];
         const yearBE = col.date.getFullYear() + 543;
-        cells.push(`<th colspan="${span}" class="gantt-month">${esc(col.monthLabel)} ${yearBE}</th>`);
+        cells.push(`<th colspan="${span}" class="gantt-month${monthStart[i] ? " month-start" : ""}">${esc(col.monthLabel)} ${yearBE}</th>`);
         i += span;
       }
       monthHeadCells = cells.join("");
@@ -94,7 +104,7 @@ export default function PrintPlan({ plan, data, onClose }) {
     const bodyRows = (plan.tasks || []).map((t, idx) => {
       const { startIdx, endIdx } = taskRange(t);
       const cells = columns.map((c, i) =>
-        `<td class="gantt-col ${i >= startIdx && i <= endIdx ? "gantt-fill" : ""}"></td>`
+        `<td class="gantt-col${monthStart[i] ? " month-start" : ""} ${i >= startIdx && i <= endIdx ? "gantt-fill" : ""}"></td>`
       ).join("");
       return `<tr><td class="gantt-no">${idx + 1}</td><td class="gantt-desc-cell">${esc(t.description || "—")}</td>${cells}</tr>`;
     }).join("");
