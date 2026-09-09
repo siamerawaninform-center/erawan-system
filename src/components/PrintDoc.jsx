@@ -27,6 +27,8 @@ const PRINT_CSS = `
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:calc(var(--fs-base) * 0.7222); }
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
+  .pv-fit-toggle{ display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; user-select:none; }
+  .pv-fit-toggle input{ cursor:pointer; }
   /* ซ่อนไว้ก่อนจนกว่าจะคำนวณขนาดตัวอักษรเสร็จ กันเห็นภาพตัวหนังสือบีบอัดวาบๆ ตอนโหลด */
   .sheet-wrap{ padding:20px 0; visibility:hidden; }
 
@@ -436,7 +438,11 @@ export default function PrintDoc({ payload, data, onClose }) {
     <option value="ต้นฉบับ">ต้นฉบับ (ORIGINAL)</option>
     <option value="สำเนา">สำเนา (COPY)</option>
   </select>
-  <button onclick="fitToPage(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
+  <label class="pv-fit-toggle">
+    <input type="checkbox" id="fitToggle" checked />
+    ย่อตัวหนังสือให้พอดี 1 หน้า A4
+  </label>
+  <button onclick="applyFitPreference(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
 <div class="sheet-wrap">
 ${sheetHtml}
@@ -448,27 +454,30 @@ ${sheetHtml}
   });
   window.onafterprint = function () { window.close(); };
 
-  // บีบเนื้อหาให้พอดี 1 หน้า A4 เสมอ ทำ 2 ขั้น:
-  // 1) ตัดแถวว่างท้ายตาราง (มีไว้กันดูโหว่เฉยๆ ไม่ใช่ข้อมูลจริง) ออกก่อน ถ้ายังล้นอยู่
-  // 2) ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก
-  function fitToPage() {
-    var MM_TO_PX = 3.7795275591; // ที่ 96dpi
-    var PAGE_HEIGHT_MM = 297;
-    // กันไว้ก่อน (buffer) — ตอนวัดสคริปต์ใช้ layout จอปกติ ไม่ใช่ layout ตอนพิมพ์จริง
-    // (ฟอนต์/การตัดคำอาจขยับเล็กน้อยระหว่างสองโหมดนี้) ถ้าวัดพอดีเป๊ะ 297mm เผื่อไม่พอ
-    // .doc-bottom-block ที่ห้ามตัดกลางก้อน (break-inside:avoid) จะถูกดันข้ามไปทั้งก้อนที่หน้า 2
-    // ทันที เหลือที่ว่างโล่งท้ายหน้า 1 — กันเคสนี้ด้วยการย่อฟอนต์ให้เหลือพื้นที่เผื่อไว้เสมอ
-    var SAFETY_MARGIN_MM = 10;
-    var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
+  var MM_TO_PX = 3.7795275591; // ที่ 96dpi
+  var PAGE_HEIGHT_MM = 297;
+  // กันไว้ก่อน (buffer) — ตอนวัดสคริปต์ใช้ layout จอปกติ ไม่ใช่ layout ตอนพิมพ์จริง
+  // (ฟอนต์/การตัดคำอาจขยับเล็กน้อยระหว่างสองโหมดนี้) ถ้าวัดพอดีเป๊ะ 297mm เผื่อไม่พอ
+  // .doc-bottom-block ที่ห้ามตัดกลางก้อน (break-inside:avoid) จะถูกดันข้ามไปทั้งก้อนที่หน้า 2
+  // ทันที เหลือที่ว่างโล่งท้ายหน้า 1 — กันเคสนี้ด้วยการย่อฟอนต์ให้เหลือพื้นที่เผื่อไว้เสมอ
+  var SAFETY_MARGIN_MM = 10;
+  var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
 
+  // โหมด "ปล่อยตามมาตรฐาน" — คืนขนาดฟอนต์เดิม ไม่บีบ ปล่อยให้ล้นไปหน้า 2 ได้ตามจริง
+  function resetFit() {
+    document.querySelectorAll('.sheet').forEach(function (sheet) {
+      sheet.style.removeProperty('--fs-base');
+    });
+  }
+
+  // โหมด "ย่อให้พอดี 1 หน้า" — ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ
+  // จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก ไม่ตัดแถวว่างหรือเนื้อหาใดๆ ทั้งสิ้น
+  function fitToPage() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       // ใบเสนอราคาพื้นฐาน 20px ห้ามต่ำกว่า 16px / ชุดเอกสารวางบิลฯ พื้นฐาน 21px ห้ามต่ำกว่า 17px
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
 
-      // หมายเหตุ: ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้งอีกต่อไป — แถวว่างพวกนี้ตอนนี้ fix จำนวนไว้ตายตัว
-      // เพื่อให้เอกสารเต็มหน้ากระดาษเสมอ ถ้าตัดทิ้งจะเห็นวาบแรกเต็มหน้าแล้วหดกลับทันที (ตามที่เจอ)
-      // ถ้าล้นจริง ให้ย่อฟอนต์แทน ไม่แตะจำนวนแถว
       var natural = sheet.scrollHeight;
       if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว (รวมพื้นที่เผื่อ) ไม่ต้องบีบฟอนต์
 
@@ -484,11 +493,21 @@ ${sheetHtml}
       }
     });
   }
+
+  // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
+  function applyFitPreference() {
+    var toggle = document.getElementById('fitToggle');
+    if (toggle && toggle.checked) fitToPage();
+    else resetFit();
+  }
+
+  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
+
   // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — ไม่เรียกทันทีตอนนี้
   // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจคำนวณผิด
   // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
   function fitAndReveal() {
-    try { fitToPage(); } finally {
+    try { applyFitPreference(); } finally {
       var wrap = document.querySelector('.sheet-wrap');
       if (wrap) wrap.style.visibility = 'visible';
     }
@@ -545,7 +564,11 @@ export function PrintDocSet({ payload, data, onClose }) {
 </head><body>
 <div class="pv-bar no-print">
   <span class="pv-label">พรีวิวก่อนพิมพ์ — ชุดเอกสาร (${pages.length} แผ่น)</span>
-  <button onclick="fitToPage(); window.print();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
+  <label class="pv-fit-toggle">
+    <input type="checkbox" id="fitToggle" checked />
+    ย่อตัวหนังสือให้พอดี 1 หน้า A4
+  </label>
+  <button onclick="applyFitPreference(); window.print();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
 </div>
 <div class="sheet-wrap">
 ${sheetsHtml}
@@ -553,15 +576,22 @@ ${sheetsHtml}
 <script>
   window.onafterprint = function () { window.close(); };
 
-  // บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ย่อฟอนต์อย่างเดียว) เหมือนหน้าเดี่ยวทุกประการ
-  function fitToPage() {
-    var MM_TO_PX = 3.7795275591;
-    var PAGE_HEIGHT_MM = 297;
-    // เผื่อพื้นที่ไว้เท่ากับหน้าเดี่ยว — กัน .doc-bottom-block (break-inside:avoid) โดนดันข้ามไปหน้าถัดไป
-    // ทั้งก้อนตอนพิมพ์จริง ทั้งที่วัดตอนสคริปต์ทำงานว่าเนื้อหาพอดีแล้ว (ดู fitToPage ของหน้าเดี่ยวประกอบ)
-    var SAFETY_MARGIN_MM = 10;
-    var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
+  var MM_TO_PX = 3.7795275591;
+  var PAGE_HEIGHT_MM = 297;
+  // เผื่อพื้นที่ไว้เท่ากับหน้าเดี่ยว — กัน .doc-bottom-block (break-inside:avoid) โดนดันข้ามไปหน้าถัดไป
+  // ทั้งก้อนตอนพิมพ์จริง ทั้งที่วัดตอนสคริปต์ทำงานว่าเนื้อหาพอดีแล้ว (ดู fitToPage ของหน้าเดี่ยวประกอบ)
+  var SAFETY_MARGIN_MM = 10;
+  var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
 
+  // โหมด "ปล่อยตามมาตรฐาน" — คืนขนาดฟอนต์เดิมทุกแผ่น ไม่บีบ ปล่อยให้ล้นไปหน้าถัดไปได้ตามจริง
+  function resetFit() {
+    document.querySelectorAll('.sheet').forEach(function (sheet) {
+      sheet.style.removeProperty('--fs-base');
+    });
+  }
+
+  // โหมด "ย่อให้พอดี 1 หน้า" — บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ย่อฟอนต์อย่างเดียว) เหมือนหน้าเดี่ยวทุกประการ
+  function fitToPage() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base');
@@ -580,10 +610,20 @@ ${sheetsHtml}
       }
     });
   }
+
+  // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
+  function applyFitPreference() {
+    var toggle = document.getElementById('fitToggle');
+    if (toggle && toggle.checked) fitToPage();
+    else resetFit();
+  }
+
+  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
+
   // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — เหตุผลเดียวกับหน้าเดี่ยว
   // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
   function fitAndReveal() {
-    try { fitToPage(); } finally {
+    try { applyFitPreference(); } finally {
       var wrap = document.querySelector('.sheet-wrap');
       if (wrap) wrap.style.visibility = 'visible';
     }
