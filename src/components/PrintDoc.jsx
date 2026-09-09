@@ -30,7 +30,7 @@ const PRINT_CSS = `
   .pv-fit-toggle{ display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; user-select:none; }
   .pv-fit-toggle input{ cursor:pointer; }
   /* ซ่อนไว้ก่อนจนกว่าจะคำนวณขนาดตัวอักษรเสร็จ กันเห็นภาพตัวหนังสือบีบอัดวาบๆ ตอนโหลด */
-  .sheet-wrap{ padding:20px 0; visibility:hidden; }
+  .sheet-wrap{ padding:20px 0; }
 
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่าเล็กน้อย เต็มหน้ากระดาษกว่าใบเสนอราคา */
@@ -144,7 +144,7 @@ const PRINT_CSS = `
   @media print {
     body{ background:#fff; }
     .no-print{ display:none !important; }
-    .sheet-wrap{ padding:0; visibility:visible !important; } /* พิมพ์/บันทึก PDF ต้องเห็นเสมอ ไม่ว่าจอจะซ่อนไว้ระหว่างคำนวณขนาดฟอนต์หรือไม่ */
+    .sheet-wrap{ padding:0; }
     .sheet{ box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always; }
     /* ถ้ารายการเยอะจนล้นจริงต้องขึ้นหน้า 2 — ให้ระยะขอบกระดาษ (padding เดิมของ .sheet) เกิดซ้ำในหน้าต่อไปด้วย
        ไม่งั้นหน้า 2 จะเริ่มชิดขอบกระดาษพอดี ดูไม่มีขอบ ไม่สวย */
@@ -454,93 +454,41 @@ ${sheetHtml}
   });
   window.onafterprint = function () { window.close(); };
 
-  // ฟอนต์ไทยโหลดผ่าน Google Fonts (@import) — ถ้าวัด/บีบขนาดก่อนฟอนต์จริงโหลดเสร็จ
-  // จะใช้ค่าฟอนต์สำรอง (fallback) ซึ่งความกว้าง/ความสูงบรรทัดไม่ตรงของจริง ทำให้คำนวณพลาด
-  // เนื้อหาที่ดูพอดีตอนพรีวิว อาจกลายเป็นล้นหน้าตอนพิมพ์จริง (ฟอนต์จริงมาแทนที่แล้วเนื้อหาขยับ)
-  // จึงต้องรอ document.fonts.ready ให้แน่ใจว่าฟอนต์สลับเสร็จสมบูรณ์ก่อนวัดทุกครั้ง ทั้งตอนโหลด
-  // หน้าและตอนกดพิมพ์
-  function whenFontsReady(callback) {
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(callback, callback);
-    } else {
-      callback();
-    }
-  }
+  // เลิกใช้วิธีวัด scrollHeight แล้วลดฟอนต์ทีละนิด — วิธีนั้นพึ่งพาจังหวะโหลดฟอนต์/รูป
+  // และพฤติกรรม pagination ของแต่ละเบราว์เซอร์ ซึ่งไม่นิ่งพอ (พรีวิวกับพิมพ์จริงออกมาคนละแบบ)
+  // เปลี่ยนเป็นค่าคงที่ตายตัว 2 ระดับแทน: ขนาดมาตรฐาน กับขนาดย่อ (compact) — เลือกได้จากติ๊ก
+  // การกำหนดค่าคงที่แบบนี้ไม่ขึ้นกับเวลาที่เรียก จึงพรีวิวกับพิมพ์จริงจะออกมาตรงกันเสมอ
+  var COMPACT_FONT_PX = { default: 16, billing: 17 }; // ต่ำสุดที่ยังอ่านง่าย ต่อประเภทเอกสาร
 
-  function printSheet() {
-    whenFontsReady(function () {
-      applyFitPreference();
-      window.print();
-    });
-  }
-
-  var MM_TO_PX = 3.7795275591; // ที่ 96dpi
-  var PAGE_HEIGHT_MM = 297;
-  // กันไว้ก่อน (buffer) — ตอนวัดสคริปต์ใช้ layout จอปกติ ไม่ใช่ layout ตอนพิมพ์จริง
-  // (ฟอนต์/การตัดคำอาจขยับเล็กน้อยระหว่างสองโหมดนี้) ถ้าวัดพอดีเป๊ะ 297mm เผื่อไม่พอ
-  // .doc-bottom-block ที่ห้ามตัดกลางก้อน (break-inside:avoid) จะถูกดันข้ามไปทั้งก้อนที่หน้า 2
-  // ทันที เหลือที่ว่างโล่งท้ายหน้า 1 — กันเคสนี้ด้วยการย่อฟอนต์ให้เหลือพื้นที่เผื่อไว้เสมอ
-  var SAFETY_MARGIN_MM = 10;
-  var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
-
-  // โหมด "ปล่อยตามมาตรฐาน" — คืนขนาดฟอนต์เดิม ไม่บีบ ปล่อยให้ล้นไปหน้า 2 ได้ตามจริง
+  // โหมด "ปล่อยตามมาตรฐาน" — ใช้ขนาดฟอนต์ตั้งต้นของเอกสาร ปล่อยให้ล้นไปหน้า 2 ได้ตามจริง
   function resetFit() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
     });
   }
 
-  // โหมด "ย่อให้พอดี 1 หน้า" — ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ลงเรื่อยๆ
-  // จนพอดีหรือถึงขนาดต่ำสุดที่ยังอ่านออก ไม่ตัดแถวว่างหรือเนื้อหาใดๆ ทั้งสิ้น
-  function fitToPage() {
+  // โหมด "ย่อให้พอดี 1 หน้า" — ตั้งฟอนต์เป็นขนาดย่อคงที่ตรงๆ ไม่วัดไม่ลูป
+  function applyCompactSize() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      // ใบเสนอราคาพื้นฐาน 20px ห้ามต่ำกว่า 16px / ชุดเอกสารวางบิลฯ พื้นฐาน 21px ห้ามต่ำกว่า 17px
-      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
-      sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
-
-      // .sheet มี CSS min-height:297mm (ให้แผ่นดูเต็มหน้าเสมอ) — ค่านี้ทำให้ scrollHeight
-      // รายงานความสูงเท่ากับ "1 หน้าเต็ม" อยู่ตลอด ต่อให้เนื้อหาจริงสั้นกว่านั้นมาก วัดตรงๆ ไม่ได้
-      // ต้องปลด min-height ออกชั่วคราวก่อนวัด ถึงจะเห็นความสูงเนื้อหาจริง แล้วค่อยคืนค่าตอนจบ
-      sheet.style.minHeight = "0";
-
-      var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX) { sheet.style.removeProperty('min-height'); return; } // พอดีแล้ว ไม่ต้องบีบฟอนต์
-
-      // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
-      // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
-      var size = parseFloat(getComputedStyle(sheet).fontSize);
-      for (var i = 0; i < 40; i++) {
-        var h = sheet.scrollHeight;
-        if (h <= PAGE_HEIGHT_PX) break;
-        size -= 0.4;
-        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
-        sheet.style.setProperty('--fs-base', size + "px");
-      }
-      sheet.style.removeProperty('min-height'); // คืนค่าให้แผ่นเต็มหน้าตามปกติหลังบีบเสร็จ
+      var px = sheet.classList.contains('sheet-billing') ? COMPACT_FONT_PX.billing : COMPACT_FONT_PX.default;
+      sheet.style.setProperty('--fs-base', px + "px");
     });
   }
 
   // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
   function applyFitPreference() {
     var toggle = document.getElementById('fitToggle');
-    if (toggle && toggle.checked) fitToPage();
+    if (toggle && toggle.checked) applyCompactSize();
     else resetFit();
   }
 
-  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
-
-  // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — ไม่เรียกทันทีตอนนี้
-  // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจคำนวณผิด
-  // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
-  function fitAndReveal() {
-    whenFontsReady(function () {
-      try { applyFitPreference(); } finally {
-        var wrap = document.querySelector('.sheet-wrap');
-        if (wrap) wrap.style.visibility = 'visible';
-      }
-    });
+  function printSheet() {
+    applyFitPreference();
+    window.print();
   }
-  window.addEventListener("load", fitAndReveal);
+
+  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
+  applyFitPreference();
 </script>
 </body></html>`;
 
@@ -604,84 +552,39 @@ ${sheetsHtml}
 <script>
   window.onafterprint = function () { window.close(); };
 
-  // ฟอนต์ไทยโหลดผ่าน Google Fonts (@import) — ต้องรอ document.fonts.ready ให้แน่ใจว่าฟอนต์
-  // สลับเสร็จสมบูรณ์ก่อนวัด/บีบขนาดทุกครั้ง (เหตุผลเดียวกับหน้าเดี่ยว) ไม่งั้นวัดตอนฟอนต์สำรอง
-  // เนื้อหาที่พอดีตอนพรีวิวจะขยับล้นตอนพิมพ์จริงหลังฟอนต์จริงโหลดมาแทนที่
-  function whenFontsReady(callback) {
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(callback, callback);
-    } else {
-      callback();
-    }
-  }
+  // ค่าคงที่ตายตัว 2 ระดับ (เหมือนหน้าเดี่ยวทุกประการ) — ไม่วัด ไม่ลูป จึงพรีวิวกับพิมพ์จริง
+  // ออกมาตรงกันเสมอ ไม่ขึ้นกับจังหวะโหลดฟอนต์/รูปหรือพฤติกรรม pagination ของเบราว์เซอร์
+  var COMPACT_FONT_PX = { default: 16, billing: 17 };
 
-  function printSheet() {
-    whenFontsReady(function () {
-      applyFitPreference();
-      window.print();
-    });
-  }
-
-  var MM_TO_PX = 3.7795275591;
-  var PAGE_HEIGHT_MM = 297;
-  // เผื่อพื้นที่ไว้เท่ากับหน้าเดี่ยว — กัน .doc-bottom-block (break-inside:avoid) โดนดันข้ามไปหน้าถัดไป
-  // ทั้งก้อนตอนพิมพ์จริง ทั้งที่วัดตอนสคริปต์ทำงานว่าเนื้อหาพอดีแล้ว (ดู fitToPage ของหน้าเดี่ยวประกอบ)
-  var SAFETY_MARGIN_MM = 10;
-  var PAGE_HEIGHT_PX = (PAGE_HEIGHT_MM - SAFETY_MARGIN_MM) * MM_TO_PX;
-
-  // โหมด "ปล่อยตามมาตรฐาน" — คืนขนาดฟอนต์เดิมทุกแผ่น ไม่บีบ ปล่อยให้ล้นไปหน้าถัดไปได้ตามจริง
+  // โหมด "ปล่อยตามมาตรฐาน" — ใช้ขนาดฟอนต์ตั้งต้นทุกแผ่น ปล่อยให้ล้นไปหน้าถัดไปได้ตามจริง
   function resetFit() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
     });
   }
 
-  // โหมด "ย่อให้พอดี 1 หน้า" — บีบเนื้อหาให้พอดี 1 หน้า A4 ต่อแผ่นเสมอ (ย่อฟอนต์อย่างเดียว) เหมือนหน้าเดี่ยวทุกประการ
-  function fitToPage() {
+  // โหมด "ย่อให้พอดี 1 หน้า" — ตั้งฟอนต์เป็นขนาดย่อคงที่ทุกแผ่นตรงๆ ไม่วัดไม่ลูป
+  function applyCompactSize() {
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
-      sheet.style.removeProperty('--fs-base');
-
-      // .sheet มี CSS min-height:297mm (ให้แผ่นดูเต็มหน้าเสมอ) ทำให้ scrollHeight รายงาน
-      // ความสูงเท่ากับ 1 หน้าเต็มตลอด ต้องปลด min-height ชั่วคราวก่อนวัด ถึงจะเห็นความสูงจริง
-      // (เหตุผลเดียวกับหน้าเดี่ยว) — ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้ง จำนวนแถวว่าง fix ไว้ตายตัวแล้ว
-      sheet.style.minHeight = "0";
-
-      var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX) { sheet.style.removeProperty('min-height'); return; }
-
-      var size = parseFloat(getComputedStyle(sheet).fontSize);
-      for (var i = 0; i < 40; i++) {
-        var h = sheet.scrollHeight;
-        if (h <= PAGE_HEIGHT_PX) break;
-        size -= 0.4;
-        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
-        sheet.style.setProperty('--fs-base', size + "px");
-      }
-      sheet.style.removeProperty('min-height');
+      var px = sheet.classList.contains('sheet-billing') ? COMPACT_FONT_PX.billing : COMPACT_FONT_PX.default;
+      sheet.style.setProperty('--fs-base', px + "px");
     });
   }
 
   // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
   function applyFitPreference() {
     var toggle = document.getElementById('fitToggle');
-    if (toggle && toggle.checked) fitToPage();
+    if (toggle && toggle.checked) applyCompactSize();
     else resetFit();
   }
 
-  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
-
-  // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — เหตุผลเดียวกับหน้าเดี่ยว
-  // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
-  function fitAndReveal() {
-    whenFontsReady(function () {
-      try { applyFitPreference(); } finally {
-        var wrap = document.querySelector('.sheet-wrap');
-        if (wrap) wrap.style.visibility = 'visible';
-      }
-    });
+  function printSheet() {
+    applyFitPreference();
+    window.print();
   }
-  window.addEventListener("load", fitAndReveal);
+
+  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
+  applyFitPreference();
 </script>
 </body></html>`;
 
