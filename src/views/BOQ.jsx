@@ -15,6 +15,7 @@ import { BOQ_DEFAULT_MARKUP, FIN_STATUSES } from "../lib/constants.js";
 export default function BOQ({ data, upsert, remove, onPrint, setView }) {
   const [modal, setModal] = useState(null);
   const [quoteModal, setQuoteModal] = useState(null); // { boq }
+  const [fromQuoteModal, setFromQuoteModal] = useState(false);
   const list = data.boqs || [];
   const project = (id) => data.projects.find((p) => p.id === id);
 
@@ -34,6 +35,12 @@ export default function BOQ({ data, upsert, remove, onPrint, setView }) {
           onClick={() => setModal({ mode: "add" })}
           disabled={data.projects.length === 0}
         >+ สร้าง BOQ</button>
+        <button
+          className="btn btn-ghost"
+          onClick={() => setFromQuoteModal(true)}
+          disabled={(data.quotes || []).filter((q) => q.kind === "quote").length === 0}
+          title="ใช้ตอนออกใบเสนอราคาไปก่อนแล้ว ยังไม่มี BOQ ของงานนั้น"
+        >+ สร้าง BOQ จากใบเสนอราคา</button>
       </Toolbar>
 
       {data.projects.length === 0 ? (
@@ -92,6 +99,14 @@ export default function BOQ({ data, upsert, remove, onPrint, setView }) {
           upsert={upsert}
           setView={setView}
           onClose={() => setQuoteModal(null)}
+        />
+      )}
+
+      {fromQuoteModal && (
+        <BoqFromQuoteModal
+          data={data}
+          upsert={upsert}
+          onClose={() => setFromQuoteModal(false)}
         />
       )}
     </div>
@@ -413,6 +428,132 @@ function QuoteFromBoqModal({ boq, data, upsert, setView, onClose }) {
         <div className="form-actions">
           <button type="button" className="btn btn-ghost" onClick={onClose}>ยกเลิก</button>
           <button type="button" className="btn btn-primary" onClick={createQuote}>สร้างใบเสนอราคา</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+/* ---------------------------------------------------------
+   BoqFromQuoteModal — สร้าง BOQ ย้อนหลังจากใบเสนอราคาที่ออกไปแล้ว
+   ใช้ตอนรีบส่งใบเสนอราคาก่อน ยังไม่ได้ทำ BOQ เลยไม่รู้ต้นทุนที่แท้จริงของงานนั้น
+   หลักการ: ราคาขาย = ต้นทุน x (1 + %กำไร) ตอนสร้าง BOQ จากใบเสนอราคา จึงต้อง
+   "ถอยกลับ" สมการเดียวกัน — ต้นทุน = ราคาขาย ÷ (1 + %กำไร)
+--------------------------------------------------------- */
+function BoqFromQuoteModal({ data, upsert, onClose }) {
+  // เอาเฉพาะใบเสนอราคาจริง (ไม่รวมชุดเรียกเก็บ) มาให้เลือก
+  const quotesOnly = (data.quotes || []).filter((q) => q.kind === "quote");
+  const [quoteId, setQuoteId] = useState("");
+  const [markup, setMarkup] = useState(BOQ_DEFAULT_MARKUP);
+
+  const quote = quotesOnly.find((q) => q.id === quoteId) || null;
+  const project = quote ? data.projects.find((p) => p.id === quote.projectId) : null;
+  const factor = 1 + (Number(markup) || 0) / 100;
+
+  // ถอยราคาขายกลับเป็นต้นทุนต่อหน่วยทีละรายการ
+  // ถ้ารายการนั้นเคยแยกค่าวัสดุ/ค่าแรงไว้แล้วในใบเสนอราคา (materialPrice/laborPrice เป็นตัวเลขจริง)
+  // ก็ถอยแยกตามนั้นตรงๆ — ถ้าไม่เคยแยก (มีแค่ราคารวม/หน่วย) ก็ยัดต้นทุนที่ถอยได้ไปไว้ที่ช่องวัสดุก่อน
+  // (ค่าแรงตั้งไว้ 0) แล้วไปแยกเองอีกทีในหน้าแก้ไข BOQ เพราะระบบเดาเองไม่ได้ว่าสัดส่วนจริงเป็นเท่าไหร่
+  const preview = (quote?.items || []).map((it) => {
+    if (it.isHeader) return { ...it, materialUnitPrice: 0, laborUnitPrice: 0, unitCost: 0 };
+    const hasSplit = typeof it.materialPrice === "number" || typeof it.laborPrice === "number";
+    const materialUnitPrice = hasSplit ? (Number(it.materialPrice) || 0) / factor : (Number(it.price) || 0) / factor;
+    const laborUnitPrice = hasSplit ? (Number(it.laborPrice) || 0) / factor : 0;
+    return { ...it, materialUnitPrice, laborUnitPrice, unitCost: materialUnitPrice + laborUnitPrice };
+  });
+
+  const createBoq = () => {
+    if (!quote) return;
+    const newBoq = {
+      id: uid("boq"),
+      projectId: quote.projectId,
+      projectCode: project?.code || "",
+      code: nextBoqCode(data.boqs, project?.code || ""),
+      date: todayISO(),
+      markupPercent: Number(markup) || 0,
+      vat: !!quote.vat,
+      discount: 0,
+      estimatorId: data.signers.find((s) => s.isDefault)?.id || "",
+      showSignature: false,
+      // บันทึกที่มาไว้เป็นหมายเหตุ กันลืมว่าต้นทุนพวกนี้เป็นตัวเลขถอยกลับ ไม่ใช่ต้นทุนจริงที่กรอกจากหน้างาน
+      note: `วิเคราะห์ต้นทุนย้อนกลับจากใบเสนอราคา ${quote.code} (สมมติกำไร ${markup}% จากต้นทุนตอนเสนอราคา) — ควรปรับต้นทุนแต่ละรายการให้ตรงของจริงอีกที โดยเฉพาะรายการที่ตอนออกใบเสนอราคายังไม่ได้แยกค่าวัสดุ/ค่าแรง (ระบบยัดรวมไว้ที่ช่องวัสดุให้ก่อน)`,
+      sourceQuoteId: quote.id, // ลิงก์อ้างอิงภายในเท่านั้น — ไม่แสดงในเอกสารที่พิมพ์
+      items: preview.map((it) => ({
+        id: uid("bi"),
+        description: it.desc,
+        qty: it.isHeader ? 0 : it.qty,
+        unit: it.isHeader ? "" : it.unit,
+        materialUnitPrice: Math.round((it.materialUnitPrice || 0) * 100) / 100,
+        laborUnitPrice: Math.round((it.laborUnitPrice || 0) * 100) / 100,
+        isHeader: !!it.isHeader,
+        isSub: !!it.isSub,
+      })),
+    };
+    upsert("boqs", newBoq, "BOQ");
+    onClose();
+  };
+
+  return (
+    <Modal title="สร้าง BOQ จากใบเสนอราคา" onClose={onClose} xwide>
+      <div className="form">
+        <p className="muted">
+          ใช้ตอนรีบออกใบเสนอราคาไปก่อนแล้ว ยังไม่ได้ทำ BOQ เลยไม่รู้ต้นทุนของงานนั้น —
+          เลือกใบเสนอราคาที่ออกไปแล้ว ใส่ % กำไรที่คิดจากต้นทุนไว้ตอนนั้น ระบบจะถอยราคากลับเป็น
+          ต้นทุนต่อหน่วยให้ทุกรายการ (ราคาขาย ÷ (1 + %กำไร)) แล้วค่อยปรับต้นทุนแต่ละรายการให้ตรงของจริงอีกทีในหน้าแก้ไข BOQ
+        </p>
+
+        <div className="form-grid-2">
+          <div className="form-row">
+            <label>ใบเสนอราคา *</label>
+            <select value={quoteId} onChange={(e) => setQuoteId(e.target.value)}>
+              <option value="">— เลือกใบเสนอราคา —</option>
+              {quotesOnly.map((q) => {
+                const proj = data.projects.find((p) => p.id === q.projectId);
+                return <option key={q.id} value={q.id}>{q.code} — {proj?.name || "—"}</option>;
+              })}
+            </select>
+          </div>
+          <div className="form-row">
+            <label>ใบเสนอราคานี้คิดกำไรจากต้นทุนไปกี่ %</label>
+            <input
+              type="number" min="0" step="0.01"
+              value={markup}
+              onChange={(e) => setMarkup(e.target.value)}
+              className="mono-input"
+              style={{ maxWidth: 160 }}
+            />
+          </div>
+        </div>
+
+        {quote && (
+          <>
+            <FormDivider>พรีวิวต้นทุนที่ถอยกลับมาได้ (ปรับแก้ในหน้าแก้ไข BOQ ได้ทีหลัง)</FormDivider>
+            <div className="boq-table">
+              <div className="boq-row boq-row-head" style={{ gridTemplateColumns: "2fr 70px 70px 100px 100px" }}>
+                <span>รายการ</span><span>ปริมาณ</span><span>หน่วย</span><span>ราคาขาย/หน่วย</span><span>ต้นทุน/หน่วย (ถอยกลับ)</span>
+              </div>
+              {preview.map((it) => (
+                it.isHeader ? (
+                  <div className="boq-row boq-row-header-preview" key={it.id} style={{ gridTemplateColumns: "1fr" }}>
+                    <span>{it.desc || "—"}</span>
+                  </div>
+                ) : (
+                  <div className="boq-row" key={it.id} style={{ gridTemplateColumns: "2fr 70px 70px 100px 100px" }}>
+                    <span>{it.desc || "—"}</span>
+                    <span>{it.qty}</span>
+                    <span>{it.unit}</span>
+                    <span className="mono-amt">฿{baht(it.price)}</span>
+                    <span className="mono-amt">฿{baht(it.unitCost)}</span>
+                  </div>
+                )
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="form-actions">
+          <button type="button" className="btn btn-ghost" onClick={onClose}>ยกเลิก</button>
+          <button type="button" className="btn btn-primary" onClick={createBoq} disabled={!quote}>สร้าง BOQ</button>
         </div>
       </div>
     </Modal>

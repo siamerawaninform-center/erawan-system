@@ -373,6 +373,14 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
     setF({ ...f, items: f.items.map((it) => (it.id === id ? { ...it, isSub: !it.isSub, isHeader: false } : it)) });
   const removeItem = (id) =>
     setF({ ...f, items: f.items.filter((it) => it.id !== id) });
+  // สลับตำแหน่งรายการขึ้น/ลง — ใช้ตอนต้องการสลับลำดับรายการในใบเสนอราคา/เอกสาร
+  const moveItem = (idx, dir) => {
+    const next = idx + dir;
+    if (next < 0 || next >= f.items.length) return;
+    const items = [...f.items];
+    [items[idx], items[next]] = [items[next], items[idx]];
+    setF({ ...f, items });
+  };
 
   /* สลับโหมดแยกค่าวัสดุ/ค่าแรง — ตอนเปิด ให้เอาราคา/หน่วยเดิมมาใส่ช่องวัสดุไว้ก่อน (แรงเริ่มที่ 0)
      จะได้ไม่ต้องพิมพ์ราคาใหม่ทั้งหมด ค่อยแยกทีหลังได้ */
@@ -552,7 +560,7 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           </div>
           {(() => {
             let runningNo = 0;
-            return f.items.map((it) => {
+            return f.items.map((it, idx) => {
               if (it.isHeader) {
                 return (
                   <div className="items-row items-row-header" key={it.id}>
@@ -563,8 +571,12 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
                       onChange={(e) => setItem(it.id, "desc", e.target.value)}
                       placeholder="พิมพ์หัวข้อ/หมวดงาน เช่น งวดที่ 1 — งานฐานราก"
                     />
-                    <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
-                    <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+                    <div className="items-row-actions">
+                      <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
+                      <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
+                      <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นรายการปกติ" aria-label="เปลี่ยนเป็นรายการ">↩</button>
+                      <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
+                    </div>
                   </div>
                 );
               }
@@ -591,7 +603,9 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
                   )}
                   <input type="number" min="0" step="0.01" value={it.discount} onChange={(e) => setItem(it.id, "discount", e.target.value)} />
                   <span className="mono-amt">฿{baht(lineTotal(it))}</span>
-                  <div className="row-actions">
+                  <div className="items-row-actions">
+                    <button type="button" className="icon-btn" onClick={() => moveItem(idx, -1)} disabled={idx === 0} aria-label="เลื่อนขึ้น">▲</button>
+                    <button type="button" className="icon-btn" onClick={() => moveItem(idx, 1)} disabled={idx === f.items.length - 1} aria-label="เลื่อนลง">▼</button>
                     <button type="button" className="icon-btn" onClick={() => toggleItemSub(it.id)} title={it.isSub ? "เปลี่ยนเป็นรายการหลัก (ขึ้นลำดับใหม่)" : "เปลี่ยนเป็นรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)"} aria-label="สลับรายละเอียดย่อย">↳</button>
                     <button type="button" className="icon-btn" onClick={() => toggleItemHeader(it.id)} title="เปลี่ยนเป็นหัวข้อ" aria-label="เปลี่ยนเป็นหัวข้อ">H</button>
                     <button type="button" className="icon-btn" onClick={() => removeItem(it.id)} aria-label="ลบรายการ">✕</button>
