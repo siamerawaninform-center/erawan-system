@@ -27,21 +27,11 @@ const PRINT_CSS = `
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:calc(var(--fs-base) * 0.7222); }
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
-  .pv-fit-toggle{ display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; user-select:none; }
-  .pv-fit-toggle input{ cursor:pointer; }
-  /* ซ่อนไว้ก่อนจนกว่าจะคำนวณขนาดตัวอักษรเสร็จ กันเห็นภาพตัวหนังสือบีบอัดวาบๆ ตอนโหลด */
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; }
-  /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่าเล็กน้อย เต็มหน้ากระดาษกว่าใบเสนอราคา */
-  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:21px; }
-  /* หมายเหตุ: เคยใช้ display:flex + margin-top:auto ดันก้อนท้ายเอกสารลงไปชิดขอบล่างหน้ากระดาษ
-     ให้เอกสารรายการน้อยดูเต็มหน้าพอดี — แต่พบว่า Chrome คำนวณตัดหน้าพิมพ์กับ flex auto-margin
-     ผิดพลาดได้ (ดันก้อนนี้ทั้งก้อนข้ามไปหน้า 2 ทั้งที่เนื้อหาจริงสั้นกว่า 1 หน้ามาก) จึงเลิกใช้ ปล่อยให้
-     ไหลต่อจากตารางตามปกติแทน เอกสารสั้นจะเหลือที่ว่างท้ายหน้าบ้าง แต่รับประกันว่าอยู่หน้าเดียวแน่นอน */
-  .doc-bottom-block{ margin-top:16px; break-inside:avoid; page-break-inside:avoid; }
-  /* เงื่อนไขการชำระเงิน (ใบเสนอราคา) — ให้ติดกับตารางรายการเลย ไม่ต้องมีช่องว่างเว้นเหมือนบล็อกอื่น */
-  .doc-bottom-block-tight{ margin-top:0; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:18px; font-size:var(--fs-base); font-weight:600; }
+  /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
+  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:23px; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -73,20 +63,16 @@ const PRINT_CSS = `
   .dp-sig-name{ white-space:nowrap; }
 
   .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-base); margin-bottom:4px; }
-  .doc-table thead{ display:table-header-group; } /* ถ้าล้นไปหน้า 2 หัวตารางขึ้นซ้ำทุกหน้า ไม่ใช่ทิ้งไว้หน้าแรกหน้าเดียว */
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:0.56em 0.44em; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
-  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:0.5em 0.44em; vertical-align:top; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
+  .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
-  .doc-table tbody tr, .doc-table thead tr{ break-inside:avoid; page-break-inside:avoid; } /* ห้ามตัดกลางแถว — แถวเดียวกันต้องอยู่หน้าเดียวกันทั้งแถว */
-  .doc-blank-row td{ height:1.2em; } /* แถวว่างไม่มีเส้นคั่นระหว่างบรรทัด — ปิดท้ายด้วยเส้นขอบตารางปกติเท่านั้น */
-  /* .doc-bottom-block กำหนดไว้ด้านบนแล้ว (margin-top ปกติ + break-inside:avoid กันตัดกลางก้อน) */
+  .doc-blank-row td{ height:22px; border-top:1.5px solid #ccc; }
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
-  .doc-desc-sub{ padding-left:1.4em; color:#333; } /* รายละเอียดย่อย — เยื้องเข้าให้เห็นว่าอยู่ในรายการเดียวกับลำดับด้านบน */
   .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-empty{ border:2px solid #333; }
@@ -129,26 +115,23 @@ const PRINT_CSS = `
   .dsg-sig-line{ width:100%; border-bottom:2.5px solid #222; height:30px; }
   .dsg-role{ color:#555; font-weight:600; }
 
-  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:1.3em; }
+  .quote-sign-grid{ display:flex; justify-content:space-between; gap:50px; margin-top:26px; }
   .quote-sig-col{ flex:1; text-align:center; }
-  .quote-sig-inname{ font-size:var(--fs-base); color:#555; margin-bottom:1.3em; font-weight:600; }
-  .quote-sig-line{ border-bottom:3px solid #222; height:3.4em; margin-bottom:0.5em; }
-  .quote-sig-imgwrap{ height:3.4em; margin-bottom:0.5em; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
-  .quote-sig-img{ max-height:3.2em; max-width:240px; object-fit:contain; }
-  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:0.25em; font-family:'Noto Serif Thai',serif; }
+  .quote-sig-inname{ font-size:var(--fs-base); color:#555; margin-bottom:26px; font-weight:600; }
+  .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
+  .quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
+  .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
+  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
   .quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
   .quote-sig-blank-space{ display:inline-block; width:230px; }
-  .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:0.4em; }
+  .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }
   .quote-sig-date{ font-size:var(--fs-base); color:#777; }
 
   @media print {
     body{ background:#fff; }
     .no-print{ display:none !important; }
     .sheet-wrap{ padding:0; }
-    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always; }
-    /* ถ้ารายการเยอะจนล้นจริงต้องขึ้นหน้า 2 — ให้ระยะขอบกระดาษ (padding เดิมของ .sheet) เกิดซ้ำในหน้าต่อไปด้วย
-       ไม่งั้นหน้า 2 จะเริ่มชิดขอบกระดาษพอดี ดูไม่มีขอบ ไม่สวย */
-    .sheet{ -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:0; height:297mm; page-break-after:always; }
     .sheet:last-child{ page-break-after:auto; }
     .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page{ size:A4; margin:0; }
@@ -178,8 +161,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   let tableHtml;
   if (isBilling) {
-    // รวมกับแถวจริง 1 แถว = 20 แถว เต็มหน้ากระดาษพอดีของใบวางบิล (23 แถวล้นจนต้องบีบฟอนต์ ถอยกลับมาที่ 20)
-    const blankRows = Array.from({ length: 19 })
+    const blankRows = Array.from({ length: 9 })
       .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
@@ -204,53 +186,31 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         </tr></tfoot>
       </table>`;
   } else {
-    const split = !!record.splitMaterialLabor;
-    const colCount = split ? 7 : 6;
     let itemRunningNo = 0;
     const itemRows = (record.items || []).map((it) => {
       if (it.isHeader) {
-        return `<tr class="doc-header-row"><td colspan="${colCount}" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
+        return `<tr class="doc-header-row"><td colspan="6" class="doc-header-cell">${esc(it.desc)}</td></tr>`;
       }
-      // รายละเอียดย่อยไม่ขึ้นลำดับที่ใหม่ — ยังถือว่าอยู่ในรายการเดียวกับเลขล่าสุดด้านบน (เยื้องเข้าให้ดูออกว่าเป็นรายละเอียดย่อย)
-      if (!it.isSub) itemRunningNo += 1;
-      // ช่องไหนไม่ได้กรอก (ว่าง/0) ไม่ต้องโชว์เป็น "0" หรือ "฿0.00" — เว้นว่างไปเลย เช็คทีละช่องอิสระต่อกัน
-      const noQty = !it.qty || Number(it.qty) === 0;
-      const noMaterial = !(Number(it.materialPrice) || 0);
-      const noLabor = !(Number(it.laborPrice) || 0);
-      const noPriceSingle = !(Number(it.price) || 0);
-      const noPriceAny = split ? (noMaterial && noLabor) : noPriceSingle;
-      const noDiscount = !(Number(it.discount) || 0);
-      const priceCells = split
-        ? `
-        <td class="doc-num">${noMaterial ? "" : esc(baht(it.materialPrice))}</td>
-        <td class="doc-num">${noLabor ? "" : esc(baht(it.laborPrice))}</td>`
-        : `
-        <td class="doc-num">${noPriceSingle ? "" : esc(baht(it.price))}</td>`;
-      // จำนวนเงินรวมของบรรทัด คำนวณได้จริงก็ต่อเมื่อมีทั้งจำนวนและราคา — ไม่งั้นเว้นว่างไว้ ไม่ใช่ 0
-      const showTotal = !noQty && !noPriceAny;
+      itemRunningNo += 1;
       return `
       <tr>
-        <td class="doc-center">${it.isSub ? "" : itemRunningNo}</td>
-        <td class="doc-desc${it.isSub ? " doc-desc-sub" : ""}">${esc(it.desc)}</td>
-        <td class="doc-center">${noQty ? "" : `${esc(num(it.qty))} ${esc(it.unit)}`}</td>${priceCells}
-        <td class="doc-num">${noDiscount ? "" : esc(baht(it.discount))}</td>
-        <td class="doc-num">${showTotal ? esc(baht(lineTotal(it))) : ""}</td>
+        <td class="doc-center">${itemRunningNo}</td>
+        <td class="doc-desc">${esc(it.desc)}</td>
+        <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>
+        <td class="doc-num">${esc(baht(it.price))}</td>
+        <td class="doc-num">${esc(baht(it.discount))}</td>
+        <td class="doc-num">${esc(baht(lineTotal(it)))}</td>
       </tr>`;
     }).join("");
-    // ใบเสนอราคา: เติมแถวว่างให้ครบขั้นต่ำ 4 แถว (ไม่งั้นดูโหว่ถ้ารายการน้อย)
-    // เอกสารชุดวางบิล (แจ้งหนี้/กำกับภาษี/เสร็จ): fix ไว้เลย 7 แถวเสมอ ต่อจากรายการจริง ไม่ขึ้นกับจำนวนรายการ (15 แถวล้นจนต้องบีบฟอนต์ ถอยกลับมาที่ 7)
-    const blankCount = isQuote ? Math.max(0, 4 - (record.items?.length || 0)) : 7;
-    const blankCells = Array.from({ length: colCount }).map(() => "<td></td>").join("");
+    const blankMin = isQuote ? 4 : 7;
+    const blankCount = Math.max(0, blankMin - (record.items?.length || 0));
     const blankRows = Array.from({ length: blankCount })
-      .map(() => `<tr class="doc-blank-row">${blankCells}</tr>`).join("");
-    const priceHeader = split
-      ? `<th style="width:12%">ค่าวัสดุ/หน่วย</th><th style="width:12%">ค่าแรง/หน่วย</th>`
-      : `<th style="width:14%">ราคา / หน่วย</th>`;
+      .map(() => `<tr class="doc-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join("");
     tableHtml = `
       <table class="doc-table doc-table-fill">
         <thead><tr>
-          <th style="width:8%">ลำดับที่</th><th style="width:${split ? 30 : 42}%">รายการ</th><th style="width:10%">จำนวน</th>
-          ${priceHeader}<th style="width:12%">ส่วนลด</th><th style="width:14%">จำนวนเงิน</th>
+          <th style="width:8%">ลำดับที่</th><th style="width:42%">รายการ</th><th style="width:10%">จำนวน</th>
+          <th style="width:14%">ราคา / หน่วย</th><th style="width:12%">ส่วนลด</th><th style="width:14%">จำนวนเงิน</th>
         </tr></thead>
         <tbody>${itemRows}${blankRows}</tbody>
       </table>`;
@@ -367,7 +327,6 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
   return `
 <div class="sheet${isQuote ? "" : " sheet-billing"}">
   <div class="doc-ribbon">${esc(ribbonLabel)}</div>
-  <div class="sheet-top-block">
   <div class="doc-top">
     <div class="doc-company">
       <img src="${logoUrl}" width="58" height="58" style="object-fit:contain;display:block" alt="โลโก้" />
@@ -404,12 +363,9 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
     </div>
   </div>
   ${tableHtml}
-  </div>
-  <div class="doc-bottom-block${paymentTermsHtml ? " doc-bottom-block-tight" : ""}">
-    ${paymentTermsHtml}
-    ${footerHtml}
-    ${signHtml}
-  </div>
+  ${paymentTermsHtml}
+  ${footerHtml}
+  ${signHtml}
 </div>`;
 }
 
@@ -438,11 +394,7 @@ export default function PrintDoc({ payload, data, onClose }) {
     <option value="ต้นฉบับ">ต้นฉบับ (ORIGINAL)</option>
     <option value="สำเนา">สำเนา (COPY)</option>
   </select>
-  <label class="pv-fit-toggle">
-    <input type="checkbox" id="fitToggle" checked />
-    ย่อตัวหนังสือให้พอดี 1 หน้า A4
-  </label>
-  <button onclick="printSheet();">🖶 พิมพ์ / บันทึก PDF</button>
+  <button onclick="fitToPage(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
 <div class="sheet-wrap">
 ${sheetHtml}
@@ -454,41 +406,31 @@ ${sheetHtml}
   });
   window.onafterprint = function () { window.close(); };
 
-  // เลิกใช้วิธีวัด scrollHeight แล้วลดฟอนต์ทีละนิด — วิธีนั้นพึ่งพาจังหวะโหลดฟอนต์/รูป
-  // และพฤติกรรม pagination ของแต่ละเบราว์เซอร์ ซึ่งไม่นิ่งพอ (พรีวิวกับพิมพ์จริงออกมาคนละแบบ)
-  // เปลี่ยนเป็นค่าคงที่ตายตัว 2 ระดับแทน: ขนาดมาตรฐาน กับขนาดย่อ (compact) — เลือกได้จากติ๊ก
-  // การกำหนดค่าคงที่แบบนี้ไม่ขึ้นกับเวลาที่เรียก จึงพรีวิวกับพิมพ์จริงจะออกมาตรงกันเสมอ
-  var COMPACT_FONT_PX = { default: 16, billing: 17 }; // ต่ำสุดที่ยังอ่านง่าย ต่อประเภทเอกสาร
-
-  // โหมด "ปล่อยตามมาตรฐาน" — ใช้ขนาดฟอนต์ตั้งต้นของเอกสาร ปล่อยให้ล้นไปหน้า 2 ได้ตามจริง
-  function resetFit() {
+  // ย่อขนาดฟอนต์จริง (ไม่ใช่ zoom/scale) ให้กลับมาพอดี 1 หน้า A4
+  // เฉพาะกรณีล้นแค่เล็กน้อย (ไม่เกิน 40%) เท่านั้น — ถ้ารายการเยอะจริงปล่อยให้ขึ้นหน้า 2 ตามธรรมชาติ
+  function fitToPage() {
+    var PAGE_HEIGHT_PX = 297 * 3.7795275591; // mm -> px ที่ 96dpi
+    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40; // ล้นได้ไม่เกิน 40% ถึงจะพยายามบีบ
+    var MIN_FONT_PX = 15; // ไม่ลดต่ำกว่านี้ กันอ่านไม่ออก
     document.querySelectorAll('.sheet').forEach(function (sheet) {
-      sheet.style.removeProperty('--fs-base');
+      sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
+      var natural = sheet.scrollHeight;
+      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return; // พอดีอยู่แล้ว หรือล้นเยอะเกินจนไม่ควรบีบ
+
+      // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
+      // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
+      var size = parseFloat(getComputedStyle(sheet).fontSize);
+      for (var i = 0; i < 30; i++) {
+        var h = sheet.scrollHeight;
+        if (h <= PAGE_HEIGHT_PX) break;
+        size -= 0.4;
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
+        sheet.style.setProperty('--fs-base', size + "px");
+      }
     });
   }
-
-  // โหมด "ย่อให้พอดี 1 หน้า" — ตั้งฟอนต์เป็นขนาดย่อคงที่ตรงๆ ไม่วัดไม่ลูป
-  function applyCompactSize() {
-    document.querySelectorAll('.sheet').forEach(function (sheet) {
-      var px = sheet.classList.contains('sheet-billing') ? COMPACT_FONT_PX.billing : COMPACT_FONT_PX.default;
-      sheet.style.setProperty('--fs-base', px + "px");
-    });
-  }
-
-  // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
-  function applyFitPreference() {
-    var toggle = document.getElementById('fitToggle');
-    if (toggle && toggle.checked) applyCompactSize();
-    else resetFit();
-  }
-
-  function printSheet() {
-    applyFitPreference();
-    window.print();
-  }
-
-  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
-  applyFitPreference();
+  fitToPage();
+  window.addEventListener("load", fitToPage); // คำนวณซ้ำเมื่อฟอนต์โหลดเสร็จสมบูรณ์
 </script>
 </body></html>`;
 
@@ -540,11 +482,7 @@ export function PrintDocSet({ payload, data, onClose }) {
 </head><body>
 <div class="pv-bar no-print">
   <span class="pv-label">พรีวิวก่อนพิมพ์ — ชุดเอกสาร (${pages.length} แผ่น)</span>
-  <label class="pv-fit-toggle">
-    <input type="checkbox" id="fitToggle" checked />
-    ย่อตัวหนังสือให้พอดี 1 หน้า A4
-  </label>
-  <button onclick="printSheet();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
+  <button onclick="fitToPage(); window.print();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
 </div>
 <div class="sheet-wrap">
 ${sheetsHtml}
@@ -552,39 +490,28 @@ ${sheetsHtml}
 <script>
   window.onafterprint = function () { window.close(); };
 
-  // ค่าคงที่ตายตัว 2 ระดับ (เหมือนหน้าเดี่ยวทุกประการ) — ไม่วัด ไม่ลูป จึงพรีวิวกับพิมพ์จริง
-  // ออกมาตรงกันเสมอ ไม่ขึ้นกับจังหวะโหลดฟอนต์/รูปหรือพฤติกรรม pagination ของเบราว์เซอร์
-  var COMPACT_FONT_PX = { default: 16, billing: 17 };
-
-  // โหมด "ปล่อยตามมาตรฐาน" — ใช้ขนาดฟอนต์ตั้งต้นทุกแผ่น ปล่อยให้ล้นไปหน้าถัดไปได้ตามจริง
-  function resetFit() {
+  // ย่อขนาดฟอนต์จริงให้พอดี 1 หน้า A4 ต่อแผ่น เฉพาะกรณีล้นเล็กน้อย เหมือนหน้าเดี่ยว
+  function fitToPage() {
+    var PAGE_HEIGHT_PX = 297 * 3.7795275591;
+    var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
+    var MIN_FONT_PX = 15;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
+      var natural = sheet.scrollHeight;
+      if (natural <= PAGE_HEIGHT_PX || natural > MAX_OVERFLOW) return;
+
+      var size = parseFloat(getComputedStyle(sheet).fontSize);
+      for (var i = 0; i < 30; i++) {
+        var h = sheet.scrollHeight;
+        if (h <= PAGE_HEIGHT_PX) break;
+        size -= 0.4;
+        if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
+        sheet.style.setProperty('--fs-base', size + "px");
+      }
     });
   }
-
-  // โหมด "ย่อให้พอดี 1 หน้า" — ตั้งฟอนต์เป็นขนาดย่อคงที่ทุกแผ่นตรงๆ ไม่วัดไม่ลูป
-  function applyCompactSize() {
-    document.querySelectorAll('.sheet').forEach(function (sheet) {
-      var px = sheet.classList.contains('sheet-billing') ? COMPACT_FONT_PX.billing : COMPACT_FONT_PX.default;
-      sheet.style.setProperty('--fs-base', px + "px");
-    });
-  }
-
-  // อ่านสถานะติ๊กจากผู้ใช้แล้วเลือกโหมดที่จะใช้จริง — เรียกทั้งตอนโหลดหน้าและตอนกดพิมพ์
-  function applyFitPreference() {
-    var toggle = document.getElementById('fitToggle');
-    if (toggle && toggle.checked) applyCompactSize();
-    else resetFit();
-  }
-
-  function printSheet() {
-    applyFitPreference();
-    window.print();
-  }
-
-  document.getElementById('fitToggle').addEventListener('change', applyFitPreference);
-  applyFitPreference();
+  fitToPage();
+  window.addEventListener("load", fitToPage);
 </script>
 </body></html>`;
 
