@@ -478,8 +478,13 @@ ${sheetHtml}
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base'); // รีเซ็ตก่อนวัดใหม่ทุกครั้ง
 
+      // .sheet มี CSS min-height:297mm (ให้แผ่นดูเต็มหน้าเสมอ) — ค่านี้ทำให้ scrollHeight
+      // รายงานความสูงเท่ากับ "1 หน้าเต็ม" อยู่ตลอด ต่อให้เนื้อหาจริงสั้นกว่านั้นมาก วัดตรงๆ ไม่ได้
+      // ต้องปลด min-height ออกชั่วคราวก่อนวัด ถึงจะเห็นความสูงเนื้อหาจริง แล้วค่อยคืนค่าตอนจบ
+      sheet.style.minHeight = "0";
+
       var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX) return; // พอดีแล้ว (รวมพื้นที่เผื่อ) ไม่ต้องบีบฟอนต์
+      if (natural <= PAGE_HEIGHT_PX) { sheet.style.removeProperty('min-height'); return; } // พอดีแล้ว ไม่ต้องบีบฟอนต์
 
       // ลูปลดทีละนิด วัดจริงใหม่ทุกรอบ (ตัดบรรทัดไม่เป็นเส้นตรง คำนวณครั้งเดียวไม่แม่นยำพอ)
       // แก้ผ่านตัวแปรกลาง --fs-base เพื่อให้กระทบทุกจุดในเอกสารพร้อมกันจริง (ไม่ใช่แค่กล่องนอกสุด)
@@ -491,6 +496,7 @@ ${sheetHtml}
         if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
         sheet.style.setProperty('--fs-base', size + "px");
       }
+      sheet.style.removeProperty('min-height'); // คืนค่าให้แผ่นเต็มหน้าตามปกติหลังบีบเสร็จ
     });
   }
 
@@ -596,9 +602,13 @@ ${sheetsHtml}
       var MIN_FONT_PX = sheet.classList.contains('sheet-billing') ? 17 : 16;
       sheet.style.removeProperty('--fs-base');
 
-      // ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้ง — เหมือนหน้าเดี่ยว จำนวนแถวว่าง fix ไว้ตายตัวแล้ว
+      // .sheet มี CSS min-height:297mm (ให้แผ่นดูเต็มหน้าเสมอ) ทำให้ scrollHeight รายงาน
+      // ความสูงเท่ากับ 1 หน้าเต็มตลอด ต้องปลด min-height ชั่วคราวก่อนวัด ถึงจะเห็นความสูงจริง
+      // (เหตุผลเดียวกับหน้าเดี่ยว) — ไม่ตัดแถวว่าง (.doc-blank-row) ทิ้ง จำนวนแถวว่าง fix ไว้ตายตัวแล้ว
+      sheet.style.minHeight = "0";
+
       var natural = sheet.scrollHeight;
-      if (natural <= PAGE_HEIGHT_PX) return;
+      if (natural <= PAGE_HEIGHT_PX) { sheet.style.removeProperty('min-height'); return; }
 
       var size = parseFloat(getComputedStyle(sheet).fontSize);
       for (var i = 0; i < 40; i++) {
@@ -608,6 +618,7 @@ ${sheetsHtml}
         if (size < MIN_FONT_PX) { size = MIN_FONT_PX; sheet.style.setProperty('--fs-base', size + "px"); break; }
         sheet.style.setProperty('--fs-base', size + "px");
       }
+      sheet.style.removeProperty('min-height');
     });
   }
 
