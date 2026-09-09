@@ -442,7 +442,7 @@ export default function PrintDoc({ payload, data, onClose }) {
     <input type="checkbox" id="fitToggle" checked />
     ย่อตัวหนังสือให้พอดี 1 หน้า A4
   </label>
-  <button onclick="applyFitPreference(); window.print();">🖶 พิมพ์ / บันทึก PDF</button>
+  <button onclick="printSheet();">🖶 พิมพ์ / บันทึก PDF</button>
 </div>
 <div class="sheet-wrap">
 ${sheetHtml}
@@ -453,6 +453,26 @@ ${sheetHtml}
     if (ribbon) ribbon.textContent = e.target.value;
   });
   window.onafterprint = function () { window.close(); };
+
+  // ฟอนต์ไทยโหลดผ่าน Google Fonts (@import) — ถ้าวัด/บีบขนาดก่อนฟอนต์จริงโหลดเสร็จ
+  // จะใช้ค่าฟอนต์สำรอง (fallback) ซึ่งความกว้าง/ความสูงบรรทัดไม่ตรงของจริง ทำให้คำนวณพลาด
+  // เนื้อหาที่ดูพอดีตอนพรีวิว อาจกลายเป็นล้นหน้าตอนพิมพ์จริง (ฟอนต์จริงมาแทนที่แล้วเนื้อหาขยับ)
+  // จึงต้องรอ document.fonts.ready ให้แน่ใจว่าฟอนต์สลับเสร็จสมบูรณ์ก่อนวัดทุกครั้ง ทั้งตอนโหลด
+  // หน้าและตอนกดพิมพ์
+  function whenFontsReady(callback) {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(callback, callback);
+    } else {
+      callback();
+    }
+  }
+
+  function printSheet() {
+    whenFontsReady(function () {
+      applyFitPreference();
+      window.print();
+    });
+  }
 
   var MM_TO_PX = 3.7795275591; // ที่ 96dpi
   var PAGE_HEIGHT_MM = 297;
@@ -513,10 +533,12 @@ ${sheetHtml}
   // เพราะถ้าวัดตอนฟอนต์ยังไม่มา ขนาดตัวอักษร fallback ผิดจากของจริง อาจคำนวณผิด
   // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
   function fitAndReveal() {
-    try { applyFitPreference(); } finally {
-      var wrap = document.querySelector('.sheet-wrap');
-      if (wrap) wrap.style.visibility = 'visible';
-    }
+    whenFontsReady(function () {
+      try { applyFitPreference(); } finally {
+        var wrap = document.querySelector('.sheet-wrap');
+        if (wrap) wrap.style.visibility = 'visible';
+      }
+    });
   }
   window.addEventListener("load", fitAndReveal);
 </script>
@@ -574,13 +596,31 @@ export function PrintDocSet({ payload, data, onClose }) {
     <input type="checkbox" id="fitToggle" checked />
     ย่อตัวหนังสือให้พอดี 1 หน้า A4
   </label>
-  <button onclick="applyFitPreference(); window.print();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
+  <button onclick="printSheet();">🖶 พิมพ์รวม / บันทึก PDF เดียว</button>
 </div>
 <div class="sheet-wrap">
 ${sheetsHtml}
 </div>
 <script>
   window.onafterprint = function () { window.close(); };
+
+  // ฟอนต์ไทยโหลดผ่าน Google Fonts (@import) — ต้องรอ document.fonts.ready ให้แน่ใจว่าฟอนต์
+  // สลับเสร็จสมบูรณ์ก่อนวัด/บีบขนาดทุกครั้ง (เหตุผลเดียวกับหน้าเดี่ยว) ไม่งั้นวัดตอนฟอนต์สำรอง
+  // เนื้อหาที่พอดีตอนพรีวิวจะขยับล้นตอนพิมพ์จริงหลังฟอนต์จริงโหลดมาแทนที่
+  function whenFontsReady(callback) {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(callback, callback);
+    } else {
+      callback();
+    }
+  }
+
+  function printSheet() {
+    whenFontsReady(function () {
+      applyFitPreference();
+      window.print();
+    });
+  }
 
   var MM_TO_PX = 3.7795275591;
   var PAGE_HEIGHT_MM = 297;
@@ -634,10 +674,12 @@ ${sheetsHtml}
   // รอให้ฟอนต์/รูปโหลดเสร็จก่อนค่อยวัดจริง (window.load) — เหตุผลเดียวกับหน้าเดี่ยว
   // เอกสารถูกซ่อนไว้ (.sheet-wrap) จนกว่าจะคำนวณเสร็จ แล้วค่อยเผยออกมาทีเดียว — กันเห็นภาพบีบอัดวาบๆ ตอนโหลด
   function fitAndReveal() {
-    try { applyFitPreference(); } finally {
-      var wrap = document.querySelector('.sheet-wrap');
-      if (wrap) wrap.style.visibility = 'visible';
-    }
+    whenFontsReady(function () {
+      try { applyFitPreference(); } finally {
+        var wrap = document.querySelector('.sheet-wrap');
+        if (wrap) wrap.style.visibility = 'visible';
+      }
+    });
   }
   window.addEventListener("load", fitAndReveal);
 </script>
