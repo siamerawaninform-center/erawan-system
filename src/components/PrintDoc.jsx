@@ -30,15 +30,16 @@ const PRINT_CSS = `
   /* ซ่อนไว้ก่อนจนกว่าจะคำนวณขนาดตัวอักษรเสร็จ กันเห็นภาพตัวหนังสือบีบอัดวาบๆ ตอนโหลด */
   .sheet-wrap{ padding:20px 0; visibility:hidden; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; display:flex; flex-direction:column; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:20px; font-size:var(--fs-base); font-weight:600; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่าเล็กน้อย เต็มหน้ากระดาษกว่าใบเสนอราคา */
   .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:21px; }
-  .sheet-top-block{ flex-shrink:0; }
-  /* ดันก้อนท้ายเอกสาร (เงื่อนไขชำระ/สรุปยอด/ลายเซ็น) ลงไปชิดขอบล่างหน้ากระดาษเสมอ
-     เอกสารรายการน้อยจะได้เต็มหน้าพอดี ไม่ใช่จบห้วนๆ กลางหน้าแล้วเหลือที่ว่างโล่งด้านล่าง */
-  .doc-bottom-block{ margin-top:auto; padding-top:12px; break-inside:avoid; page-break-inside:avoid; }
+  /* หมายเหตุ: เคยใช้ display:flex + margin-top:auto ดันก้อนท้ายเอกสารลงไปชิดขอบล่างหน้ากระดาษ
+     ให้เอกสารรายการน้อยดูเต็มหน้าพอดี — แต่พบว่า Chrome คำนวณตัดหน้าพิมพ์กับ flex auto-margin
+     ผิดพลาดได้ (ดันก้อนนี้ทั้งก้อนข้ามไปหน้า 2 ทั้งที่เนื้อหาจริงสั้นกว่า 1 หน้ามาก) จึงเลิกใช้ ปล่อยให้
+     ไหลต่อจากตารางตามปกติแทน เอกสารสั้นจะเหลือที่ว่างท้ายหน้าบ้าง แต่รับประกันว่าอยู่หน้าเดียวแน่นอน */
+  .doc-bottom-block{ margin-top:16px; break-inside:avoid; page-break-inside:avoid; }
   /* เงื่อนไขการชำระเงิน (ใบเสนอราคา) — ให้ติดกับตารางรายการเลย ไม่ต้องมีช่องว่างเว้นเหมือนบล็อกอื่น */
-  .doc-bottom-block-tight{ padding-top:0; }
+  .doc-bottom-block-tight{ margin-top:0; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -79,7 +80,7 @@ const PRINT_CSS = `
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
   .doc-table tbody tr, .doc-table thead tr{ break-inside:avoid; page-break-inside:avoid; } /* ห้ามตัดกลางแถว — แถวเดียวกันต้องอยู่หน้าเดียวกันทั้งแถว */
   .doc-blank-row td{ height:1.2em; } /* แถวว่างไม่มีเส้นคั่นระหว่างบรรทัด — ปิดท้ายด้วยเส้นขอบตารางปกติเท่านั้น */
-  /* .doc-bottom-block กำหนดไว้ด้านบนแล้ว (margin-top:auto ดันชิดขอบล่าง + break-inside:avoid กันตัดกลางก้อน) */
+  /* .doc-bottom-block กำหนดไว้ด้านบนแล้ว (margin-top ปกติ + break-inside:avoid กันตัดกลางก้อน) */
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
