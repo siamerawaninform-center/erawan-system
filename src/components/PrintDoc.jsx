@@ -100,7 +100,7 @@ const PRINT_CSS = `
   .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
   .dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
-  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; margin-top:16px; font-size:var(--fs-base); }
+  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:26px; position:absolute; left:0; right:0; bottom:0; }
   .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .dsg-note{ color:#333; }
   .dsg-field{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
@@ -108,7 +108,7 @@ const PRINT_CSS = `
   .dsg-line-sm{ flex:0.6; }
   .dsg-paren{ text-align:center; margin-top:2px; }
   .dsg-check{ display:flex; align-items:baseline; gap:6px; margin-top:4px; }
-  .dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:calc(var(--fs-base) * 0.5000); flex-shrink:0; }
+  .dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:0.5em; flex-shrink:0; }
   .dsg-box-checked{ background:#eee; }
   .dsg-col-sign{ justify-content:flex-end; gap:22px; }
   .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
