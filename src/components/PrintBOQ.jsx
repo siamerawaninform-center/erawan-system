@@ -12,30 +12,30 @@ function esc(s) {
 }
 
 const PRINT_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   :root{ --ink:#1a1a1a; --maroon:#880808; --steel:#6e6e6e; --steel-light:#9e9e9e; --concrete:#f2f2f2; }
-  body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
+  body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7647); cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7647); cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:calc(var(--fs-base) * 0.7647); }
   .sheet-wrap{ padding:20px 0; }
 
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:17px; font-size:var(--fs-base); font-weight:600; }
 
-  .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
+  .mono-amt{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
 
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
   .doc-company-text{ font-size:calc(var(--fs-base) * 1.0588); line-height:1.4; }
-  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); margin-bottom:2px; color:var(--ink); }
+  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); margin-bottom:2px; color:var(--ink); }
   .dc-line{ color:#333; font-size:calc(var(--fs-base) * 1.0588); }
   .dc-taxid{ margin-left:14px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:calc(var(--fs-base) * 1.0588); border-radius:2px; display:inline-block; }
 
   .boq-info{ font-size:var(--fs-base); line-height:1.3; margin-bottom:3px; }
 
@@ -46,7 +46,7 @@ const PRINT_CSS = `
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-desc{ white-space:pre-wrap; }
   .doc-desc-sub{ padding-left:1.4em; color:#333; } /* รายละเอียดย่อย — เยื้องเข้าให้เห็นว่าอยู่ในรายการเดียวกับลำดับด้านบน */
-  .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
+  .doc-num{ text-align:right; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-label{ border:2px solid #333; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
   .doc-foot-total{ border:2px solid #333; font-weight:700; background:#fafafa; }

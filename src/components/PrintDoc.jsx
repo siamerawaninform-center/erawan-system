@@ -17,13 +17,13 @@ function esc(s) {
 }
 
 const PRINT_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   :root{ --ink:#1a1a1a; --maroon:#880808; --steel:#6e6e6e; --steel-light:#9e9e9e; --concrete:#f2f2f2; }
-  body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
+  body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7222); cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7222); cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:calc(var(--fs-base) * 0.7222); }
   .pv-bar select{ padding:6px 10px; font-size:calc(var(--fs-base) * 0.6944); border-radius:4px; border:none; }
@@ -33,20 +33,20 @@ const PRINT_CSS = `
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
   .sheet.sheet-billing{ padding:10mm 10mm 10mm; --fs-base:24px; }
 
-  .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
-  .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
-  .mono-amt-lg{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1.25em; font-weight:700; color:var(--maroon); }
+  .mono-code{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
+  .mono-amt{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
+  .mono-amt-lg{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1.25em; font-weight:700; color:var(--maroon); }
 
   .doc-ribbon{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:9px 24px; font-size:calc(var(--fs-base) * 0.8889); border-bottom-left-radius:6px; }
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-right:130px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
   .doc-company-text{ font-size:var(--fs-base); line-height:1.4; }
-  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:var(--fs-base); margin-bottom:2px; color:var(--ink); }
+  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:var(--fs-base); margin-bottom:2px; color:var(--ink); }
   .dc-line{ color:#333; font-size:var(--fs-base); }
   .dc-taxid{ margin-left:14px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:4px 0 5px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 6px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:var(--fs-base); border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:var(--fs-base); border-radius:2px; display:inline-block; }
 
   .doc-party{ display:flex; border:2px solid #333; border-radius:3px; margin-bottom:6px; font-size:var(--fs-base); overflow:hidden; }
   .dp-left{ flex:1.6; padding:10px 14px; border-right:2px solid #333; display:flex; flex-direction:column; gap:4px; background:#fff; }
@@ -73,7 +73,7 @@ const PRINT_CSS = `
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
-  .doc-num{ text-align:right; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
+  .doc-num{ text-align:right; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
   .doc-center{ text-align:center; }
   .doc-foot-empty{ border:2px solid #333; }
   .doc-foot-label{ border:2px solid #333; text-align:right; font-weight:600; padding-right:10px; background:#fafafa; }
@@ -121,7 +121,7 @@ const PRINT_CSS = `
   .quote-sig-line{ border-bottom:3px solid #222; height:68px; margin-bottom:10px; }
   .quote-sig-imgwrap{ height:68px; margin-bottom:10px; display:flex; align-items:flex-end; justify-content:center; border-bottom:3px solid #222; }
   .quote-sig-img{ max-height:64px; max-width:240px; object-fit:contain; }
-  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:5px; font-family:'Noto Serif Thai',serif; }
+  .quote-sig-name{ font-size:var(--fs-base); font-weight:700; color:#171717; margin-bottom:5px; font-family:'Chakra Petch',sans-serif; }
   .quote-sig-blank{ display:flex; align-items:center; justify-content:center; }
   .quote-sig-blank-space{ display:inline-block; width:230px; }
   .quote-sig-role{ font-size:var(--fs-base); color:var(--maroon); font-weight:700; letter-spacing:.02em; margin-bottom:8px; }

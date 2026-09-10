@@ -13,13 +13,13 @@ function esc(s) {
 }
 
 const PRINT_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
   :root{ --ink:#1a1a1a; --maroon:#880808; }
-  body{ margin:0; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
+  body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
+  .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
   .pv-label{ font-size:13px; }
   .sheet-wrap{ padding:20px 0; }
@@ -29,11 +29,11 @@ const PRINT_CSS = `
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
   .doc-company-text{ font-size:17px; line-height:1.4; }
-  .dc-name{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size:17px; margin-bottom:2px; color:var(--ink); }
+  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:17px; margin-bottom:2px; color:var(--ink); }
   .dc-line{ color:#333; font-size:17px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Noto Serif Thai',serif; font-weight:700; font-size:17px; border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:17px; border-radius:2px; display:inline-block; }
 
   .jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:17px; margin-bottom:4px; }
 
