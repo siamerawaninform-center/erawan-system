@@ -67,8 +67,12 @@ const PRINT_CSS = `
   .dp-sig-name{ white-space:nowrap; }
 
   .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-base); margin-bottom:4px; }
+  .doc-table thead{ display:table-header-group; } /* ถ้าตารางล้นไปหน้า 2 จริงๆ ให้หัวตารางขึ้นซ้ำหน้าใหม่ */
   .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:10px 8px; font-weight:700; font-size:calc(var(--fs-base) * 1.1111); text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:9px 8px; vertical-align:top; }
+  /* กันตัดกลางแถวเวลาล้นไปหน้าถัดไปจริงๆ — ถ้าแถวไหนพอดีเกินหน้า ดันทั้งแถวไปหน้าใหม่แทนการตัดครึ่ง */
+  .doc-table tr{ break-inside:avoid; page-break-inside:avoid; }
+  .payment-terms-box, .doc-sign-grid, .doc-party{ break-inside:avoid; page-break-inside:avoid; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
@@ -138,7 +142,11 @@ const PRINT_CSS = `
     body{ background:#fff; }
     .no-print{ display:none !important; }
     .sheet-wrap{ padding:0; }
-    .sheet{ box-shadow:none; margin:0; width:210mm; min-height:0; height:297mm; page-break-after:always; }
+    .sheet{
+      box-shadow:none; margin:0; width:210mm; min-height:297mm; page-break-after:always;
+      /* ถ้าเนื้อหาล้นจริงๆ เกิน 1 หน้า ให้ระยะขอบ (padding) เกิดซ้ำที่หน้าถัดไปด้วย ไม่ใช่ชิดขอบกระดาษ */
+      box-decoration-break:clone; -webkit-box-decoration-break:clone;
+    }
     .sheet:last-child{ page-break-after:auto; }
     .sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page{ size:A4; margin:0; }
