@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   TitleBlock, Modal, EmptyState, Toolbar, ChipRow, Stamp, FormDivider,
   finStatusVariant, billingStatusVariant,
@@ -362,6 +362,46 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
     });
   const addItem = () =>
     setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: 1, unit: "งาน", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: false, isSub: false }] });
+
+  /* เฉพาะชุดวางบิล — รวบรวมรายการที่เคยพิมพ์ไว้ในชุดวางบิลก่อนๆ (ไม่ซ้ำชื่อ เอาราคาล่าสุด)
+     ให้เลือกใส่ซ้ำได้แทนพิมพ์ใหม่ทุกครั้ง ไม่มีหน้าจอจัดการแยก ดึงจากประวัติจริงล้วนๆ */
+  const historyItems = useMemo(() => {
+    if (!isSet) return [];
+    const map = new Map();
+    (data.quotes || [])
+      .filter((r) => r.kind === "salesSet")
+      .forEach((r) => {
+        (r.items || []).forEach((it) => {
+          const desc = (it.desc || "").trim();
+          if (!desc || it.isHeader) return;
+          const existing = map.get(desc);
+          if (!existing || (r.date || "") > existing.date) {
+            map.set(desc, {
+              date: r.date || "",
+              desc: it.desc,
+              unit: it.unit || "งาน",
+              price: it.price || 0,
+              materialPrice: it.materialPrice || 0,
+              laborPrice: it.laborPrice || 0,
+            });
+          }
+        });
+      });
+    return Array.from(map.values()).sort((a, b) => a.desc.localeCompare(b.desc, "th"));
+  }, [data.quotes, isSet]);
+
+  const addItemFromHistory = (desc) => {
+    const tpl = historyItems.find((h) => h.desc === desc);
+    if (!tpl) return;
+    setF({
+      ...f,
+      items: [...f.items, {
+        id: uid("it"), desc: tpl.desc, qty: 1, unit: tpl.unit,
+        price: tpl.price, materialPrice: tpl.materialPrice, laborPrice: tpl.laborPrice,
+        discount: 0, isHeader: false, isSub: false,
+      }],
+    });
+  };
   const addHeaderItem = () =>
     setF({ ...f, items: [...f.items, { id: uid("it"), desc: "", qty: "", unit: "", price: 0, materialPrice: 0, laborPrice: 0, discount: 0, isHeader: true, isSub: false }] });
   // รายละเอียดย่อย — ยังนับยอดเงินตามปกติ แต่ไม่ขึ้นลำดับที่ใหม่ ยังถือว่าอยู่ในรายการเดียวกับแถวก่อนหน้า
@@ -620,6 +660,23 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           <button type="button" className="btn btn-ghost btn-sm" onClick={addSubItem}>+ เพิ่มรายละเอียดย่อย (ไม่ขึ้นลำดับใหม่)</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={addHeaderItem}>+ เพิ่มหัวข้อ/หมวดงาน</button>
         </div>
+
+        {isSet && historyItems.length > 0 && (
+          <div className="form-row" style={{ marginTop: 6 }}>
+            <label>เลือกจากรายการที่เคยพิมพ์ในชุดวางบิลก่อนๆ</label>
+            <Autocomplete
+              options={historyItems.map((h) => ({
+                id: h.desc,
+                label: h.desc,
+                sublabel: `${h.unit} · ฿${baht(h.price)}`,
+              }))}
+              value=""
+              onChange={addItemFromHistory}
+              placeholder="พิมพ์ค้นหารายการเดิม แล้วเลือกเพื่อเพิ่มเป็นแถวใหม่…"
+              allowClear={false}
+            />
+          </div>
+        )}
 
         <div className="form-grid-2">
           <div className="form-row">
