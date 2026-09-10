@@ -153,7 +153,6 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
   const totals = computeFinTotal(record.items, record.vat, record.discount);
 
   const isBilling = printType === "ใบวางบิล";
-  const isReceipt = printType === "ใบเสร็จรับเงิน";
   const isQuote = printType === "ใบเสนอราคา";
 
   const docCode = record.kind === "salesSet"
@@ -292,7 +291,6 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         ? `<span class="dsg-line dsg-line-sm">${esc(record.chequeNo)}</span><span>เลขที่</span>` : "";
       return `<div class="dsg-check"><span class="dsg-box ${checked ? "dsg-box-checked" : ""}">${checked ? "✓" : ""}</span><span>${esc(m)}</span>${chequeExtra}</div>`;
     }).join("");
-    const receiptParen = isReceipt ? `<div class="dsg-paren">( ${esc(record.signerIssuer || "—")} )</div>` : "";
     signHtml = `
       <div class="doc-sign-grid">
         <div class="dsg-col">
@@ -304,7 +302,6 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
         </div>
         <div class="dsg-col dsg-col-pay">
           <div class="dsg-field"><span>ผู้รับเงิน</span><span class="dsg-line"></span><span>ตัวบรรจง</span></div>
-          ${receiptParen}
           <div class="dsg-field"><span>วันที่</span><span class="dsg-line"></span></div>
           ${paymentChecks}
           <div class="dsg-field"><span>ลงวันที่</span><span class="dsg-line"></span></div>
