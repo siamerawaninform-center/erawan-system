@@ -123,7 +123,8 @@
 .cashflow-legend .dot-cost{ background:var(--warn); }
 
 .mini-list{ display:flex; flex-direction:column; gap:4px; }
-.mini-row{ display:grid; grid-template-columns:1fr auto 80px; align-items:center; gap:10px; padding:10px 8px; border-radius:6px; border-bottom:1px solid var(--concrete); transition:background .15s; }
+.mini-row{ display:grid; grid-template-columns:1fr auto minmax(80px, max-content); align-items:center; gap:10px; padding:10px 8px; border-radius:6px; border-bottom:1px solid var(--concrete); transition:background .15s; }
+.mini-row > .mono-amt{ text-align:right; justify-self:end; }
 .mini-row:hover{ background:var(--concrete); }
 .mini-row:last-child{ border-bottom:none; }
 .mini-row-main{ display:flex; flex-direction:column; gap:2px; font-size:18px; }
