@@ -9,7 +9,7 @@ import { uid } from "../lib/format.js";
 
 export default function Units({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
-  const list = data.units || [];
+  const list = (data.units || []).slice().reverse();
 
   return (
     <div className="view">

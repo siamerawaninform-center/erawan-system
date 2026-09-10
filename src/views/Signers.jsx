@@ -10,7 +10,7 @@ import { uid } from "../lib/format.js";
 
 export default function Signers({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
-  const list = data.signers || [];
+  const list = (data.signers || []).slice().reverse();
 
   return (
     <div className="view">

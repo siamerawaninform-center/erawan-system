@@ -20,7 +20,7 @@ function debtStatusVariant(status) {
 export default function Debts({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("ทั้งหมด");
-  const list = data.debts || [];
+  const list = (data.debts || []).slice().reverse();
 
   const activeDebts = list.filter((d) => d.status !== "ชำระหมดแล้ว");
   const totalBalance = activeDebts.reduce((s, d) => s + (Number(d.balance) || 0), 0);

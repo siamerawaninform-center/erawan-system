@@ -13,7 +13,7 @@ export default function Customers({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
   const [q, setQ] = useState("");
 
-  const list = (data.customers || []).filter((c) =>
+  const list = (data.customers || []).slice().reverse().filter((c) =>
     `${c.code} ${c.nameTh} ${c.taxId} ${c.branch}`.toLowerCase().includes(q.toLowerCase())
   );
 

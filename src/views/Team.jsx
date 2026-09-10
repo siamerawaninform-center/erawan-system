@@ -8,7 +8,7 @@ import { uid } from "../lib/format.js";
 
 export default function Team({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
-  const list = data.team || [];
+  const list = (data.team || []).slice().reverse();
 
   return (
     <div className="view">

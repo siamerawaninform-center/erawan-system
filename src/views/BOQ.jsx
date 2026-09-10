@@ -16,7 +16,7 @@ export default function BOQ({ data, upsert, remove, onPrint, setView }) {
   const [modal, setModal] = useState(null);
   const [quoteModal, setQuoteModal] = useState(null); // { boq }
   const [fromQuoteModal, setFromQuoteModal] = useState(false);
-  const list = data.boqs || [];
+  const list = (data.boqs || []).slice().reverse();
   const project = (id) => data.projects.find((p) => p.id === id);
 
   return (

@@ -13,7 +13,7 @@ export default function Suppliers({ data, upsert, remove }) {
   const [modal, setModal] = useState(null);
   const [q, setQ] = useState("");
 
-  const list = (data.suppliers || []).filter((s) =>
+  const list = (data.suppliers || []).slice().reverse().filter((s) =>
     `${s.code} ${s.nameTh} ${s.taxId}`.toLowerCase().includes(q.toLowerCase())
   );
 

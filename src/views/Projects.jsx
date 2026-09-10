@@ -4,6 +4,7 @@ import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, formatShortThaiDate, exportToCSV } from "../lib/format.js";
 import { nextProjectCode } from "../lib/docNumber.js";
 import { PROJECT_STATUSES } from "../lib/constants.js";
+import ProjectPhotosModal from "../components/ProjectPhotos.jsx";
 
 /* ---------------------------------------------------------
    02 โปรเจกต์ — ข้อมูลเบื้องต้นของโครงการ
@@ -16,16 +17,20 @@ const GROUP_ORDER = ["กำลังดำเนินการ", "เสนอ
 
 export default function Projects({ data, upsert, removeProject }) {
   const [modal, setModal] = useState(null);
+  const [photoProject, setPhotoProject] = useState(null); // โปรเจกต์ที่กำลังเปิดดู/อัปโหลดรูปภาพงาน
   const [q, setQ] = useState("");
   // ย่อกลุ่ม "เสร็จสิ้น" กับ "ระงับ" ไว้ก่อน เพราะไม่ใช่งานที่ต้องดูประจำวัน
   const [collapsed, setCollapsed] = useState({ "เสร็จสิ้น": true, "ระงับ": true });
 
   const customerName = (id) => data.customers.find((c) => c.id === id)?.nameTh || "";
 
-  const list = data.projects.filter((p) =>
-    `${p.name} ${p.code} ${customerName(p.customerId)} ${p.clientName || ""}`
-      .toLowerCase().includes(q.toLowerCase())
-  );
+  const list = data.projects
+    .slice()
+    .reverse() // เพิ่มล่าสุดขึ้นก่อน
+    .filter((p) =>
+      `${p.name} ${p.code} ${customerName(p.customerId)} ${p.clientName || ""}`
+        .toLowerCase().includes(q.toLowerCase())
+    );
 
   const groups = GROUP_ORDER.map((status) => ({
     status,
@@ -123,6 +128,7 @@ export default function Projects({ data, upsert, removeProject }) {
                         )}
                         <div className="card-actions">
                           <button className="btn btn-ghost" onClick={() => setModal({ mode: "edit", item: p })}>แก้ไข</button>
+                          <button className="btn btn-ghost" onClick={() => setPhotoProject(p)}>📷 รูปภาพงาน</button>
                           <button
                             className="btn btn-danger"
                             onClick={() => {
@@ -148,6 +154,13 @@ export default function Projects({ data, upsert, removeProject }) {
           data={data}
           onSave={(item) => { upsert("projects", item, "โปรเจกต์"); setModal(null); }}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {photoProject && (
+        <ProjectPhotosModal
+          project={photoProject}
+          onClose={() => setPhotoProject(null)}
         />
       )}
     </div>
