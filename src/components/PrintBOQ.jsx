@@ -17,6 +17,10 @@ const PRINT_CSS = `
   :root{ --ink:#1a1a1a; --maroon:#880808; --steel:#6e6e6e; --steel-light:#9e9e9e; --concrete:#f2f2f2; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
+  @media screen and (max-width:1400px){ body{ zoom:0.85; } }
+  @media screen and (max-width:1100px){ body{ zoom:0.65; } }
+  @media screen and (max-width:800px){ body{ zoom:0.45; } }
+  @media print{ body{ zoom:1 !important; } }
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
   .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7647); cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
   .pv-bar button:hover{ background:#a91010; }
@@ -209,7 +213,7 @@ ${sheetHtml}
   function fitToPage() {
     var PAGE_HEIGHT_PX = 297 * 3.7795275591;
     var MAX_OVERFLOW = PAGE_HEIGHT_PX * 1.40;
-    var MIN_FONT_PX = 15;
+    var MIN_FONT_PX = 4;
     document.querySelectorAll('.sheet').forEach(function (sheet) {
       sheet.style.removeProperty('--fs-base');
       var natural = sheet.scrollHeight;
