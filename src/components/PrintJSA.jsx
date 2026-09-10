@@ -24,20 +24,20 @@ const PRINT_CSS = `
   .pv-label{ font-size:13px; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:6mm 9mm 5mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:12px; font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:6mm 9mm 5mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:8px; font-weight:600; }
 
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
-  .doc-company-text{ font-size:12px; line-height:1.4; }
-  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:12px; margin-bottom:2px; color:var(--ink); }
-  .dc-line{ color:#333; font-size:12px; }
+  .doc-company-text{ font-size:8px; line-height:1.4; }
+  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:8px; margin-bottom:2px; color:var(--ink); }
+  .dc-line{ color:#333; font-size:8px; }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:12px; border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:8px; border-radius:2px; display:inline-block; }
 
-  .jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:12px; margin-bottom:4px; }
+  .jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:8px; margin-bottom:4px; }
 
-  .doc-table{ width:100%; border-collapse:collapse; font-size:12px; margin-bottom:4px; }
+  .doc-table{ width:100%; border-collapse:collapse; font-size:8px; margin-bottom:4px; }
   .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:12.5px; line-height:1.3; text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:5px 6px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }

@@ -14,7 +14,7 @@ const PRINT_CSS = `
   :root{ --ink:#1a1a1a; --maroon:#880808; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
   .sheet-wrap{ padding:20px 0; }
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:11mm 14mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:12px; font-weight:500; position:relative; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:11mm 14mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.3); color:#171717; font-size:8px; font-weight:500; position:relative; }
 
   .copy-tag{ position:absolute; top:0; right:0; background:var(--maroon); color:#fff; font-weight:700; letter-spacing:.04em; padding:8px 22px; font-size:14px; border-bottom-left-radius:6px; }
 
@@ -27,7 +27,7 @@ const PRINT_CSS = `
   .title-wrap{ text-align:center; margin-bottom:4px; }
   .title{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
   .subtitle{ text-align:center; font-size:13.5px; margin-bottom:6px; color:#333; }
-  .copy-note{ text-align:center; font-size:12px; color:#666; margin-bottom:10px; font-style:italic; }
+  .copy-note{ text-align:center; font-size:8px; color:#666; margin-bottom:10px; font-style:italic; }
   .booknum{ display:flex; justify-content:flex-end; gap:24px; font-size:13.5px; margin-bottom:12px; font-weight:600; }
 
   .party{ border:2px solid #333; border-radius:3px; padding:12px 14px; margin-bottom:10px; font-size:14.5px; line-height:2; background:#fafafa; }
