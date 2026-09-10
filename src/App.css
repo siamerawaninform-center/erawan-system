@@ -318,7 +318,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .plan-task-head span{ font-size:18px; text-transform:uppercase; letter-spacing:.04em; color:var(--steel-light); }
 
 .ms-table{ display:flex; flex-direction:column; gap:6px; }
-.ms-row{ display:grid; grid-template-columns:40px 60px 1fr 70px 24px; gap:6px; align-items:center; }
+.ms-row{ display:grid; grid-template-columns:40px 90px 1fr 70px 24px; gap:6px; align-items:center; }
 .ms-row-head span{ font-size:18px; text-transform:uppercase; color:var(--steel-light); }
 .ms-check{ justify-content:center; }
 
