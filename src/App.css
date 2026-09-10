@@ -67,7 +67,7 @@
 .mobile-toggle{ display:none; }
 
 /* ---------- main ---------- */
-.main{ flex:1; padding:30px 34px 60px; max-width:1220px; }
+.main{ flex:1; padding:30px 34px 60px; max-width:1680px; }
 .view{ display:flex; flex-direction:column; gap:20px; }
 
 .titleblock{ display:flex; border:2px solid var(--ink); border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:0 2px 10px rgba(0,0,0,.06); font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; position:relative; flex-wrap:wrap; }
