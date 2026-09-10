@@ -15,7 +15,7 @@ const PRINT_CSS = `
   @page { size: A4; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:17px; font-weight:600; }
+  body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:18px; font-weight:600; }
   .sheet{ width:210mm; min-height:297mm; padding:16mm 16mm 14mm; page-break-after:always; }
   .sheet:last-child{ page-break-after:auto; }
   .hdr{ display:flex; align-items:center; gap:12px; border-bottom:3px solid #880808; padding-bottom:10px; margin-bottom:16px; }
