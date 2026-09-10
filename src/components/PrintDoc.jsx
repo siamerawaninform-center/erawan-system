@@ -106,6 +106,9 @@ const PRINT_CSS = `
 
   .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:var(--fs-base); position:absolute; left:10mm; right:10mm; bottom:10mm; }
   .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
+  .dsg-col-pay{ flex:1.6; }
+  .dsg-col-pay .dsg-field{ margin-top:10px; }
+  .dsg-col-pay .dsg-check{ margin-top:8px; }
   .dsg-note{ color:#333; }
   .dsg-field{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
   .dsg-line{ flex:1; border-bottom:2px dotted #444; min-width:20px; }
@@ -114,7 +117,7 @@ const PRINT_CSS = `
   .dsg-check{ display:flex; align-items:baseline; gap:6px; margin-top:4px; }
   .dsg-box{ width:13px; height:13px; border:1.5px solid #222; display:inline-flex; align-items:center; justify-content:center; font-size:0.5em; flex-shrink:0; }
   .dsg-box-checked{ background:#eee; }
-  .dsg-col-sign{ justify-content:flex-end; gap:22px; }
+  .dsg-col-sign{ justify-content:flex-end; gap:22px; flex:0.65; }
   .dsg-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
   .dsg-sig-line{ width:100%; border-bottom:2.5px solid #222; height:30px; }
   .dsg-role{ color:#555; font-weight:600; }
@@ -299,7 +302,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
           <div class="dsg-field"><span>ผู้ส่งของ</span><span class="dsg-line"></span></div>
           <div class="dsg-paren">( ${esc(record.signerIssuer || "—")} )</div>
         </div>
-        <div class="dsg-col">
+        <div class="dsg-col dsg-col-pay">
           <div class="dsg-field"><span>ผู้รับเงิน</span><span class="dsg-line"></span><span>ตัวบรรจง</span></div>
           ${receiptParen}
           <div class="dsg-field"><span>วันที่</span><span class="dsg-line"></span></div>
