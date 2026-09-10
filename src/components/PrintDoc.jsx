@@ -73,6 +73,8 @@ const PRINT_CSS = `
   /* กันตัดกลางแถวเวลาล้นไปหน้าถัดไปจริงๆ — ถ้าแถวไหนพอดีเกินหน้า ดันทั้งแถวไปหน้าใหม่แทนการตัดครึ่ง */
   .doc-table tr{ break-inside:avoid; page-break-inside:avoid; }
   .payment-terms-box, .doc-sign-grid, .doc-party{ break-inside:avoid; page-break-inside:avoid; }
+  /* เงื่อนไขการชำระเงิน+สรุปยอด+ลายเซ็น ให้ติดกันเป็นก้อนเดียว ถ้าพอดีเกินหน้า ดันทั้งก้อนไปหน้า 2 แทนการแยกกระจาย */
+  .doc-tail-group{ break-inside:avoid; page-break-inside:avoid; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
@@ -375,9 +377,11 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
     </div>
   </div>
   ${tableHtml}
-  ${paymentTermsHtml}
-  ${footerHtml}
-  ${signHtml}
+  <div class="doc-tail-group">
+    ${paymentTermsHtml}
+    ${footerHtml}
+    ${signHtml}
+  </div>
 </div>`;
 }
 
