@@ -100,7 +100,7 @@ const PRINT_CSS = `
   .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
   .dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
-  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:var(--fs-base); position:absolute; left:0; right:0; bottom:0; }
+  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:var(--fs-base); position:absolute; left:10mm; right:10mm; bottom:10mm; }
   .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .dsg-note{ color:#333; }
   .dsg-field{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
