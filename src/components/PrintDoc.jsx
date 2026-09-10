@@ -31,7 +31,7 @@ const PRINT_CSS = `
 
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:18px; font-size:var(--fs-base); font-weight:600; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
-  .sheet.sheet-billing{ padding:10mm 12mm 9mm; --fs-base:21px; }
+  .sheet.sheet-billing{ padding:10mm 10mm 10mm; --fs-base:22px; }
 
   .mono-code{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -69,7 +69,7 @@ const PRINT_CSS = `
   .doc-table-fill tbody{ border-bottom:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-table tfoot tr:last-child td{ border-bottom:2px solid #333 !important; }
-  .doc-blank-row td{ height:22px; border-top:1.5px solid #ccc; }
+  .doc-blank-row td{ height:22px; }
   .doc-header-row td{ background:var(--maroon); }
   .doc-header-cell{ color:#fff; font-weight:700; padding:8px 10px !important; letter-spacing:.02em; }
   .doc-desc{ white-space:pre-wrap; }
