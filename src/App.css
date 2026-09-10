@@ -210,9 +210,9 @@ tr:last-child td{ border-bottom:none; }
 .empty p{ font-size:18px; color:var(--steel); max-width:360px; }
 
 .modal-backdrop{ position:fixed; inset:0; background:rgba(26,26,26,.55); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; }
-.modal{ background:var(--paper); width:100%; max-width:480px; max-height:88vh; overflow-y:auto; border:2px solid var(--ink); }
-.modal-wide{ max-width:680px; }
-.modal-xwide{ max-width:900px; }
+.modal{ background:var(--paper); width:80vw; max-width:80vw; max-height:90vh; overflow-y:auto; border:2px solid var(--ink); border-radius:10px; }
+.modal-wide{ width:85vw; max-width:85vw; }
+.modal-xwide{ width:90vw; max-width:90vw; }
 .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1.5px solid var(--line); position:sticky; top:0; background:var(--paper); z-index:2; }
 .modal-head h3{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:18px; font-weight:700; }
 .modal-body{ padding:20px; }
