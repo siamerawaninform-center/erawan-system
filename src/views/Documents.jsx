@@ -20,7 +20,7 @@ export default function Documents({ data, upsert, remove }) {
   const list = (data.documents || [])
     .filter((d) => filterType === "ทั้งหมด" || d.docType === filterType)
     .filter((d) => `${d.code} ${d.name}`.toLowerCase().includes(q.toLowerCase()))
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    .sort((a, b) => (b.code || "").localeCompare(a.code || ""));
 
   return (
     <div className="view">
