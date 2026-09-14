@@ -74,6 +74,32 @@ export function nextQuoteRunning(existingFin, dateStr, startFrom = 1, issuedAs =
   return Math.max(max + 1, Number(startFrom) || 1);
 }
 
+/**
+ * หาเลขวิ่งถัดไปของ "ใบกำกับภาษี/ใบเสร็จ" — แยกออกจากเลขชุดวางบิล/แจ้งหนี้โดยเด็ดขาด
+ * นับต่อเนื่องตามลำดับ "วันที่ออกจริง" (วันรับชำระ) เท่านั้น เพราะเลขใบกำกับภาษีต้องเรียงตามวันที่ออกจริง
+ * ห้ามใช้วันวางบิล เพราะลูกค้าจ่ายไม่เรียงคิวกับลำดับที่วางบิลเสมอไป ถ้าใช้วันวางบิลเลขจะสลับกับวันที่ในรายงานภาษีขาย
+ *
+ * รองรับเอกสารเก่าก่อนแยกเลข (ที่ "ชำระแล้ว" ไปจริงแล้วตั้งแต่ก่อนอัปเดตนี้) โดยถือว่าเลขชุดเดิมของเอกสารนั้น
+ * คือเลข PT จริงที่ออกไปแล้ว กันเลขใหม่ไปชนของเก่าที่ออกจริงแล้ว
+ */
+export function nextTaxReceiptRunning(existingFin, taxInvoiceDateStr, startFrom = 1, issuedAs = "นามบริษัท") {
+  const period = bePeriod(taxInvoiceDateStr);
+  let max = 0;
+  (existingFin || []).forEach((f) => {
+    if (f.kind !== "salesSet") return;
+    if ((f.issuedAs || "นามบริษัท") !== issuedAs) return;
+    if (f.taxInvoiceRunning && f.taxInvoicePeriod === period) {
+      const n = Number(f.taxInvoiceRunning);
+      if (!isNaN(n) && n > max) max = n;
+    } else if (!f.taxInvoiceRunning && f.status === "ชำระแล้ว" && f.period === period && f.running) {
+      // เอกสารเก่าก่อนอัปเดต — ถือว่าเลขชุดเดิมคือเลข PT จริงที่ออกไปแล้ว
+      const n = Number(f.running);
+      if (!isNaN(n) && n > max) max = n;
+    }
+  });
+  return Math.max(max + 1, Number(startFrom) || 1);
+}
+
 /** ประกอบเลขที่เอกสารจาก type + period + running */
 export function buildDocCode(type, period, running) {
   const prefix = FIN_TYPE_PREFIX[type] || "DOC";
@@ -108,6 +134,19 @@ export function siblingCodes(period, running) {
     out[t] = buildDocCode(t, period, running);
   });
   return out;
+}
+
+/**
+ * เลขที่เอกสารจริงของ type ใดๆ ในชุดขาย — ให้ใช้ฟังก์ชันนี้แทนการต่อ buildDocCode ตรงๆ เสมอ
+ * BP/NO: ใช้ period+running ของชุด (ตามวันวางบิล) เหมือนเดิม
+ * PT/RV: ใช้ taxInvoicePeriod+taxInvoiceRunning (ตามวันออกจริง) — คืนค่า null ถ้ายังไม่ออก (ยังไม่รับชำระ)
+ */
+export function salesSetDocCode(record, type) {
+  if (type === "ใบกำกับภาษี" || type === "ใบเสร็จรับเงิน") {
+    if (!record.taxInvoiceRunning) return null;
+    return buildDocCode(type, record.taxInvoicePeriod, record.taxInvoiceRunning);
+  }
+  return buildDocCode(type, record.period, record.running);
 }
 
 /** รหัสโปรเจกต์ SEC-{พ.ศ.}-{เลขวิ่ง 3 หลัก} */

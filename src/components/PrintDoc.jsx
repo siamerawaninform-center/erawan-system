@@ -3,7 +3,7 @@ import logoUrl from "../assets/logo.png";
 import {
   baht, bahtText, formatShortThaiDate, computeFinTotal, lineTotal, num,
 } from "../lib/format.js";
-import { buildDocCode } from "../lib/docNumber.js";
+import { buildDocCode, salesSetDocCode } from "../lib/docNumber.js";
 import { COMPANY_DEFAULT, FIN_TYPE_EN, PAYMENT_METHODS } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
@@ -164,12 +164,15 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
 
   const isBilling = printType === "ใบวางบิล";
   const isQuote = printType === "ใบเสนอราคา";
+  // ใบกำกับภาษี/ใบเสร็จ ต้องขึ้นวันที่รับชำระจริง ไม่ใช่วันที่วางบิล (ถ้ายังไม่ตั้ง taxInvoiceDate ใช้ record.date ไปก่อนแต่ถือว่ายังไม่ควรออกจริง)
+  const isTaxOrReceipt = printType === "ใบกำกับภาษี" || printType === "ใบเสร็จรับเงิน";
+  const headerDate = (isTaxOrReceipt && record.taxInvoiceDate) ? record.taxInvoiceDate : record.date;
 
   const docCode = record.kind === "salesSet"
-    ? buildDocCode(printType, record.period, record.running)
+    ? (salesSetDocCode(record, printType) || `${printType} — ยังไม่ออกเลขจริง (รอรับชำระ)`)
     : record.code;
   const taxInvoiceCode = record.kind === "salesSet"
-    ? buildDocCode("ใบกำกับภาษี", record.period, record.running)
+    ? (salesSetDocCode(record, "ใบกำกับภาษี") || "ยังไม่ออก")
     : "";
   const custName = customer?.nameTh || record.customerName || "";
   const custBranch = customer?.branch ? ` สาขา ${customer.branch}` : "";
@@ -380,7 +383,7 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       <div class="dp-row"><span class="dp-k">E-mail</span><span class="dp-v">${esc(customer?.email || "—")}</span></div>
     </div>
     <div class="dp-right">
-      <div class="dp-row2"><span class="dp-k">วันที่</span><span class="dp-v mono-amt">${esc(formatShortThaiDate(record.date))}</span></div>
+      <div class="dp-row2"><span class="dp-k">วันที่</span><span class="dp-v mono-amt">${esc(formatShortThaiDate(headerDate))}</span></div>
       <div class="dp-row2"><span class="dp-k">เลขที่บิล</span><span class="dp-v mono-amt">${esc(docCode)}</span></div>
       ${dpRightExtra}
       ${dpRightBottom}
@@ -404,7 +407,7 @@ export default function PrintDoc({ payload, data, onClose }) {
 
     const { record, printType } = payload;
     const docCode = record.kind === "salesSet"
-      ? buildDocCode(printType, record.period, record.running)
+      ? (salesSetDocCode(record, printType) || printType)
       : record.code;
 
     const sheetHtml = buildDocPageHtml({ record, printType, copyType: "ต้นฉบับ (ORIGINAL)", data });
