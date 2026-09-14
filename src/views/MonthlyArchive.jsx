@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TitleBlock, Toolbar, Stamp, Kpi, finStatusVariant } from "../components/UI.jsx";
 import { baht, formatShortThaiDate, computeFinTotal, computeExpenseTotal, monthKey, formatThaiMonthYear } from "../lib/format.js";
-import { buildDocCode, salesSetDocCode } from "../lib/docNumber.js";
+import { buildDocCode } from "../lib/docNumber.js";
 import { SALES_SET_TYPES, THAI_MONTHS_FULL } from "../lib/constants.js";
 import { openMonthlyPackagePrint } from "../components/PrintMonthlyPackage.jsx";
 
@@ -20,23 +20,15 @@ export default function MonthlyArchive({ data }) {
   const customer = (id) => data.customers.find((c) => c.id === id);
   const supplier = (id) => data.suppliers.find((s) => s.id === id);
 
-  // รายการเอกสารขายของเดือนนี้ (ตามวันที่วางบิล) — ใช้แสดงในหน้าคลังเอกสารเฉยๆ
   const salesDocs = (data.quotes || [])
     .filter((q) => q.kind === "salesSet" && monthKey(q.date) === ym && q.status !== "ยกเลิก")
     .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
-
-  // เอกสารที่ "ออกใบกำกับภาษี/ใบเสร็จจริง" แล้วในเดือนนี้ (ตามวันที่รับชำระ ไม่ใช่วันที่วางบิล)
-  // ใช้เฉพาะตอนพิมพ์แพ็คเกจส่งบัญชี/รายงานภาษีขาย กันเอกสารที่ยังไม่ออกจริงหลุดเข้ารายงาน
-  const taxInvoiceDocs = (data.quotes || [])
-    .filter((q) => q.kind === "salesSet" && q.status === "ชำระแล้ว" && q.taxInvoiceDate && monthKey(q.taxInvoiceDate) === ym)
-    .sort((a, b) => (a.taxInvoiceDate || "").localeCompare(b.taxInvoiceDate || ""));
 
   const expenses = (data.expenses || [])
     .filter((e) => monthKey(e.date) === ym)
     .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
-  // ใช้ taxInvoiceDocs (ออกใบกำกับภาษีจริงแล้ว) คำนวณยอด/ภาษีขาย — ให้ตรงกับรายงานภาษีขายที่พิมพ์จริง
-  const salesTotals = taxInvoiceDocs.reduce(
+  const salesTotals = salesDocs.reduce(
     (acc, q) => {
       const t = computeFinTotal(q.items, q.vat, q.discount);
       acc.total += t.total;
@@ -67,8 +59,7 @@ export default function MonthlyArchive({ data }) {
   const years = [...yearsFromData].sort((a, b) => b - a);
 
   const handlePrint = () => {
-    // ส่งเฉพาะเอกสารที่ออกใบกำกับภาษีจริงแล้วเข้ารายงานภาษีขาย — ไม่ใช่ทุกเอกสารที่ถูกวางบิลในเดือนนี้
-    openMonthlyPackagePrint({ ym, year, month, salesDocs: taxInvoiceDocs, expenses, data, customer, supplier });
+    openMonthlyPackagePrint({ ym, year, month, salesDocs, expenses, data, customer, supplier });
   };
 
   return (
@@ -95,7 +86,7 @@ export default function MonthlyArchive({ data }) {
       </Toolbar>
 
       <div className="kpi-grid">
-        <Kpi label="รายรับรวม (ใบกำกับภาษีที่ออกแล้ว)" value={`฿${baht(salesTotals.total)}`} />
+        <Kpi label="รายรับรวม (จากเอกสารขาย)" value={`฿${baht(salesTotals.total)}`} />
         <Kpi label="ภาษีขาย" value={`฿${baht(salesTotals.vat)}`} />
         <Kpi label="รายจ่ายรวม" value={`฿${baht(expenseTotals.total)}`} />
         <Kpi label="ภาษีซื้อ" value={`฿${baht(expenseTotals.vat)}`} />
@@ -118,7 +109,7 @@ export default function MonthlyArchive({ data }) {
             <div className="mini-list">
               {salesDocs.map((q) => {
                 const t = computeFinTotal(q.items, q.vat, q.discount);
-                const taxCode = salesSetDocCode(q, "ใบกำกับภาษี") || "—";
+                const taxCode = buildDocCode("ใบกำกับภาษี", q.period, q.running);
                 return (
                   <div key={q.id} className="mini-row">
                     <div className="mini-row-main">

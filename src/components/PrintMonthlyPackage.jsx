@@ -2,7 +2,7 @@ import logoUrl from "../assets/logo.png";
 import {
   baht, bahtText, formatShortThaiDate, computeFinTotal, computeExpenseTotal, formatThaiMonthYear,
 } from "../lib/format.js";
-import { buildDocCode, salesSetDocCode } from "../lib/docNumber.js";
+import { buildDocCode } from "../lib/docNumber.js";
 import { COMPANY_DEFAULT } from "../lib/constants.js";
 
 /* ---------------------------------------------------------
@@ -123,11 +123,11 @@ export function openMonthlyPackagePrint({ ym, salesDocs, expenses, data, custome
   /* ---------- รายงานภาษีขาย ---------- */
   const salesRows = salesDocs.map((q, i) => {
     const t = computeFinTotal(q.items, q.vat, q.discount);
-    const taxCode = salesSetDocCode(q, "ใบกำกับภาษี") || "—";
+    const taxCode = buildDocCode("ใบกำกับภาษี", q.period, q.running);
     const cust = customer(q.customerId);
     return `<tr>
       <td class="center">${i + 1}</td>
-      <td class="center">${esc(formatShortThaiDate(q.taxInvoiceDate || q.date))}</td>
+      <td class="center">${esc(formatShortThaiDate(q.date))}</td>
       <td class="center mono">${esc(taxCode)}</td>
       <td>${esc(cust?.nameTh || q.customerName || "—")}</td>
       <td class="center">${esc(cust?.taxId || "—")}</td>

@@ -88,27 +88,15 @@ export default function Company({ company, onSave }) {
           เลขวิ่งเริ่มต้น — ตั้งครั้งเดียว ให้เอกสารใหม่รันต่อจากเลขที่ใช้อยู่ในระบบเดิมของบริษัท
           (เช่น ถ้าระบบเดิมล่าสุดถึงเลข 166 ให้ใส่ 167)
         </FormDivider>
-        <div className="form-grid-3">
+        <div className="form-grid-2">
           <div className="form-row">
-            <label>เลขวิ่งเริ่มต้น — ใบวางบิล/ใบแจ้งหนี้ (เลขชุด)</label>
+            <label>เลขวิ่งเริ่มต้น — เอกสารชุดขาย (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จรับเงิน)</label>
             <input
               type="number" min="1"
               value={f.startingRunning.salesSet}
               onChange={setRun("salesSet")}
               className="mono-input"
             />
-          </div>
-          <div className="form-row">
-            <label>เลขวิ่งเริ่มต้น — ใบกำกับภาษี/ใบเสร็จ (แยกจากเลขชุด)</label>
-            <input
-              type="number" min="1"
-              value={f.startingRunning.taxInvoice}
-              onChange={setRun("taxInvoice")}
-              className="mono-input"
-            />
-            <p className="field-hint">
-              ใส่เลข PT จริงล่าสุดที่เคยออกไปแล้วในระบบเดิม (ทำมือ) +1 — ให้เลขต่อเนื่องกับของเดิมไม่มีช่องว่าง
-            </p>
           </div>
           <div className="form-row">
             <label>เลขวิ่งเริ่มต้น — ใบเสนอราคา</label>

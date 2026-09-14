@@ -5,7 +5,7 @@ import {
 } from "../components/UI.jsx";
 import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, baht, todayISO, formatShortThaiDate, computeFinTotal, lineTotal, monthKey, formatThaiMonthYear, exportToCSV } from "../lib/format.js";
-import { allocateDocNumber, buildDocCode, nextTaxReceiptRunning, salesSetDocCode, bePeriod } from "../lib/docNumber.js";
+import { allocateDocNumber, buildDocCode } from "../lib/docNumber.js";
 import {
   FIN_TYPES, FIN_STATUSES, BILLING_STATUSES, PAYMENT_METHODS, SALES_SET_TYPES, ISSUED_AS_OPTIONS,
 } from "../lib/constants.js";
@@ -154,14 +154,11 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
 
                           {isSet && (
                             <div className="set-codes">
-                              {SALES_SET_TYPES.map((t2) => {
-                                const code = salesSetDocCode(f, t2);
-                                return (
-                                  <span key={t2} className="set-code-chip">
-                                    {t2.replace("ใบ", "")} <b>{code || "ยังไม่ออก"}</b>
-                                  </span>
-                                );
-                              })}
+                              {SALES_SET_TYPES.map((t2) => (
+                                <span key={t2} className="set-code-chip">
+                                  {t2.replace("ใบ", "")} <b>{buildDocCode(t2, f.period, f.running)}</b>
+                                </span>
+                              ))}
                             </div>
                           )}
 
@@ -169,15 +166,6 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
                             <div className="billing-line">
                               <span className="muted">สถานะวางบิล</span>
                               <Stamp label={f.billingStatus} variant={billingStatusVariant(f.billingStatus)} />
-                            </div>
-                          )}
-
-                          {isSet && (
-                            <div className="billing-line">
-                              <span className="muted">ใบกำกับภาษี/ใบเสร็จ</span>
-                              {f.taxInvoiceRunning
-                                ? <Stamp label={`ออกแล้ว ${formatShortThaiDate(f.taxInvoiceDate)}`} variant="ok" />
-                                : <Stamp label="ยังไม่ออก (รอรับชำระ)" variant="steel" />}
                             </div>
                           )}
 
@@ -190,18 +178,13 @@ export default function Finance({ data, upsert, remove, onPrint, onPrintSet }) {
                             <button className="btn btn-ghost btn-sm" onClick={() => setModal({ mode: "edit", item: f, kind: f.kind })}>แก้ไข</button>
                             {isSet ? (
                               <>
-                                {SALES_SET_TYPES.map((t2) => {
-                                  const notYetIssued = (t2 === "ใบกำกับภาษี" || t2 === "ใบเสร็จรับเงิน") && !f.taxInvoiceRunning;
-                                  return (
-                                    <button
-                                      key={t2}
-                                      className="btn btn-ghost btn-sm"
-                                      disabled={notYetIssued}
-                                      title={notYetIssued ? "ต้องเปลี่ยนสถานะเป็น \"ชำระแล้ว\" ก่อน ระบบจะออกเลขที่จริงให้อัตโนมัติ" : ""}
-                                      onClick={() => onPrint({ record: f, printType: t2 })}
-                                    >🖶 {t2.replace("ใบ", "")}</button>
-                                  );
-                                })}
+                                {SALES_SET_TYPES.map((t2) => (
+                                  <button
+                                    key={t2}
+                                    className="btn btn-ghost btn-sm"
+                                    onClick={() => onPrint({ record: f, printType: t2 })}
+                                  >🖶 {t2.replace("ใบ", "")}</button>
+                                ))}
                                 <button
                                   className="btn btn-primary btn-sm"
                                   onClick={() => setPrintSetModal({ record: f })}
@@ -276,11 +259,6 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       customerName: "",
       status: FIN_STATUSES[0],
       billingStatus: isSet ? BILLING_STATUSES[0] : undefined,
-      // วันที่ออกใบกำกับภาษี/ใบเสร็จจริง (วันรับชำระเงิน) — แยกจาก "date" ซึ่งเป็นวันวางบิล/แจ้งหนี้
-      // ต้อง null จนกว่าจะรับชำระ ไม่งั้นรายงานภาษีขายจะดึงเอกสารที่ยังไม่ออกจริงไปด้วย
-      taxInvoiceDate: isSet ? null : undefined,
-      taxInvoicePeriod: isSet ? null : undefined,
-      taxInvoiceRunning: isSet ? null : undefined,
       date: initDate,
       dueDate: initDue.toISOString().slice(0, 10),
       creditDays: initCreditDays,
@@ -330,35 +308,6 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       next = { ...next, period: alloc.period, running: alloc.running, code: alloc.code };
     }
     setF(next);
-  };
-
-  /* เปลี่ยนสถานะ → ถ้าเพิ่งเปลี่ยนเป็น "ชำระแล้ว" และยังไม่เคยออกเลข PT/RV จริง
-     ให้ออกเลขวิ่งจริงของ PT/RV ทันที (แยกจากเลขชุด) เรียงตามลำดับวันที่ออกจริงเท่านั้น
-     ป้องกันลืมออกเลข และกันเลขสลับลำดับกับวันที่ในรายงานภาษีขาย */
-  const changeStatus = (e) => {
-    const status = e.target.value;
-    let next = { ...f, status };
-    if (isSet && status === "ชำระแล้ว" && !f.taxInvoiceRunning) {
-      const taxInvoiceDate = f.taxInvoiceDate || todayISO();
-      const taxInvoicePeriod = bePeriod(taxInvoiceDate);
-      const taxInvoiceRunning = nextTaxReceiptRunning(
-        data.quotes, taxInvoiceDate, data.company?.startingRunning?.taxInvoice, f.issuedAs
-      );
-      next = { ...next, taxInvoiceDate, taxInvoicePeriod, taxInvoiceRunning };
-    }
-    setF(next);
-  };
-
-  /* แก้วันที่ออกจริงด้วยมือ (กรณีลืมกดตอนรับเงินจริง) — เลขวิ่งที่จัดไปแล้วคงเดิม ไม่จัดใหม่
-     เพื่อไม่ให้เลขที่พิมพ์ไปแล้วเปลี่ยนย้อนหลัง แก้วันที่ได้เฉพาะตอนยังไม่เคยออกเลขเท่านั้น */
-  const changeTaxInvoiceDate = (e) => {
-    const taxInvoiceDate = e.target.value || null;
-    if (f.taxInvoiceRunning) {
-      // มีเลขจริงแล้ว — แก้ได้แค่วันที่แสดงผล ไม่จัดเลขใหม่
-      setF({ ...f, taxInvoiceDate });
-      return;
-    }
-    setF({ ...f, taxInvoiceDate });
   };
 
   const changeCreditDays = (e) => {
@@ -521,16 +470,13 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
       >
         {isSet && (
           <div className="info-box">
-            ใบวางบิล/ใบแจ้งหนี้ ใช้เลขชุดนี้ ส่วนใบกำกับภาษี/ใบเสร็จ จะออกเลขจริงแยกต่างหากตอนรับชำระ:
+            เอกสารชุดนี้ใช้เลขวิ่งเดียวกันทั้ง 4 ใบ — พิมพ์ได้ทุกแบบจากรายการเดียว:
             <div className="set-codes set-codes-inline">
-              {SALES_SET_TYPES.map((t) => {
-                const code = salesSetDocCode(f, t);
-                return (
-                  <span key={t} className="set-code-chip">
-                    {t} <b>{code || "ยังไม่ออก (รอรับชำระ)"}</b>
-                  </span>
-                );
-              })}
+              {SALES_SET_TYPES.map((t) => (
+                <span key={t} className="set-code-chip">
+                  {t} <b>{buildDocCode(t, f.period, f.running)}</b>
+                </span>
+              ))}
             </div>
           </div>
         )}
@@ -555,30 +501,11 @@ function FinanceForm({ mode, kind, item, data, onSave, onClose }) {
           </div>
           <div className="form-row">
             <label>สถานะเอกสาร</label>
-            <select value={f.status} onChange={changeStatus}>
+            <select value={f.status} onChange={set("status")}>
               {FIN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
         </div>
-
-        {isSet && (
-          <div className="form-grid-3">
-            <div className="form-row">
-              <label>วันที่ออกใบกำกับภาษี/ใบเสร็จจริง (วันรับชำระเงิน)</label>
-              <input
-                type="date"
-                value={f.taxInvoiceDate || ""}
-                onChange={changeTaxInvoiceDate}
-                disabled={!!f.taxInvoiceRunning}
-              />
-              <p className="field-hint">
-                {f.taxInvoiceRunning
-                  ? `ออกเลขจริงแล้ว: PT/RV เลขวิ่ง ${f.taxInvoiceRunning} (${f.taxInvoicePeriod}) — แก้วันที่ไม่ได้แล้วเพราะเลขถูกจัดไปแล้ว ถ้าผิดจริงๆ ให้ลบเอกสารนี้แล้วสร้างใหม่`
-                  : "ยังไม่ออกเลขจริง — ระบบจะออกเลข PT/RV อัตโนมัติตามลำดับวันที่นี้ทันทีที่เปลี่ยนสถานะเป็น \"ชำระแล้ว\""}
-              </p>
-            </div>
-          </div>
-        )}
 
         <div className="form-grid-3">
           <div className="form-row">
