@@ -213,10 +213,11 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       const priceCells = isSplit
         ? `<td class="doc-num">${esc(baht(it.materialPrice || 0))}</td><td class="doc-num">${esc(baht(it.laborPrice || 0))}</td>`
         : `<td class="doc-num">${esc(baht(it.price))}</td>`;
+      const descText = record.refPO ? `${it.desc} (PO: ${record.refPO})` : it.desc;
       return `
       <tr>
         <td class="doc-center">${itemRunningNo}</td>
-        <td class="doc-desc">${esc(it.desc)}</td>
+        <td class="doc-desc">${esc(descText)}</td>
         <td class="doc-center">${esc(num(it.qty))} ${esc(it.unit)}</td>
         ${priceCells}
         <td class="doc-num">${esc(baht(it.discount))}</td>
