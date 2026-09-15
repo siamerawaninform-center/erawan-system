@@ -12,8 +12,11 @@ const PRINT_CSS = `
   @page { size: A4 landscape; margin: 0; }
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
+  /* บังคับให้เบราว์เซอร์พิมพ์สีพื้นหลัง (เช่นแถบสีแดงในตาราง) เสมอ — ปกติเบราว์เซอร์จะซ่อนสีพื้นหลังตอนพิมพ์
+     จนกว่าจะไปติ๊ก "Background graphics" เองใน print dialog ซึ่งพึ่งพาไม่ได้ ต้องบังคับด้วย CSS ตรงนี้แทน */
+  *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:4px; font-weight:600; }
-  .sheet{ width:297mm; min-height:210mm; padding:12mm 14mm; }
+  .sheet{ width:297mm; padding:10mm 14mm; transform-origin:top left; }
   .plan-title-bar{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:8px; margin-bottom:12px; }
   .plan-header{ display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:10px; line-height:1.6; }
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
@@ -159,10 +162,30 @@ export default function PrintPlan({ plan, data, onClose }) {
     rows.forEach(function (r) { maxH = Math.max(maxH, r.getBoundingClientRect().height); });
     rows.forEach(function (r) { r.style.height = maxH + "px"; });
   }
-  window.addEventListener("load", function () {
+  // ย่อทั้งแผ่นให้พอดี A4 แนวนอน 1 หน้าเสมอ ไม่ว่าจำนวนวัน/รายการงานจะเยอะแค่ไหน
+  // วัดความสูงจริงของเนื้อหาเทียบกับความสูงกระดาษ แล้วคำนวณสัดส่วนย่อที่พอดีเป๊ะ
+  function fitToOnePage() {
+    var sheet = document.querySelector(".sheet");
+    if (!sheet) return;
+    sheet.style.transform = "none";
+    sheet.style.width = "297mm";
+    var pxPerMm = 96 / 25.4;
+    var pageHeightPx = 210 * pxPerMm; // A4 แนวนอน สูง 210mm, margin ตั้งเป็น 0 แล้ว
+    var contentHeightPx = sheet.scrollHeight;
+    if (contentHeightPx > pageHeightPx) {
+      var scale = (pageHeightPx / contentHeightPx) * 0.985; // เผื่อ margin กันขอบตัดพอดี
+      sheet.style.transform = "scale(" + scale + ")";
+      sheet.style.width = (100 / scale) + "%"; // ชดเชยความกว้างที่หายไปจากการย่อ ให้กว้างเต็มหน้ากระดาษเหมือนเดิม
+    }
+  }
+  function layoutPrintPage() {
     equalizeRowHeights();
+    fitToOnePage();
+  }
+  window.addEventListener("load", function () {
+    layoutPrintPage();
     // เรียกซ้ำอีกครั้งหลังฟอนต์ Google Fonts โหลดเสร็จจริง (กันกรณี metric ขยับหลังสลับฟอนต์)
-    setTimeout(equalizeRowHeights, 250);
+    setTimeout(layoutPrintPage, 250);
   });
   window.onafterprint = function () { window.close(); };
 </script>
