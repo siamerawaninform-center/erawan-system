@@ -16,24 +16,24 @@ const PRINT_CSS = `
      จนกว่าจะไปติ๊ก "Background graphics" เองใน print dialog ซึ่งพึ่งพาไม่ได้ ต้องบังคับด้วย CSS ตรงนี้แทน */
   *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; color:#171717; font-size:4px; font-weight:600; }
-  .sheet{ width:297mm; padding:10mm 14mm; transform-origin:top left; }
-  .plan-title-bar{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:8px; margin-bottom:12px; }
-  .plan-header{ display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:10px; line-height:1.6; }
+  .sheet{ width:297mm; padding:8mm 14mm; transform-origin:top left; }
+  .plan-title-bar{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:22px; color:#880808; border-bottom:3px solid #880808; padding-bottom:5px; margin-bottom:8px; }
+  .plan-header{ display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:6px; line-height:1.4; }
   table{ width:100%; border-collapse:collapse; table-layout:fixed; }
   th, td{ border:1px solid #999; text-align:center; }
-  thead th{ background:#5c0505; color:#fff; font-size:11.5px; padding:4px 1px; font-weight:700; }
+  thead th{ background:#5c0505; color:#fff; font-size:11.5px; padding:3px 1px; font-weight:700; }
   .gantt-month{ font-size:11.5px; letter-spacing:.03em; }
   /* เส้นกั้นหนาสีดำ เฉพาะตรงจุดที่ขึ้นเดือนใหม่เท่านั้น — ลากยาวทะลุทุกแถวของตาราง จุดอื่นไม่ขีดเพิ่ม */
   th.month-start, td.month-start{ border-left:3px solid #000 !important; }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
-  .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; vertical-align:middle; }
-  .gantt-col{ height:18px; vertical-align:middle; }
+  .gantt-desc-cell{ text-align:left; padding:3px 6px; font-size:11.5px; vertical-align:middle; }
+  .gantt-col{ height:16px; vertical-align:middle; }
   .gantt-fill{ background:#880808; }
-  .plan-sign{ margin-top:26px; display:flex; justify-content:flex-end; }
-  .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; width:180px; font-size:11.5px; }
-  .sig-line{ width:100%; border-bottom:1px solid #333; height:32px; }
-  .sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
+  .plan-sign{ margin-top:10px; display:flex; justify-content:flex-end; }
+  .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:2px; width:180px; font-size:11.5px; }
+  .sig-line{ width:100%; border-bottom:1px solid #333; height:22px; }
+  .sig-img{ max-height:34px; max-width:130px; object-fit:contain; margin-bottom:2px; }
   .sig-role{ color:#555; }
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
   .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:13px; cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
