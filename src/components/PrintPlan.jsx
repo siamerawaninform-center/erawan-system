@@ -24,8 +24,8 @@ const PRINT_CSS = `
   th.month-start, td.month-start{ border-left:3px solid #000 !important; }
   .gantt-no{ width:32px; font-size:11.5px; }
   .gantt-desc{ width:220px; text-align:left !important; padding-left:6px !important; }
-  .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; }
-  .gantt-col{ height:18px; }
+  .gantt-desc-cell{ text-align:left; padding:4px 6px; font-size:11.5px; vertical-align:middle; }
+  .gantt-col{ height:18px; vertical-align:middle; }
   .gantt-fill{ background:#880808; }
   .plan-sign{ margin-top:26px; display:flex; justify-content:flex-end; }
   .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; width:180px; font-size:4px; }
@@ -149,6 +149,21 @@ export default function PrintPlan({ plan, data, onClose }) {
   </div>
 </div>
 <script>
+  // ทำให้ทุกแถวของตารางสูงเท่ากันหมด โดยยึดแถวที่สูงที่สุด (เกิดจากรายละเอียดงานยาวขึ้นหลายบรรทัด)
+  // วัดความสูงจริงหลังเบราว์เซอร์ render เสร็จ (แม่นกว่าคำนวณจากความยาวตัวหนังสือ)
+  function equalizeRowHeights() {
+    var rows = document.querySelectorAll("tbody tr");
+    if (!rows.length) return;
+    rows.forEach(function (r) { r.style.height = "auto"; });
+    var maxH = 0;
+    rows.forEach(function (r) { maxH = Math.max(maxH, r.getBoundingClientRect().height); });
+    rows.forEach(function (r) { r.style.height = maxH + "px"; });
+  }
+  window.addEventListener("load", function () {
+    equalizeRowHeights();
+    // เรียกซ้ำอีกครั้งหลังฟอนต์ Google Fonts โหลดเสร็จจริง (กันกรณี metric ขยับหลังสลับฟอนต์)
+    setTimeout(equalizeRowHeights, 250);
+  });
   window.onafterprint = function () { window.close(); };
 </script>
 </body></html>`;

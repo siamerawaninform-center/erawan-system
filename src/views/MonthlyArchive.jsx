@@ -24,6 +24,12 @@ export default function MonthlyArchive({ data }) {
     .filter((q) => q.kind === "salesSet" && monthKey(q.date) === ym && q.status !== "ยกเลิก")
     .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
+  // เอกสารที่ยกเลิกในเดือนนี้ — ต้องโผล่ในรายงานภาษีขายที่พิมพ์ด้วย (พร้อมกำกับ "ยกเลิก")
+  // ไม่งั้นเลขที่เอกสารในรายงานจะกระโดดห้วนๆ โดยไม่มีคำอธิบาย
+  const cancelledDocs = (data.quotes || [])
+    .filter((q) => q.kind === "salesSet" && monthKey(q.date) === ym && q.status === "ยกเลิก")
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+
   const expenses = (data.expenses || [])
     .filter((e) => monthKey(e.date) === ym)
     .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
@@ -59,7 +65,7 @@ export default function MonthlyArchive({ data }) {
   const years = [...yearsFromData].sort((a, b) => b - a);
 
   const handlePrint = () => {
-    openMonthlyPackagePrint({ ym, year, month, salesDocs, expenses, data, customer, supplier });
+    openMonthlyPackagePrint({ ym, year, month, salesDocs, cancelledDocs, expenses, data, customer, supplier });
   };
 
   return (
@@ -102,8 +108,8 @@ export default function MonthlyArchive({ data }) {
 
       <div className="split">
         <div className="panel">
-          <div className="panel-head"><h3>เอกสารขายเดือนนี้ ({salesDocs.length})</h3></div>
-          {salesDocs.length === 0 ? (
+          <div className="panel-head"><h3>เอกสารขายเดือนนี้ ({salesDocs.length}{cancelledDocs.length > 0 ? ` + ยกเลิก ${cancelledDocs.length}` : ""})</h3></div>
+          {salesDocs.length === 0 && cancelledDocs.length === 0 ? (
             <p className="muted">ไม่มีเอกสารขายในเดือนนี้</p>
           ) : (
             <div className="mini-list">
@@ -118,6 +124,19 @@ export default function MonthlyArchive({ data }) {
                     </div>
                     <Stamp label={q.status} variant={finStatusVariant(q.status)} />
                     <span className="mono-amt">฿{baht(t.total)}</span>
+                  </div>
+                );
+              })}
+              {cancelledDocs.map((q) => {
+                const taxCode = buildDocCode("ใบกำกับภาษี", q.period, q.running);
+                return (
+                  <div key={q.id} className="mini-row" style={{ opacity: 0.55 }}>
+                    <div className="mini-row-main">
+                      <span className="mono-code">{taxCode}</span>
+                      <span>{customer(q.customerId)?.nameTh || q.customerName || "—"}</span>
+                    </div>
+                    <Stamp label="ยกเลิก" variant={finStatusVariant("ยกเลิก")} />
+                    <span className="mono-amt">—</span>
                   </div>
                 );
               })}

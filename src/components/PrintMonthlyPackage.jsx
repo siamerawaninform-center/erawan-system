@@ -58,7 +58,7 @@ function header(company) {
     </div>`;
 }
 
-export function openMonthlyPackagePrint({ ym, salesDocs, expenses, data, customer, supplier }) {
+export function openMonthlyPackagePrint({ ym, salesDocs, cancelledDocs = [], expenses, data, customer, supplier }) {
   const company = { ...COMPANY_DEFAULT, ...(data.company || {}) };
   const monthLabel = formatThaiMonthYear(ym);
 
@@ -115,41 +115,51 @@ export function openMonthlyPackagePrint({ ym, salesDocs, expenses, data, custome
       </div>
     </div>
     <div class="note">
-      เอกสารในแพ็คเกจนี้: เอกสารขาย ${salesDocs.length} รายการ · รายจ่าย/ภาษีซื้อ ${expenses.length} รายการ
+      เอกสารในแพ็คเกจนี้: เอกสารขาย ${salesDocs.length} รายการ${cancelledDocs.length > 0 ? ` (+ ยกเลิก ${cancelledDocs.length} รายการ)` : ""} · รายจ่าย/ภาษีซื้อ ${expenses.length} รายการ
       (${vatExpenses.length} รายการมี VAT, ${whtExpenses.length} รายการหัก ณ ที่จ่าย)
     </div>
   </div>`;
 
   /* ---------- รายงานภาษีขาย ---------- */
-  const salesRows = salesDocs.map((q, i) => {
+  // รวมเอกสารที่ยกเลิกเข้ามาแสดงด้วย (เลขที่ยกเลิกยังต้องโผล่ในรายงาน พร้อมกำกับสถานะ)
+  // กันเลขที่เอกสารในรายงานกระโดดห้วนๆ โดยไม่มีคำอธิบายว่าเลขที่หายไปไหน — ไม่รวมยอดของแถวที่ยกเลิกในผลรวม
+  const allSalesRows = [
+    ...salesDocs.map((q) => ({ q, cancelled: false })),
+    ...cancelledDocs.map((q) => ({ q, cancelled: true })),
+  ].sort((a, b) => (a.q.date || "").localeCompare(b.q.date || ""));
+
+  const salesRows = allSalesRows.map(({ q, cancelled }, i) => {
     const t = computeFinTotal(q.items, q.vat, q.discount);
     const taxCode = buildDocCode("ใบกำกับภาษี", q.period, q.running);
     const cust = customer(q.customerId);
-    return `<tr>
+    const rowStyle = cancelled ? ' style="color:#999;"' : "";
+    return `<tr${rowStyle}>
       <td class="center">${i + 1}</td>
       <td class="center">${esc(formatShortThaiDate(q.date))}</td>
       <td class="center mono">${esc(taxCode)}</td>
       <td>${esc(cust?.nameTh || q.customerName || "—")}</td>
       <td class="center">${esc(cust?.taxId || "—")}</td>
-      <td class="num">${baht(t.afterDiscount)}</td>
-      <td class="num">${baht(t.vatAmount)}</td>
+      <td class="num">${cancelled ? "—" : baht(t.afterDiscount)}</td>
+      <td class="num">${cancelled ? "—" : baht(t.vatAmount)}</td>
+      <td class="center">${cancelled ? "ยกเลิก" : "—"}</td>
     </tr>`;
   }).join("");
 
-  const salesPage = salesDocs.length === 0 ? "" : `
+  const salesPage = allSalesRows.length === 0 ? "" : `
   <div class="sheet">
     ${header(company)}
     <div class="title">รายงานภาษีขาย</div>
     <div class="subtitle">${esc(monthLabel)}</div>
     <table>
       <thead><tr>
-        <th style="width:6%">ลำดับ</th><th style="width:12%">วันที่</th><th style="width:18%">เลขที่ใบกำกับภาษี</th>
-        <th style="width:28%">ชื่อผู้ซื้อ</th><th style="width:16%">เลขผู้เสียภาษีผู้ซื้อ</th>
-        <th style="width:10%">มูลค่าสินค้า/บริการ</th><th style="width:10%">ภาษีมูลค่าเพิ่ม</th>
+        <th style="width:5%">ลำดับ</th><th style="width:11%">วันที่</th><th style="width:16%">เลขที่ใบกำกับภาษี</th>
+        <th style="width:24%">ชื่อผู้ซื้อ</th><th style="width:14%">เลขผู้เสียภาษีผู้ซื้อ</th>
+        <th style="width:9%">มูลค่าสินค้า/บริการ</th><th style="width:9%">ภาษีมูลค่าเพิ่ม</th><th style="width:8%">หมายเหตุ</th>
       </tr></thead>
       <tbody>${salesRows}</tbody>
-      <tfoot><tr><td colspan="5">รวม</td><td class="num">${baht(salesTotals.total - salesTotals.vat)}</td><td class="num">${baht(salesTotals.vat)}</td></tr></tfoot>
+      <tfoot><tr><td colspan="5">รวม (ไม่รวมรายการที่ยกเลิก)</td><td class="num">${baht(salesTotals.total - salesTotals.vat)}</td><td class="num">${baht(salesTotals.vat)}</td><td></td></tr></tfoot>
     </table>
+    ${cancelledDocs.length > 0 ? `<div class="note">มีเอกสารยกเลิก ${cancelledDocs.length} รายการในเดือนนี้ — แสดงเลขที่ไว้เพื่อไม่ให้เลขที่เอกสารกระโดดโดยไม่มีคำอธิบาย ไม่นับรวมในยอดขาย/ภาษีขาย</div>` : ""}
   </div>`;
 
   /* ---------- รายงานภาษีซื้อ ---------- */
