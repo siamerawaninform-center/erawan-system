@@ -15,7 +15,7 @@ function esc(s) {
 const PRINT_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap');
   *{ box-sizing:border-box; }
-  :root{ --ink:#1a1a1a; --maroon:#880808; }
+  :root{ --ink:#1a1a1a; --maroon:#880808; --fs-jsa:15.5px; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
@@ -24,34 +24,35 @@ const PRINT_CSS = `
   .pv-label{ font-size:13px; }
   .sheet-wrap{ padding:20px 0; }
 
-  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:6mm 9mm 5mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:4px; font-weight:600; }
+  .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:6mm 9mm 5mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; font-size:var(--fs-jsa); line-height:1.35; font-weight:600; }
 
   .doc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
   .doc-company{ display:flex; gap:12px; align-items:flex-start; }
-  .doc-company-text{ font-size:4px; line-height:1.4; }
-  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:4px; margin-bottom:2px; color:var(--ink); }
-  .dc-line{ color:#333; font-size:4px; }
+  .doc-company-text{ font-size:var(--fs-jsa); line-height:1.4; }
+  .dc-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:var(--fs-jsa); margin-bottom:2px; color:var(--ink); }
+  .dc-line{ color:#333; font-size:var(--fs-jsa); }
   .doc-top-rule{ height:3px; background:var(--maroon); margin:3px 0 4px; border-radius:1px; }
   .doc-name-wrap{ display:flex; justify-content:center; margin:0 0 5px; }
-  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:4px; border-radius:2px; display:inline-block; }
+  .doc-name{ background:var(--ink); color:#fff; padding:5px 26px; letter-spacing:.03em; font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:var(--fs-jsa); border-radius:2px; display:inline-block; }
 
-  .jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:4px; margin-bottom:4px; }
+  .jsa-meta{ display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font-size:var(--fs-jsa); margin-bottom:6px; }
 
-  .doc-table{ width:100%; border-collapse:collapse; font-size:4px; margin-bottom:4px; }
-  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:12.5px; line-height:1.3; text-align:center; }
+  .doc-table{ width:100%; border-collapse:collapse; font-size:var(--fs-jsa); margin-bottom:4px; }
+  .doc-table th{ background:var(--ink); color:#fff; border:2px solid var(--ink); padding:6px 6px; font-weight:700; font-size:var(--fs-jsa); line-height:1.3; text-align:center; }
   .doc-table td{ border-left:2px solid #333; border-right:2px solid #333; padding:5px 6px; vertical-align:top; }
   .doc-table tbody tr:first-child td{ border-top:2px solid #333; }
   .doc-table tbody tr:last-child td{ border-bottom:2px solid #333; }
   .doc-desc{ white-space:pre-wrap; }
   .doc-center{ text-align:center; }
-  .jsa-cell{ font-size:15.5px; }
+  .doc-table td{ font-size:var(--fs-jsa); }
+  .jsa-cell{ font-size:var(--fs-jsa); }
 
   .jsa-sign{ margin-top:16px; display:flex; justify-content:flex-end; }
   .plan-sig{ display:flex; flex-direction:column; align-items:center; gap:3px; }
   .dsg-sig-line{ width:180px; border-bottom:2.5px solid #222; height:30px; display:block; }
   .dsg-sig-img{ max-height:44px; max-width:140px; object-fit:contain; margin-bottom:4px; }
-  .dsg-paren{ text-align:center; margin-top:2px; }
-  .dsg-role{ color:#555; font-weight:600; }
+  .dsg-paren{ text-align:center; margin-top:2px; font-size:var(--fs-jsa); }
+  .dsg-role{ color:#555; font-weight:600; font-size:var(--fs-jsa); }
 
   @media print {
     body{ background:#fff; }
