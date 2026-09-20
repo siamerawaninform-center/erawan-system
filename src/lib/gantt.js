@@ -59,7 +59,7 @@ export function formatAbsHour(h) {
   const day = Math.floor(h / 24);
   const hh = String(h % 24).padStart(2, "0") + ":00";
   if (day <= 0) return hh;
-  return day === 1 ? `${hh} (วันถัดไป)` : `${hh} (+${day} วัน)`;
+  return `${hh} (+${day})`;
 }
 
 /**
@@ -68,11 +68,22 @@ export function formatAbsHour(h) {
  * (เวลางานที่ตัวเลขน้อยกว่าเวลาเริ่ม = ผ่านเที่ยงคืนไปแล้ว บวก 24)
  */
 export function normalizeHourPlan(plan) {
-  if (!plan || plan.unit !== "hour" || plan.hourEndDate) return plan;
-  const sh = Number(plan.startHour), eh = Number(plan.endHour);
+  if (!plan || plan.unit !== "hour") return plan;
+  const sh = Number(plan.startHour);
+  // งานที่เวลาเริ่ม/สิ้นสุดไม่ใช่ตัวเลข (เช่น ยังเป็นวันที่ค้างมาจากโหมดรายวัน) จะคำนวณตำแหน่งแถบสีไม่ได้ -> แถบไม่ขึ้น
+  // ปรับให้เป็นตัวเลขที่ใช้ได้เสมอ: เริ่ม = เวลาเริ่มของแผน, สิ้นสุด = เริ่ม + 1 ชม.
+  const isNum = (v) => v !== "" && v !== null && v !== undefined && Number.isFinite(Number(v));
+  const cleaned = (plan.tasks || []).map((t) => {
+    const s = isNum(t.start) ? Number(t.start) : sh;
+    const e = isNum(t.end) ? Number(t.end) : s + 1;
+    return { ...t, start: s, end: e };
+  });
+  plan = { ...plan, tasks: cleaned };
+  if (plan.hourEndDate) return plan;
+  const eh = Number(plan.endHour);
   if (eh > sh) return { ...plan, hourEndDate: plan.hourDate };
   const fix = (h) => (Number(h) < sh ? Number(h) + 24 : Number(h));
-  const tasks = (plan.tasks || []).map((t) => {
+  const tasks = plan.tasks.map((t) => {
     const s = fix(t.start);
     let e = fix(t.end);
     if (e < s) e += 24;

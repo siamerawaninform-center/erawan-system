@@ -136,8 +136,34 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
 
   const setTask = (id, key, value) =>
     setF({ ...f, tasks: f.tasks.map((t) => (t.id === id ? { ...t, [key]: value } : t)) });
-  const addTask = () =>
-    setF({ ...f, tasks: [...f.tasks, { id: uid("tsk"), no: f.tasks.length + 1, description: "", start: f.startDate || f.hourDate, end: f.endDate || f.hourDate }] });
+  const addTask = () => {
+    let start, end;
+    if (f.unit === "hour") {
+      // ต่อจากเวลาสิ้นสุดของรายการล่าสุด (ไม่เกินสิ้นสุดของแผน)
+      const last = f.tasks[f.tasks.length - 1];
+      const endLimit = hourPlanEndAbs(f);
+      start = last && Number.isFinite(Number(last.end)) ? Math.min(Number(last.end), endLimit) : Number(f.startHour);
+      end = Math.min(start + 1, endLimit);
+    } else {
+      start = f.startDate; end = f.startDate;
+    }
+    setF({ ...f, tasks: [...f.tasks, { id: uid("tsk"), no: f.tasks.length + 1, description: "", start, end }] });
+  };
+  // สลับรายวัน <-> รายชั่วโมง: แปลงเวลาของทุกรายการงานให้เป็นชนิดที่ตรงกับโหมดใหม่ (วันที่ / ตัวเลขชั่วโมง)
+  // ไม่งั้นค่าเก่าจะค้างเป็นคนละชนิด แล้วแถบสีตอนพิมพ์ไม่ขึ้น
+  const setUnit = (unit) => {
+    if (unit === f.unit) return;
+    const isDate = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+    const tasks = f.tasks.map((t) => {
+      if (unit === "hour") {
+        const s = Number.isFinite(Number(t.start)) && t.start !== "" && !isDate(t.start) ? Number(t.start) : Number(f.startHour);
+        const e = Number.isFinite(Number(t.end)) && t.end !== "" && !isDate(t.end) ? Number(t.end) : s + 1;
+        return { ...t, start: s, end: e };
+      }
+      return { ...t, start: isDate(t.start) ? t.start : f.startDate, end: isDate(t.end) ? t.end : f.startDate };
+    });
+    setF({ ...f, unit, tasks });
+  };
   const removeTask = (id) =>
     setF({ ...f, tasks: f.tasks.filter((t) => t.id !== id).map((t, i) => ({ ...t, no: i + 1 })) });
 
@@ -193,7 +219,9 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
   const taskHourOptions = (() => {
     const set = new Set();
     for (let h = Number(f.startHour); h <= endAbs; h++) set.add(h);
-    (f.tasks || []).forEach((t) => { set.add(Number(t.start)); set.add(Number(t.end)); });
+    (f.tasks || []).forEach((t) => {
+      [t.start, t.end].forEach((v) => { if (v !== "" && Number.isFinite(Number(v))) set.add(Number(v)); });
+    });
     return [...set].sort((a, b) => a - b);
   })();
 
@@ -260,11 +288,11 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
         <div className="form-row">
           <div className="unit-toggle">
             <label className="check-item">
-              <input type="radio" name="unit" checked={!isHour} onChange={() => setF({ ...f, unit: "day" })} />
+              <input type="radio" name="unit" checked={!isHour} onChange={() => setUnit("day")} />
               รายวัน
             </label>
             <label className="check-item">
-              <input type="radio" name="unit" checked={isHour} onChange={() => setF({ ...f, unit: "hour" })} />
+              <input type="radio" name="unit" checked={isHour} onChange={() => setUnit("hour")} />
               รายชั่วโมง (ข้ามคืนได้)
             </label>
           </div>
