@@ -3,7 +3,10 @@ import { TitleBlock, Modal, EmptyState, Toolbar, FormDivider } from "../componen
 import { Autocomplete } from "../components/Autocomplete.jsx";
 import { uid, todayISO, formatShortThaiDate } from "../lib/format.js";
 import { nextPlanCode } from "../lib/docNumber.js";
-import { PLAN_DAY_STEPS, PLAN_HOUR_STEPS } from "../lib/gantt.js";
+import {
+  PLAN_DAY_STEPS, PLAN_HOUR_STEPS,
+  addDaysISO, diffDaysISO, hourPlanDayOffset, hourPlanEndAbs, formatAbsHour, normalizeHourPlan,
+} from "../lib/gantt.js";
 
 /* ---------------------------------------------------------
    แผนงานโครงการ (Gantt) — เลือกหน่วยเวลาได้เอง (วัน/ชั่วโมง)
@@ -46,6 +49,7 @@ export default function Plan({ data, upsert, remove, onPrint }) {
         <div className="card-grid">
           {list.map((p) => {
             const proj = project(p.projectId);
+            const np = normalizeHourPlan(p);
             return (
               <div className="card" key={p.id}>
                 <div className="card-top"><span className="mono-code">{p.code}</span></div>
@@ -54,7 +58,9 @@ export default function Plan({ data, upsert, remove, onPrint }) {
                 <p className="card-line">
                   {(p.tasks || []).length} รายการงาน ·{" "}
                   {p.unit === "hour"
-                    ? `${formatShortThaiDate(p.hourDate)} (${p.startHour}:00-${p.endHour}:00)`
+                    ? (hourPlanDayOffset(np) > 0
+                      ? `${formatShortThaiDate(np.hourDate)} ${np.startHour}:00 — ${formatShortThaiDate(np.hourEndDate)} ${np.endHour}:00`
+                      : `${formatShortThaiDate(p.hourDate)} (${p.startHour}:00-${p.endHour}:00)`)
                     : `${formatShortThaiDate(p.startDate)} — ${formatShortThaiDate(p.endDate)}`}
                 </p>
                 <div className="card-actions">
@@ -86,7 +92,7 @@ export default function Plan({ data, upsert, remove, onPrint }) {
 
 function PlanForm({ mode, item, data, onSave, onClose }) {
   const [f, setF] = useState(() => {
-    if (item) return item;
+    if (item) return normalizeHourPlan(item);
     const proj = data.projects[0];
     const today = todayISO();
     const in14 = new Date(); in14.setDate(in14.getDate() + 14);
@@ -103,6 +109,7 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
       endDate: in14.toISOString().slice(0, 10),
       stepDays: 2,
       hourDate: today,
+      hourEndDate: today,
       startHour: 8,
       endHour: 17,
       stepHours: 1,
@@ -151,7 +158,7 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
     let newTasks;
     if (isHour) {
       // โหมดรายชั่วโมง: กระจายเท่าๆ กันในช่วงเวลาเริ่ม-สิ้นสุดของวันนั้น
-      const totalHours = Math.max(1, Number(f.endHour) - Number(f.startHour));
+      const totalHours = Math.max(1, hourPlanEndAbs(f) - Number(f.startHour));
       const slice = totalHours / lineItems.length;
       newTasks = lineItems.map((it, i) => ({
         id: uid("tsk"), no: i + 1, description: it.desc,
@@ -179,9 +186,45 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
   const signer = data.signers.find((s) => s.id === f.preparerId);
   const hourOptions = Array.from({ length: 24 }, (_, h) => h);
 
+  // โหมดรายชั่วโมงข้ามวัน: เวลางานเก็บเป็นชั่วโมงสะสมนับจาก 00:00 ของ "วันที่ทำงาน"
+  // เช่น 01:00 ของวันถัดไป = 25 — ตัวเลือกของรายการงานจึงแสดงเฉพาะช่วงเวลาของแผน
+  const endAbs = hourPlanEndAbs(f);
+  const spansDays = hourPlanDayOffset(f) > 0;
+  const taskHourOptions = (() => {
+    const set = new Set();
+    for (let h = Number(f.startHour); h <= endAbs; h++) set.add(h);
+    (f.tasks || []).forEach((t) => { set.add(Number(t.start)); set.add(Number(t.end)); });
+    return [...set].sort((a, b) => a - b);
+  })();
+
+  // ถ้าตั้งเวลาสิ้นสุด <= เวลาเริ่ม ภายในวันเดียว = ทำงานข้ามคืน -> ขยับวันสิ้นสุดเป็นวันถัดไปให้เอง
+  const setHourRange = (patch) => {
+    const next = { ...f, ...patch };
+    if (hourPlanDayOffset(next) === 0 && Number(next.endHour) <= Number(next.startHour)) {
+      next.hourEndDate = addDaysISO(next.hourDate, 1);
+    }
+    setF(next);
+  };
+  const setHourDate = (e) => {
+    const v = e.target.value;
+    if (!v) return;
+    const shift = f.hourDate ? diffDaysISO(f.hourDate, v) : 0;
+    setF({ ...f, hourDate: v, hourEndDate: addDaysISO(f.hourEndDate || f.hourDate || v, shift) });
+  };
+  const setHourEndDate = (e) => {
+    const v = e.target.value;
+    if (!v) return;
+    setF({ ...f, hourEndDate: v < f.hourDate ? f.hourDate : v });
+  };
+
   return (
     <Modal title={mode === "add" ? "สร้างแผนงาน" : "แก้ไขแผนงาน"} onClose={onClose} xwide>
-      <form className="form" onSubmit={(e) => { e.preventDefault(); if (!f.projectId) return; onSave(f); }}>
+      <form className="form" onSubmit={(e) => {
+        e.preventDefault();
+        if (!f.projectId) return;
+        if (isHour && endAbs <= Number(f.startHour)) { alert("เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่ม — ถ้าทำงานข้ามคืนให้เลือกวันที่สิ้นสุดเป็นวันถัดไป"); return; }
+        onSave(f);
+      }}>
         <div className="form-grid-3">
           <div className="form-row">
             <label>โปรเจกต์ * (พิมพ์เพื่อค้นหา)</label>
@@ -222,7 +265,7 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
             </label>
             <label className="check-item">
               <input type="radio" name="unit" checked={isHour} onChange={() => setF({ ...f, unit: "hour" })} />
-              รายชั่วโมง (ภายในวันเดียว)
+              รายชั่วโมง (ข้ามคืนได้)
             </label>
           </div>
         </div>
@@ -245,19 +288,23 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
             </div>
           </div>
         ) : (
-          <div className="form-grid-3">
+          <div className="form-grid-4">
             <div className="form-row">
-              <label>วันที่ทำงาน</label>
-              <input type="date" value={f.hourDate} onChange={set("hourDate")} />
+              <label>วันที่เริ่มทำงาน</label>
+              <input type="date" value={f.hourDate} onChange={setHourDate} />
+            </div>
+            <div className="form-row">
+              <label>วันที่สิ้นสุด {spansDays && <span className="field-hint">(ข้ามคืน)</span>}</label>
+              <input type="date" value={f.hourEndDate || f.hourDate} min={f.hourDate} onChange={setHourEndDate} />
             </div>
             <div className="form-row">
               <label>เวลาเริ่ม — สิ้นสุด</label>
               <div className="hour-range">
-                <select value={f.startHour} onChange={(e) => setF({ ...f, startHour: Number(e.target.value) })}>
+                <select value={f.startHour} onChange={(e) => setHourRange({ startHour: Number(e.target.value) })}>
                   {hourOptions.map((h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
                 </select>
                 <span>—</span>
-                <select value={f.endHour} onChange={(e) => setF({ ...f, endHour: Number(e.target.value) })}>
+                <select value={f.endHour} onChange={(e) => setHourRange({ endHour: Number(e.target.value) })}>
                   {hourOptions.map((h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
                 </select>
               </div>
@@ -291,14 +338,14 @@ function PlanForm({ mode, item, data, onSave, onClose }) {
                 <input type="date" value={t.start} onChange={(e) => setTask(t.id, "start", e.target.value)} />
               ) : (
                 <select value={t.start} onChange={(e) => setTask(t.id, "start", Number(e.target.value))}>
-                  {hourOptions.map((h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
+                  {taskHourOptions.map((h) => <option key={h} value={h}>{formatAbsHour(h)}</option>)}
                 </select>
               )}
               {!isHour ? (
                 <input type="date" value={t.end} onChange={(e) => setTask(t.id, "end", e.target.value)} />
               ) : (
                 <select value={t.end} onChange={(e) => setTask(t.id, "end", Number(e.target.value))}>
-                  {hourOptions.map((h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
+                  {taskHourOptions.map((h) => <option key={h} value={h}>{formatAbsHour(h)}</option>)}
                 </select>
               )}
               <button type="button" className="icon-btn" onClick={() => removeTask(t.id)} aria-label="ลบ">✕</button>

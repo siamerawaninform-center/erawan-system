@@ -231,6 +231,7 @@ tr:last-child td{ border-bottom:none; }
 .sig-upload-btn{ cursor:pointer; }
 .form-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .form-grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.form-grid-4{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; }
 .form-span-2{ grid-column:span 2; }
 label{ font-size:18px; font-weight:700; color:var(--ink); }
 input, select, textarea{
@@ -360,6 +361,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   .split{ grid-template-columns:1fr; }
   .kpi-grid{ grid-template-columns:1fr 1fr; }
   .form-grid-3{ grid-template-columns:1fr; }
+  .form-grid-4{ grid-template-columns:1fr 1fr; }
   .form-span-2{ grid-column:span 1; }
 }
 @media (max-width: 760px){

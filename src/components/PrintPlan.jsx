@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { formatShortThaiDate } from "../lib/format.js";
 import { COMPANY_DEFAULT } from "../lib/constants.js";
-import { buildDayColumns, buildHourColumns, taskColumnRange } from "../lib/gantt.js";
+import { buildDayColumns, buildHourColumns, taskColumnRange, normalizeHourPlan } from "../lib/gantt.js";
 
 /* ---------------------------------------------------------
    พิมพ์แผนงาน — เปิดหน้าต่างแยกต่างหาก ตั้งกระดาษแนวนอนตรงๆ
@@ -46,7 +46,8 @@ function esc(s) {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export default function PrintPlan({ plan, data, onClose }) {
+export default function PrintPlan({ plan: rawPlan, data, onClose }) {
+  const plan = normalizeHourPlan(rawPlan);
   const openedRef = useRef(false);
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function PrintPlan({ plan, data, onClose }) {
     const isHour = plan.unit === "hour";
 
     const { columns, stepMs, rangeStart } = isHour
-      ? buildHourColumns(plan.hourDate, plan.startHour, plan.endHour, plan.stepHours)
+      ? buildHourColumns(plan.hourDate, plan.startHour, plan.endHour, plan.stepHours, plan.hourEndDate)
       : buildDayColumns(plan.startDate, plan.endDate, plan.stepDays);
 
     const taskRange = (t) => {
@@ -73,31 +74,35 @@ export default function PrintPlan({ plan, data, onClose }) {
     };
 
     // จุดที่ขึ้นเดือนใหม่ (เทียบกับคอลัมน์ก่อนหน้า) — ใช้ตีเส้นหนาทะลุทั้งตาราง เฉพาะโหมดรายวันที่มีวันที่จริงต่อคอลัมน์
-    const monthStart = columns.map((c, i) =>
-      !isHour && i > 0 &&
-      (c.date.getMonth() !== columns[i - 1].date.getMonth() || c.date.getFullYear() !== columns[i - 1].date.getFullYear())
-    );
+    // โหมดรายชั่วโมงข้ามวัน: ตีเส้นหนาตรงจุดขึ้นวันใหม่ (เที่ยงคืน) แทน
+    const isMultiDayHour = isHour && !!plan.hourEndDate && plan.hourEndDate > plan.hourDate;
+    const monthStart = columns.map((c, i) => {
+      if (i === 0) return false;
+      if (isHour) return isMultiDayHour && c.dayIdx !== columns[i - 1].dayIdx;
+      return c.date.getMonth() !== columns[i - 1].date.getMonth() || c.date.getFullYear() !== columns[i - 1].date.getFullYear();
+    });
 
     const headCells = columns.map((c, i) => `<th class="gantt-col${monthStart[i] ? " month-start" : ""}">${esc(isHour ? c.label : c.day)}</th>`).join("");
 
     // แถวเดือน (รวมช่องวันที่อยู่เดือนเดียวกันไว้ด้วยกันด้วย colspan) — เฉพาะโหมดรายวัน
     // ลิงค์ตรงจากช่วงวันที่/ระยะห่างคอลัมน์ที่กรอกไว้ในแผนงาน (buildDayColumns) ไม่ใช่ค่าตายตัว
     let monthHeadCells = "";
-    if (!isHour && columns.length > 0) {
+    if ((!isHour || isMultiDayHour) && columns.length > 0) {
       const cells = [];
       let i = 0;
+      // โหมดรายวัน: จัดกลุ่มตามเดือน / โหมดรายชั่วโมงข้ามวัน: จัดกลุ่มตามวัน
+      const sameGroup = (a, b) => isHour
+        ? a.dayIdx === b.dayIdx
+        : a.date.getMonth() === b.date.getMonth() && a.date.getFullYear() === b.date.getFullYear();
       while (i < columns.length) {
         let span = 1;
-        while (
-          i + span < columns.length &&
-          columns[i + span].date.getMonth() === columns[i].date.getMonth() &&
-          columns[i + span].date.getFullYear() === columns[i].date.getFullYear()
-        ) {
+        while (i + span < columns.length && sameGroup(columns[i + span], columns[i])) {
           span++;
         }
         const col = columns[i];
         const yearBE = col.date.getFullYear() + 543;
-        cells.push(`<th colspan="${span}" class="gantt-month${monthStart[i] ? " month-start" : ""}">${esc(col.monthLabel)} ${yearBE}</th>`);
+        const label = isHour ? `${col.date.getDate()} ${col.monthLabel} ${yearBE}` : `${col.monthLabel} ${yearBE}`;
+        cells.push(`<th colspan="${span}" class="gantt-month${monthStart[i] ? " month-start" : ""}">${esc(label)}</th>`);
         i += span;
       }
       monthHeadCells = cells.join("");
