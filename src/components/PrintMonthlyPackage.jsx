@@ -21,7 +21,7 @@ const PRINT_CSS = `
   .hdr{ display:flex; align-items:center; gap:12px; border-bottom:3px solid #880808; padding-bottom:10px; margin-bottom:16px; }
   .hdr img{ width:46px; height:46px; object-fit:contain; }
   .hdr-name{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:14px; }
-  .hdr-meta{ font-size:4px; color:#444; line-height:1.5; }
+  .hdr-meta{ font-size:13.5px; color:#444; line-height:1.5; }
   .title{ font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:19px; color:#880808; margin-bottom:4px; }
   .subtitle{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:13px; color:#666; margin-bottom:16px; }
   .cover-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px; }
