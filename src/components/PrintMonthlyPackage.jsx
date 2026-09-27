@@ -29,7 +29,7 @@ const PRINT_CSS = `
   .cover-card.warn{ border-color:#8C3A22; background:#fdf4f1; }
   .cover-label{ font-size:12.5px; color:#666; margin-bottom:6px; }
   .cover-value{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:22px; font-weight:700; }
-  table{ width:100%; border-collapse:collapse; font-size:15.5px; }
+  table{ width:100%; border-collapse:collapse; font-size:11px; }
   th{ background:#171717; color:#fff; padding:4px 5px; text-align:center; font-size:13.5px; font-weight:700; }
   td{ padding:3px 5px; border-bottom:1px solid #e0e0e0; }
   .num{ text-align:right; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
