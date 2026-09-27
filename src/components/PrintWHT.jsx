@@ -27,7 +27,7 @@ const PRINT_CSS = `
   .title-wrap{ text-align:center; margin-bottom:4px; }
   .title{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
   .subtitle{ text-align:center; font-size:13.5px; margin-bottom:6px; color:#333; }
-  .copy-note{ text-align:center; font-size:4px; color:#666; margin-bottom:10px; font-style:italic; }
+  .copy-note{ text-align:center; font-size:13.5px; color:#666; margin-bottom:10px; font-style:italic; }
   .booknum{ display:flex; justify-content:flex-end; gap:24px; font-size:13.5px; margin-bottom:12px; font-weight:600; }
 
   .party{ border:2px solid #333; border-radius:3px; padding:12px 14px; margin-bottom:10px; font-size:14.5px; line-height:2; background:#fafafa; }
@@ -37,7 +37,7 @@ const PRINT_CSS = `
   table.wht{ width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
   table.wht th{ border:2px solid #333; padding:8px 6px; background:var(--ink); color:#fff; font-weight:700; }
   table.wht td{ border:2px solid #333; padding:8px 8px; vertical-align:top; }
-  .num{ text-align:right; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; font-weight:600; }
+  .num{ text-align:right; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; white-space:nowrap; font-weight:600; font-size:12px; }
   .center{ text-align:center; }
   .total-row td{ font-weight:700; background:#f2f2f2; }
   .bahttext-row td{ font-style:italic; font-size:13px; }
