@@ -213,7 +213,12 @@ function buildDocPageHtml({ record, printType, copyType, data }) {
       const priceCells = isSplit
         ? `<td class="doc-num">${esc(baht(it.materialPrice || 0))}</td><td class="doc-num">${esc(baht(it.laborPrice || 0))}</td>`
         : `<td class="doc-num">${esc(baht(it.price))}</td>`;
-      const descText = record.refPO ? `${it.desc} (PO: ${record.refPO})` : it.desc;
+      const poRef = String(record.refPO || "").trim();
+      const descRaw = String(it.desc || "");
+      // ไม่ต่อ (PO: xxx) ซ้ำ ถ้ารายการมีเลข PO อยู่แล้ว
+      const descText = poRef && !descRaw.replace(/\s+/g, "").includes(poRef.replace(/\s+/g, ""))
+        ? `${descRaw} (PO: ${poRef})`
+        : descRaw;
       return `
       <tr>
         <td class="doc-center">${itemRunningNo}</td>
