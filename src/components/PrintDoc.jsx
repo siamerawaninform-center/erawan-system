@@ -22,9 +22,9 @@ const PRINT_CSS = `
   :root{ --ink:#1a1a1a; --maroon:#880808; --steel:#6e6e6e; --steel-light:#9e9e9e; --concrete:#f2f2f2; }
   body{ margin:0; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; background:#525659; }
 
-  @media screen and (max-width:1400px){ body{ zoom:0.85; } }
-  @media screen and (max-width:1100px){ body{ zoom:0.65; } }
-  @media screen and (max-width:800px){ body{ zoom:0.45; } }
+  @media screen and (max-width:1400px) and (hover:hover) and (pointer:fine){ body{ zoom:0.85; } }
+  @media screen and (max-width:1100px) and (hover:hover) and (pointer:fine){ body{ zoom:0.65; } }
+  @media screen and (max-width:800px) and (hover:hover) and (pointer:fine){ body{ zoom:0.45; } }
   @media print{ body{ zoom:1 !important; } }
   .pv-bar{ position:sticky; top:0; z-index:10; background:#1a1a1a; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
   .pv-bar button{ background:#880808; color:#fff; border:none; padding:8px 18px; border-radius:4px; font-size:calc(var(--fs-base) * 0.7222); cursor:pointer; font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; }
@@ -36,6 +36,8 @@ const PRINT_CSS = `
   .sheet{ background:#fff; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 15mm 13mm; box-shadow:0 4px 24px rgba(0,0,0,.3); position:relative; color:#171717; --fs-base:4px; font-size:var(--fs-base); font-weight:600; }
   /* ชุดเอกสารเรียกเก็บ (วางบิล/แจ้งหนี้/กำกับภาษี/เสร็จ) — ตัวใหญ่กว่า เต็มหน้ากระดาษกว่าใบเสนอราคา */
   .sheet.sheet-billing{ padding:10mm 10mm 10mm; --fs-base:18px; }
+  /* ชุดวางบิล: ให้ส่วนลงชื่ออยู่ท้ายหน้าด้วย flex (ไม่ใช้ absolute) กันซ้อนทับเนื้อหาเมื่อฟอนต์/ขนาดต่างกัน เช่นพิมพ์จาก iPad */
+  .sheet.sheet-billing{ display:flex; flex-direction:column; }
 
   .mono-code{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:calc(var(--fs-base) * 0.6944); color:var(--maroon); font-weight:700; }
   .mono-amt{ font-family:'Chakra Petch','Angsana New','AngsanaUPC','TH Sarabun New','TH Sarabun PSK','Sarabun',sans-serif; font-size:1em; font-weight:700; }
@@ -110,7 +112,7 @@ const PRINT_CSS = `
   .dsbn-subrow{ flex:1; display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
   .dsbn-subline{ flex:1; border-bottom:2px dotted #666; min-height:12px; }
 
-  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:var(--fs-base); position:absolute; left:10mm; right:10mm; bottom:10mm; }
+  .doc-sign-grid{ display:flex; justify-content:space-between; gap:14px; font-size:var(--fs-base); position:static; margin-top:auto; padding-top:8mm; }
   .dsg-col{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .dsg-col-pay{ flex:1.6; }
   .dsg-col-pay .dsg-field{ margin-top:10px; }
